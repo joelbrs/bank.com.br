@@ -11,6 +11,7 @@
   "description": "",
   "devDependencies": {
     "@repo/types": "workspace:*",
+    "@types/bcrypt": "^5.0.2",
     "@types/graphql-relay": "^0.7.0",
     "@types/kcors": "^2.2.8",
     "@types/koa": "^2.15.0",
@@ -25,6 +26,7 @@
   "dependencies": {
     "@entria/graphql-mongo-helpers": "^1.1.2",
     "@react-email/components": "^0.0.21",
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "graphql": "^16.9.0",
     "graphql-relay": "^0.10.1",
