@@ -1,6 +1,6 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { timestampResolver } from "@entria/graphql-mongo-helpers";
-import { Load, registerTypeLoader } from "../node/type-register";
+import { Load, registerTypeLoader } from "../node";
 import { globalIdField } from "graphql-relay";
 import { UserLoader } from "./user-loader";
 import { User } from "./user-model";
