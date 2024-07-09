@@ -6,6 +6,7 @@ import { successField } from "@entria/graphql-mongo-helpers";
 import { randomUUID } from "crypto";
 import { env } from "@/config";
 import { resend, UserConfirmationTemplate } from "@/mail";
+import { ConfirmationLink } from "@/modules/confirmation-link";
 
 type RegisterUserInput = Pick<
   User,
@@ -64,6 +65,11 @@ export const RegisterUserMutation = mutationWithClientMutationId({
         link: confirmationLink.toString(),
       }),
     });
+
+    await new ConfirmationLink({
+      code: confirmationCode,
+      userTaxId: user.taxId,
+    }).save();
 
     return {
       user,
