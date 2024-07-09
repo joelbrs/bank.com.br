@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { restartCounters } from "./counters";
 
 export async function clearDatabase() {
-  await mongoose.connection.db.dropDatabase();
+  await mongoose.connection.dropDatabase();
 }
 
 export async function clearDbAndRestartCounters() {
