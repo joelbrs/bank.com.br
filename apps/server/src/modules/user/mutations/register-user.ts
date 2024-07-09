@@ -6,7 +6,7 @@ import { successField } from "@entria/graphql-mongo-helpers";
 import { randomUUID } from "crypto";
 import { env } from "../../../config";
 import { resend, UserConfirmationTemplate } from "../../../mail";
-import { ConfirmationLink } from "../../confirmation-link";
+import { ConfirmationLinkModel } from "../../confirmation-link";
 import { cnpj, cpf } from "cpf-cnpj-validator";
 import { BusinessRuleException } from "../../../exceptions";
 
@@ -72,7 +72,7 @@ export const RegisterUserMutation = mutationWithClientMutationId({
       }),
     });
 
-    await new ConfirmationLink({
+    await new ConfirmationLinkModel({
       code: confirmationCode,
       userTaxId: user.taxId,
     }).save();
