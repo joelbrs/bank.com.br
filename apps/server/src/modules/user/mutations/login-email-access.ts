@@ -7,8 +7,7 @@ import {
 } from "../../../exceptions";
 import { randomUUID } from "crypto";
 import { AuthenticationLinkModel } from "../../../modules/authentication-link";
-import { env } from "../../../config";
-import { resend, UserLoginTemplate } from "../../../mail";
+import { sendEmail, UserLoginTemplate } from "../../mail";
 import { successField } from "@entria/graphql-mongo-helpers";
 
 export type LoginEmailAccessInput = {
@@ -35,25 +34,19 @@ export const LoginEmailAccessMutation = mutationWithClientMutationId({
       );
     }
 
-    const authCode = randomUUID();
+    const code = randomUUID();
 
     await AuthenticationLinkModel.create({
       userTaxId: user.taxId,
-      code: authCode,
+      code,
     });
 
-    const authLink = new URL("/authenticate", env.API_BASE_URL);
-    authLink.searchParams.set("code", authCode);
-    authLink.searchParams.set("redirect", env.AUTH_REDIRECT_URL);
-
-    await resend.emails.send({
-      from: "Bank <noreply@bank-woovi.joelf.tech>",
-      to: email,
+    await sendEmail({
+      code,
+      linkUri: "/authenticate",
       subject: "[Bank] Link para Login",
-      react: UserLoginTemplate({
-        email,
-        link: authLink?.toString(),
-      }),
+      template: UserLoginTemplate,
+      to: email,
     });
 
     return {
