@@ -41,6 +41,26 @@ describe("RegisterUserMutation", () => {
     mongooseDisconnect();
   });
 
+  it("should return null if password and passwordConfirmation dont match", async () => {
+    const variableValues = {
+      fullName: "valid_fullname",
+      email: "valid_mail@mail.com",
+      password: "valid_password",
+      passwordConfirmation: "invalid_password",
+      taxId: "valid_valid_taxId",
+    };
+
+    jest.spyOn(cpf, "isValid").mockReturnValueOnce(true);
+
+    const { data } = await getGraphqlResult<RegisterMutationResponse>({
+      source: mutation,
+      variableValues,
+      schema,
+    });
+
+    expect(data?.RegisterUser).toBeNull();
+  });
+
   it("should return null data if taxId is invalid", async () => {
     const variableValues = {
       fullName: "valid_fullname",
