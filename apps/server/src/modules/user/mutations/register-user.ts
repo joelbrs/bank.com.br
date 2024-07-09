@@ -8,6 +8,7 @@ import { env } from "@/config";
 import { resend, UserConfirmationTemplate } from "@/mail";
 import { ConfirmationLink } from "@/modules/confirmation-link";
 import { cnpj, cpf } from "cpf-cnpj-validator";
+import { BusinessRuleException } from "@/exceptions";
 
 type RegisterUserInput = Pick<
   User,
@@ -41,11 +42,11 @@ export const RegisterUserMutation = mutationWithClientMutationId({
     taxId,
   }: RegisterUserInput) => {
     if (!cpf.isValid(taxId) || !cnpj.isValid(taxId)) {
-      throw new Error("Informe um CPF ou CNPJ válido.");
+      throw new BusinessRuleException("Informe um CPF ou CNPJ válido.");
     }
 
     if (password !== passwordConfirmation) {
-      throw new Error("As senhas não são iguais.");
+      throw new BusinessRuleException("As senhas não são iguais.");
     }
 
     const user = await new UserModel({
