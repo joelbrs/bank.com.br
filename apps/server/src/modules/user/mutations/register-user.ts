@@ -7,6 +7,7 @@ import { randomUUID } from "crypto";
 import { env } from "@/config";
 import { resend, UserConfirmationTemplate } from "@/mail";
 import { ConfirmationLink } from "@/modules/confirmation-link";
+import { cnpj, cpf } from "cpf-cnpj-validator";
 
 type RegisterUserInput = Pick<
   User,
@@ -39,6 +40,10 @@ export const RegisterUserMutation = mutationWithClientMutationId({
     passwordConfirmation,
     taxId,
   }: RegisterUserInput) => {
+    if (!cpf.isValid(taxId) || !cnpj.isValid(taxId)) {
+      throw new Error("Informe um CPF ou CNPJ válido.");
+    }
+
     if (password !== passwordConfirmation) {
       throw new Error("As senhas não são iguais.");
     }
