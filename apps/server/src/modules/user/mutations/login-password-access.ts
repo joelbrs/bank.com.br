@@ -2,7 +2,11 @@ import { GraphQLNonNull, GraphQLString } from "graphql";
 import { mutationWithClientMutationId } from "graphql-relay";
 import { Context } from "koa";
 import { UserModel } from "../user-model";
-import { BusinessRuleException } from "../../../exceptions";
+import {
+  BusinessRuleException,
+  EntityNotFoundException,
+  UnauthorizedException,
+} from "../../../exceptions";
 import { successField } from "@entria/graphql-mongo-helpers";
 
 export type LoginPasswordAccessInput = {
@@ -27,7 +31,7 @@ export const LoginPasswordAccessMutation = mutationWithClientMutationId({
     const user = await UserModel.findOne({ taxId });
 
     if (!user) {
-      throw new Error("Usuário não encontrado.");
+      throw new EntityNotFoundException("Usuário");
     }
 
     if (!user.confirmed) {
@@ -39,7 +43,7 @@ export const LoginPasswordAccessMutation = mutationWithClientMutationId({
     const passwordMatches = await user.comparePassword(password, user.password);
 
     if (!passwordMatches) {
-      throw new Error("Acesso não autorizado.");
+      throw new UnauthorizedException();
     }
 
     const token = user.generateJwt(user);

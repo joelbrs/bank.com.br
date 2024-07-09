@@ -4,6 +4,7 @@ import { mutationWithClientMutationId } from "graphql-relay";
 import { UserModel } from "../user-model";
 import { AccountModel } from "../../../modules/account";
 import { successField } from "@entria/graphql-mongo-helpers";
+import { EntityNotFoundException, UnauthorizedException } from "@/exceptions";
 
 export type ConfirmUserInput = {
   code: string;
@@ -24,13 +25,13 @@ export const ConfirmUserMutation = mutationWithClientMutationId({
     const existingCode = await ConfirmationLinkModel.findOne({ code });
 
     if (!existingCode) {
-      throw new Error("Acesso não autorizado.");
+      throw new UnauthorizedException();
     }
 
     const user = await UserModel.findOne({ taxId: existingCode.userTaxId });
 
     if (!user) {
-      throw new Error("Usuário não encontrado.");
+      throw new EntityNotFoundException("Usuário");
     }
 
     user.confirmed = true;
