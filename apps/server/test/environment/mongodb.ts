@@ -2,7 +2,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import NodeEnvironment from "jest-environment-node";
 import { JestEnvironmentConfig, EnvironmentContext } from "@jest/environment";
 
-export class MongoDbEnvironment extends NodeEnvironment {
+class MongoDbEnvironment extends NodeEnvironment {
   private mongod: MongoMemoryServer;
 
   constructor(config: JestEnvironmentConfig, context: EnvironmentContext) {
@@ -28,3 +28,5 @@ export class MongoDbEnvironment extends NodeEnvironment {
     await this.mongod.stop();
   }
 }
+
+export default MongoDbEnvironment;
