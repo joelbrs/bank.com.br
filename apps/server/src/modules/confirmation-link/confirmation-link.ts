@@ -1,18 +1,16 @@
-import { Document, Model, Schema, model } from "mongoose";
+import { Maybe } from "@repo/types/index";
+import mongoose, { Document } from "mongoose";
 
-export interface IConfirmationLink extends Document {
+export interface ConfirmationLink extends Document {
   code: string;
   userTaxId: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-type ConfirmationLinkModel = Model<IConfirmationLink>;
+type ConfirmationLinkDocument = Maybe<Document> & ConfirmationLink;
 
-const ConfirmationLinkSchema = new Schema<
-  IConfirmationLink,
-  ConfirmationLinkModel
->(
+const ConfirmationLinkSchema = new mongoose.Schema<ConfirmationLinkDocument>(
   {
     code: {
       type: String,
@@ -32,7 +30,7 @@ const ConfirmationLinkSchema = new Schema<
   }
 );
 
-export const ConfirmationLink: ConfirmationLinkModel = model<
-  IConfirmationLink,
-  ConfirmationLinkModel
->("ConfirmationLink", ConfirmationLinkSchema);
+export const ConfirmationLinkModel = mongoose.model<ConfirmationLink>(
+  "ConfirmationLink",
+  ConfirmationLinkSchema
+);
