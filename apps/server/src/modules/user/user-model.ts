@@ -64,7 +64,7 @@ UserSchema.methods = {
   },
   generateJwt({ _id: subId }: User) {
     const payload = {
-      subId,
+      subId: subId?.toString(),
     };
 
     return sign(payload, env.JWT_KEY);
