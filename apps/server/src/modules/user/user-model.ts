@@ -2,6 +2,7 @@ import mongoose, { Document } from "mongoose";
 import { Maybe } from "@repo/types/index";
 import { env } from "../../config";
 import bcrypt from "bcrypt";
+import { sign } from "jsonwebtoken";
 
 export type User = {
   fullName: string;
@@ -13,6 +14,8 @@ export type User = {
   updatedAt: Date;
 
   hashPassword(password: string): Promise<string>;
+  comparePassword(password: string, digest: string): Promise<boolean>;
+  generateJwt(user: User): string;
 } & Document;
 
 type UserDocument = Maybe<Document> & User;
@@ -55,6 +58,16 @@ const UserSchema = new mongoose.Schema<User>(
 UserSchema.methods = {
   hashPassword: (password: string) => {
     return bcrypt.hash(password, env.HASH_SALT);
+  },
+  comparePassword(password: string, digest: string) {
+    return bcrypt.compare(password, digest);
+  },
+  generateJwt({ _id: subId }: User) {
+    const payload = {
+      subId,
+    };
+
+    return sign(payload, env.JWT_KEY);
   },
 };
 
