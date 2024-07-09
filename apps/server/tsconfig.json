@@ -3,6 +3,7 @@
   "compilerOptions": {
     "declaration": false,
     "declarationMap": false,
+    "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
