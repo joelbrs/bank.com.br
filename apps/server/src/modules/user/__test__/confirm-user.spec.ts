@@ -14,15 +14,15 @@ interface ConfirmUserMutationResponse {
   };
 }
 
-const mutation = `
-  mutation confirmUserAccountMutation($code: String!, $redirect: String!) {
-    ConfirmUser(input: { code: $code, redirect: $redirect }) {
-      userId
-    }
-  }
-`;
-
 const fetchResult = (variableValues: ConfirmUserInput) => {
+  const mutation = `
+    mutation confirmUserAccountMutation($code: String!, $redirect: String!) {
+      ConfirmUser(input: { code: $code, redirect: $redirect }) {
+        userId
+      }
+    }
+  `;
+
   return getGraphqlResult<ConfirmUserMutationResponse>({
     source: mutation,
     variableValues,

@@ -15,17 +15,17 @@ interface RegisterMutationResponse {
   };
 }
 
-const mutation = `
-        mutation registerUserMutation($fullName: String!, $email: String!, $password: String!, $taxId: String!, $passwordConfirmation: String!) {
-            RegisterUser(input: { fullName: $fullName, email: $email, password: $password, taxId: $taxId, passwordConfirmation: $passwordConfirmation }) {
-                user {
-                    fullName
-                }
-            }
-        }
-    `;
-
 const fetchResult = (variableValues: RegisterUserInput) => {
+  const mutation = `
+      mutation registerUserMutation($fullName: String!, $email: String!, $password: String!, $taxId: String!, $passwordConfirmation: String!) {
+          RegisterUser(input: { fullName: $fullName, email: $email, password: $password, taxId: $taxId, passwordConfirmation: $passwordConfirmation }) {
+            user {
+              fullName
+            }
+          }
+        }
+      `;
+
   return getGraphqlResult<RegisterMutationResponse>({
     source: mutation,
     variableValues,
