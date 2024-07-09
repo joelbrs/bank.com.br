@@ -1,6 +1,8 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { timestampResolver } from "@entria/graphql-mongo-helpers";
+import { Load, registerTypeLoader } from "../node/type-register";
 import { globalIdField } from "graphql-relay";
+import { UserLoader } from "./user-loader";
 import { User } from "./user-model";
 
 export const UserType = new GraphQLObjectType<User>({
@@ -27,3 +29,5 @@ export const UserType = new GraphQLObjectType<User>({
     ...timestampResolver,
   }),
 });
+
+registerTypeLoader(UserType, UserLoader.load as Load);
