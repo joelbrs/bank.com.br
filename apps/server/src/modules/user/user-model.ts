@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
 import { Maybe } from "@repo/types/index";
-import { env } from "@/config";
+import { env } from "../../config";
 import bcrypt from "bcrypt";
 
 export type User = {
