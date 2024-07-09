@@ -3,7 +3,7 @@ import mongoose, { Decimal128, Document } from "mongoose";
 
 export type Account = {
   accountNumber: string;
-  taxId: string;
+  userTaxId: string;
   balance: Decimal128;
   createdAt: Date;
   updatedAt: Date;
@@ -18,8 +18,9 @@ const AccountSchema = new mongoose.Schema<Account>(
       unique: true,
       default: Date.now().toString(),
     },
-    taxId: {
+    userTaxId: {
       type: String,
+      ref: "User",
       unique: true,
       required: true,
     },
