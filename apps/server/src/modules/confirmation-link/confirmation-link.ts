@@ -2,7 +2,7 @@ import { Document, Model, Schema, model } from "mongoose";
 
 export interface IConfirmationLink extends Document {
   code: string;
-  userTaxId: Schema.Types.ObjectId;
+  userTaxId: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,7 +20,7 @@ const ConfirmationLinkSchema = new Schema<
       required: true,
     },
     userTaxId: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       unique: true,
       required: true,
