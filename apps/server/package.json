@@ -10,6 +10,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@repo/types": "workspace:*",
+    "@types/graphql-relay": "^0.7.0",
     "@types/kcors": "^2.2.8",
     "@types/koa": "^2.15.0",
     "@types/koa-bodyparser": "^4.3.12",
@@ -17,12 +19,13 @@
     "@types/node": "^20.14.10",
     "ts-node": "^10.9.2",
     "tsx": "^4.16.2",
-    "typescript": "^5.3.3",
-    "@repo/types": "workspace:*"
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "@entria/graphql-mongo-helpers": "^1.1.2",
     "dotenv": "^16.4.5",
+    "graphql": "^16.9.0",
+    "graphql-relay": "^0.10.1",
     "kcors": "^2.2.2",
     "koa": "^2.15.3",
     "koa-bodyparser": "^4.4.1",
