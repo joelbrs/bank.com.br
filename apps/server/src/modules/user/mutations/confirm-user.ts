@@ -4,7 +4,10 @@ import { mutationWithClientMutationId } from "graphql-relay";
 import { UserModel } from "../user-model";
 import { AccountModel } from "../../../modules/account";
 import { successField } from "@entria/graphql-mongo-helpers";
-import { EntityNotFoundException, UnauthorizedException } from "@/exceptions";
+import {
+  EntityNotFoundException,
+  UnauthorizedException,
+} from "../../../exceptions";
 
 export type ConfirmUserInput = {
   code: string;
