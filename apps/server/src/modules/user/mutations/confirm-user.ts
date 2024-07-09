@@ -5,7 +5,7 @@ import { UserModel } from "../user-model";
 import { AccountModel } from "../../../modules/account";
 import { successField } from "@entria/graphql-mongo-helpers";
 
-type ConfirmUserInput = {
+export type ConfirmUserInput = {
   code: string;
   redirect: string;
 };

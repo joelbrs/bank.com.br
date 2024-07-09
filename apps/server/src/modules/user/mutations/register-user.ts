@@ -10,7 +10,7 @@ import { ConfirmationLinkModel } from "../../confirmation-link";
 import { cnpj, cpf } from "cpf-cnpj-validator";
 import { BusinessRuleException } from "../../../exceptions";
 
-type RegisterUserInput = Pick<
+export type RegisterUserInput = Pick<
   User,
   "fullName" | "email" | "password" | "taxId"
 > & { passwordConfirmation: string };

@@ -6,6 +6,7 @@ import { mongooseConnection } from "../../../../test/mongoose-connection";
 import { mongooseDisconnect } from "../../../../test/mongoose-disconnect";
 import { createConfirmationLink } from "../../../modules/confirmation-link";
 import { createUser } from "../fixture";
+import { ConfirmUserInput } from "../mutations/confirm-user";
 
 interface ConfirmUserMutationResponse {
   ConfirmUser: {
@@ -20,6 +21,14 @@ const mutation = `
     }
   }
 `;
+
+const fetchResult = (variableValues: ConfirmUserInput) => {
+  return getGraphqlResult<ConfirmUserMutationResponse>({
+    source: mutation,
+    variableValues,
+    schema,
+  });
+};
 
 describe("ConfirmUserMutation", () => {
   beforeAll(() => {
@@ -36,12 +45,7 @@ describe("ConfirmUserMutation", () => {
       redirect: "/",
     };
 
-    const { data, errors } =
-      await getGraphqlResult<ConfirmUserMutationResponse>({
-        source: mutation,
-        variableValues,
-        schema,
-      });
+    const { data, errors } = await fetchResult(variableValues);
 
     expect(data?.ConfirmUser).toBeNull();
     expect((errors as GraphQLError[])[0]?.message).toBe(
@@ -57,12 +61,7 @@ describe("ConfirmUserMutation", () => {
       redirect: "/",
     };
 
-    const { data, errors } =
-      await getGraphqlResult<ConfirmUserMutationResponse>({
-        source: mutation,
-        variableValues,
-        schema,
-      });
+    const { data, errors } = await fetchResult(variableValues);
 
     expect(data?.ConfirmUser).toBeNull();
     expect((errors as GraphQLError[])[0]?.message).toBe(
@@ -79,11 +78,7 @@ describe("ConfirmUserMutation", () => {
       redirect: "/",
     };
 
-    const { data } = await getGraphqlResult<ConfirmUserMutationResponse>({
-      source: mutation,
-      variableValues,
-      schema,
-    });
+    const { data } = await fetchResult(variableValues);
 
     expect(data?.ConfirmUser.userId).toBe(_id?.toString());
   });

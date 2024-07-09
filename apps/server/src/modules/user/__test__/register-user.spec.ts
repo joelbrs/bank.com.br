@@ -5,6 +5,7 @@ import { mongooseConnection } from "../../../../test/mongoose-connection";
 import { mongooseDisconnect } from "../../../../test/mongoose-disconnect";
 import { cnpj, cpf } from "cpf-cnpj-validator";
 import { GraphQLError } from "graphql";
+import { RegisterUserInput } from "../mutations/register-user";
 
 interface RegisterMutationResponse {
   RegisterUser: {
@@ -23,6 +24,14 @@ const mutation = `
             }
         }
     `;
+
+const fetchResult = (variableValues: RegisterUserInput) => {
+  return getGraphqlResult<RegisterMutationResponse>({
+    source: mutation,
+    variableValues,
+    schema,
+  });
+};
 
 jest.mock("../../../mail");
 
@@ -51,11 +60,7 @@ describe("RegisterUserMutation", () => {
     jest.spyOn(cpf, "isValid").mockReturnValueOnce(true);
     jest.spyOn(cnpj, "isValid").mockReturnValueOnce(true);
 
-    const { data, errors } = await getGraphqlResult<RegisterMutationResponse>({
-      source: mutation,
-      variableValues,
-      schema,
-    });
+    const { data, errors } = await fetchResult(variableValues);
 
     expect(data?.RegisterUser).toBeNull();
     expect((errors as GraphQLError[])[0]?.message).toBe(
@@ -72,11 +77,7 @@ describe("RegisterUserMutation", () => {
       taxId: "invalid_valid_taxId",
     };
 
-    const { data, errors } = await getGraphqlResult<RegisterMutationResponse>({
-      source: mutation,
-      variableValues,
-      schema,
-    });
+    const { data, errors } = await fetchResult(variableValues);
 
     expect(data?.RegisterUser).toBeNull();
     expect((errors as GraphQLError[])[0]?.message).toBe(
@@ -96,11 +97,7 @@ describe("RegisterUserMutation", () => {
     jest.spyOn(cpf, "isValid").mockReturnValueOnce(true);
     jest.spyOn(cnpj, "isValid").mockReturnValueOnce(true);
 
-    const { data } = await getGraphqlResult<RegisterMutationResponse>({
-      source: mutation,
-      variableValues,
-      schema,
-    });
+    const { data } = await fetchResult(variableValues);
 
     expect(data?.RegisterUser.user?.fullName).toBe("valid_fullname");
   });
