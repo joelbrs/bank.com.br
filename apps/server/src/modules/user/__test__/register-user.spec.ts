@@ -33,8 +33,6 @@ const fetchResult = (variableValues: RegisterUserInput) => {
   });
 };
 
-jest.mock("../../mail");
-
 describe("RegisterUserMutation", () => {
   beforeAll(() => {
     mongooseConnection();

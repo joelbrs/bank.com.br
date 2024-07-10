@@ -4,7 +4,7 @@ import { GraphQLNonNull, GraphQLString } from "graphql";
 import { UserType } from "../user-type";
 import { successField } from "@entria/graphql-mongo-helpers";
 import { randomUUID } from "crypto";
-import { sendEmail, UserConfirmationTemplate } from "../../mail";
+import { sendEmail, UserConfirmationTemplate } from "../../../notification";
 import { ConfirmationLinkModel } from "../../confirmation-link";
 import { cnpj, cpf } from "cpf-cnpj-validator";
 import { BusinessRuleException } from "../../../exceptions";
