@@ -6,6 +6,8 @@ export type AuthenticationLink = {
   userTaxId: string;
   createdAt: Date;
   updatedAt: Date;
+
+  isExpired(date: Date): boolean;
 } & Document;
 
 type AuthenticationLinkDocument = Maybe<Document> & AuthenticationLink;
@@ -28,6 +30,14 @@ const AuthenticationLinkSchema = new mongoose.Schema<AuthenticationLink>(
     timestamps: true,
   }
 );
+
+AuthenticationLinkSchema.methods = {
+  isExpired(date: Date) {
+    const timestamp = date.getTime();
+
+    return Math.abs(Date.now() - timestamp) > 86400000; //one day
+  },
+};
 
 export const AuthenticationLinkModel =
   mongoose.model<AuthenticationLinkDocument>(

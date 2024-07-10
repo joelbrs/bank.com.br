@@ -8,6 +8,7 @@ import {
   UnauthorizedException,
 } from "../../../exceptions";
 import { successField } from "@entria/graphql-mongo-helpers";
+import { setCookies } from "../../../authentication";
 
 export type LoginPasswordAccessInput = {
   taxId: string;
@@ -47,14 +48,7 @@ export const LoginPasswordAccessMutation = mutationWithClientMutationId({
     }
 
     const token = user.generateJwt(user);
-
-    ctx.cookies.set("bank.auth.token", token, {
-      domain: undefined, //TODO: set domain production,
-      httpOnly: true,
-      sameSite: true,
-      path: "/",
-      maxAge: 86400 * 7,
-    });
+    setCookies(ctx, token);
 
     return {
       userId: user._id,
