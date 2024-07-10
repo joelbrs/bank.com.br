@@ -4,6 +4,7 @@ import { UserModel, UserType } from "../user";
 import { connectionDefinitions } from "graphql-relay";
 import { Load, registerTypeLoader } from "../node";
 import { AccountLoader } from "./account-loader";
+import { timestampResolver } from "@entria/graphql-mongo-helpers";
 
 export const AccountType = new GraphQLObjectType<Account>({
   name: "Account",
@@ -20,8 +21,9 @@ export const AccountType = new GraphQLObjectType<Account>({
     balance: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Represents account's balance",
+      resolve: ({ balance }) => `${balance}`,
     },
-    user: {
+    owner: {
       type: new GraphQLNonNull(UserType),
       description: "Represents account's owner object",
       resolve: async ({ userTaxId }) => {
@@ -29,6 +31,7 @@ export const AccountType = new GraphQLObjectType<Account>({
         return user;
       },
     },
+    ...timestampResolver,
   }),
 });
 

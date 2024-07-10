@@ -3,7 +3,10 @@ import { UserLoader, UserType } from "../modules/user";
 import { GraphQLObjectType, GraphQLString } from "graphql";
 import { connectionArgs, globalIdField } from "graphql-relay";
 import { isValidObjectId } from "mongoose";
-import { UnauthorizedException } from "@/exceptions";
+import { EntityNotFoundException, UnauthorizedException } from "@/exceptions";
+import { AccountType } from "@/modules/account/account-type";
+import { AccountModel } from "@/modules/account";
+import { AccountLoader } from "@/modules/account/account-loader";
 
 export const Query = new GraphQLObjectType({
   name: "Query",
@@ -34,6 +37,27 @@ export const Query = new GraphQLObjectType({
           throw new UnauthorizedException();
         }
         return user;
+      },
+    },
+    account: {
+      type: AccountType,
+      args: {
+        ...connectionArgs,
+      },
+      resolve: async (_, __, ctx) => {
+        const { _id, taxId } = ctx.user;
+
+        if (!isValidObjectId(_id)) {
+          throw new UnauthorizedException();
+        }
+
+        const account = await AccountModel.findOne({ userTaxId: taxId });
+
+        if (!account) {
+          throw new EntityNotFoundException("Conta");
+        }
+
+        return await AccountLoader.load(ctx, account?._id?.toString());
       },
     },
   }),
