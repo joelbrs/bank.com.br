@@ -40,7 +40,7 @@ export const RegisterUserMutation = mutationWithClientMutationId({
     passwordConfirmation,
     taxId,
   }: RegisterUserInput) => {
-    if (!cpf.isValid(taxId) || !cnpj.isValid(taxId)) {
+    if (!cpf.isValid(taxId) && !cnpj.isValid(taxId)) {
       throw new BusinessRuleException("Informe um CPF ou CNPJ válido.");
     }
 

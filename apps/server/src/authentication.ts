@@ -23,8 +23,16 @@ export const validateJwt = (token: string) => {
 };
 
 export const getUserByContext = async (ctx: ParameterizedContext) => {
-  const { subId } = validateJwt(ctx.token as string);
+  const token = ctx.cookies.get("bank.auth.token");
 
-  const user = await UserModel.findById(subId);
-  return { user };
+  try {
+    const { subId } = validateJwt(token as string);
+
+    const user = await UserModel.findById(subId);
+    return { user };
+  } catch {
+    return {
+      user: null,
+    };
+  }
 };

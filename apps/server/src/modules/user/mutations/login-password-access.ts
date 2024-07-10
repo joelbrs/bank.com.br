@@ -48,7 +48,7 @@ export const LoginPasswordAccessMutation = mutationWithClientMutationId({
     }
 
     const token = user.generateJwt(user);
-    setCookies(ctx, token);
+    setCookies(ctx.ctx, token);
 
     return {
       userId: user._id,

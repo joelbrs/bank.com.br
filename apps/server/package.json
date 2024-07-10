@@ -43,6 +43,7 @@
     "kcors": "^2.2.2",
     "koa": "^2.15.3",
     "koa-bodyparser": "^4.4.1",
+    "koa-graphql": "^0.12.0",
     "koa-router": "^12.0.1",
     "mongoose": "^8.5.0",
     "react": "^18.3.1",
