@@ -1,0 +1,153 @@
+"""Root queries"""
+type Query {
+  """The ID of an object"""
+  id: ID!
+
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Fetches objects given their IDs"""
+  nodes(
+    """The IDs of objects"""
+    ids: [ID!]!
+  ): [Node]!
+  version: String
+  user(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): User
+  account(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): Account
+}
+
+"""An object with an ID"""
+interface Node {
+  """The id of the object."""
+  id: ID!
+}
+
+"""User object that represents Bank users"""
+type User {
+  """Represents user's id"""
+  _id: String!
+
+  """Represents user's full name"""
+  fullName: String!
+
+  """Represents user's taxId (it can be CPF or CNPJ)"""
+  taxId: String!
+
+  """Represents user's password"""
+  password: String!
+
+  """Represents user's email"""
+  email: String!
+  createdAt: String
+  updatedAt: String
+}
+
+"""Account object that represents user's account"""
+type Account {
+  """Represents account's id"""
+  _id: String!
+
+  """Represents owner's taxId of account"""
+  userTaxId: String!
+
+  """Represents account's balance"""
+  balance: String!
+
+  """Represents account's owner object"""
+  owner: User!
+  createdAt: String
+  updatedAt: String
+}
+
+"""Root mutations"""
+type Mutation {
+  RegisterUser(input: RegisterUserInput!): RegisterUserPayload
+  ConfirmUser(input: ConfirmUserInput!): ConfirmUserPayload
+  LoginPasswordAccess(input: LoginPasswordAccessInput!): LoginPasswordAccessPayload
+  LoginEmailAccess(input: LoginEmailAccessInput!): LoginEmailAccessPayload
+  ValidateAuthenticationLink(input: ValidateAuthenticationLinkInput!): ValidateAuthenticationLinkPayload
+}
+
+type RegisterUserPayload {
+  user: User
+  clientMutationId: String
+}
+
+input RegisterUserInput {
+  fullName: String!
+  email: String!
+  password: String!
+  passwordConfirmation: String!
+  taxId: String!
+  clientMutationId: String
+}
+
+type ConfirmUserPayload {
+  userId: String!
+  clientMutationId: String
+}
+
+input ConfirmUserInput {
+  code: String!
+  redirect: String!
+  clientMutationId: String
+}
+
+type LoginPasswordAccessPayload {
+  userId: String!
+  clientMutationId: String
+}
+
+input LoginPasswordAccessInput {
+  taxId: String!
+  password: String!
+  clientMutationId: String
+}
+
+type LoginEmailAccessPayload {
+  message: String!
+  clientMutationId: String
+}
+
+input LoginEmailAccessInput {
+  email: String!
+  clientMutationId: String
+}
+
+type ValidateAuthenticationLinkPayload {
+  userId: String!
+  clientMutationId: String
+}
+
+input ValidateAuthenticationLinkInput {
+  code: String!
+  redirect: String!
+  clientMutationId: String
+}

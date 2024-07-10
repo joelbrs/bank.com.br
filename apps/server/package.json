@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "tsx watch ./src/index.ts",
-    "test": "jest --watch --detectOpenHandles"
+    "test": "jest --watch --detectOpenHandles",
+    "update:schema": "tsx scripts/update-schema.ts"
   },
   "keywords": [],
   "author": "",
