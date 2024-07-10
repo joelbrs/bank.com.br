@@ -2,6 +2,8 @@ import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { Account } from "./account-model";
 import { UserModel, UserType } from "../user";
 import { connectionDefinitions } from "graphql-relay";
+import { Load, registerTypeLoader } from "../node";
+import { AccountLoader } from "./account-loader";
 
 export const AccountType = new GraphQLObjectType<Account>({
   name: "Account",
@@ -34,3 +36,5 @@ export const AccountConnection = connectionDefinitions({
   name: "AccountConnection",
   nodeType: AccountType,
 });
+
+registerTypeLoader(AccountType, AccountLoader.load as Load);
