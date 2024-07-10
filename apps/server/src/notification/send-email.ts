@@ -9,7 +9,7 @@ type SendEmailParams = {
   code: string;
 };
 
-export const sendEmail = ({
+export const sendEmail = async ({
   template,
   subject,
   to,
@@ -20,8 +20,8 @@ export const sendEmail = ({
   link.searchParams.set("code", code);
   link.searchParams.set("redirect", env.AUTH_REDIRECT_URL);
 
-  return resend.emails.send({
-    from: "Bank <noreply@bank.joelf.tech>",
+  return await resend.emails.send({
+    from: "Bank <noreply@bank-woovi.joelf.tech>",
     to,
     subject,
     react: template({
