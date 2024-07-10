@@ -1,6 +1,7 @@
-import { Context } from "koa";
+import { Context, ParameterizedContext } from "koa";
 import { env } from "./config";
 import jwt from "jsonwebtoken";
+import { UserModel } from "./modules/user";
 
 export const setCookies = (ctx: Context, token: string) => {
   ctx.cookies.set("bank.auth.token", token, {
@@ -19,4 +20,11 @@ export const validateJwt = (token: string) => {
   } catch {
     throw new Error("Invalid token.");
   }
+};
+
+export const getUserByContext = async (ctx: ParameterizedContext) => {
+  const { subId } = validateJwt(ctx.token as string);
+
+  const user = await UserModel.findById(subId);
+  return { user };
 };
