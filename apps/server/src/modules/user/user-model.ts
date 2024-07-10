@@ -18,7 +18,7 @@ export type User = {
   generateJwt(user: User): string;
 } & Document;
 
-type UserDocument = Maybe<Document> & User;
+export type UserDocument = Maybe<Document> & User;
 
 const UserSchema = new mongoose.Schema<User>(
   {

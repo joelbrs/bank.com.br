@@ -4,7 +4,7 @@ import { GraphQLNonNull, GraphQLString } from "graphql";
 import { UserType } from "../user-type";
 import { successField } from "@entria/graphql-mongo-helpers";
 import { randomUUID } from "crypto";
-import { sendEmail, UserConfirmationTemplate } from "../../mail";
+import { sendEmail, UserConfirmationTemplate } from "../../../notification";
 import { ConfirmationLinkModel } from "../../confirmation-link";
 import { cnpj, cpf } from "cpf-cnpj-validator";
 import { BusinessRuleException } from "../../../exceptions";
@@ -40,7 +40,7 @@ export const RegisterUserMutation = mutationWithClientMutationId({
     passwordConfirmation,
     taxId,
   }: RegisterUserInput) => {
-    if (!cpf.isValid(taxId) || !cnpj.isValid(taxId)) {
+    if (!cpf.isValid(taxId) && !cnpj.isValid(taxId)) {
       throw new BusinessRuleException("Informe um CPF ou CNPJ válido.");
     }
 

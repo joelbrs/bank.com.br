@@ -7,8 +7,6 @@ import { ValidateAuthenticationLinkInput } from "../mutations/validate-authentic
 import { randomUUID } from "crypto";
 import { GraphQLError } from "graphql";
 import { createAuthenticationLink } from "../../authentication-link/fixtures";
-import { AuthenticationLinkModel } from "../../authentication-link";
-import { createUser } from "../fixture";
 
 interface ValidateAuthenticationLinkResponse {
   ValidateAuthenticationLink: {

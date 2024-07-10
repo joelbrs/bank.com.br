@@ -44,7 +44,7 @@ export const ValidateAuthenticationLinkMutation = mutationWithClientMutationId({
     }
 
     const token = user?.generateJwt(user);
-    setCookies(ctx, token);
+    setCookies(ctx.ctx, token);
 
     await authLinkFromCode.deleteOne({ code });
     return {

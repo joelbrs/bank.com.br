@@ -1,7 +1,7 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { timestampResolver } from "@entria/graphql-mongo-helpers";
 import { Load, registerTypeLoader } from "../node";
-import { connectionDefinitions, globalIdField } from "graphql-relay";
+import { connectionDefinitions } from "graphql-relay";
 import { UserLoader } from "./user-loader";
 import { User } from "./user-model";
 
@@ -9,7 +9,10 @@ export const UserType = new GraphQLObjectType<User>({
   name: "User",
   description: "User object that represents Bank users",
   fields: () => ({
-    id: globalIdField("User"),
+    _id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Represents user's id",
+    },
     fullName: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Represents user's full name",

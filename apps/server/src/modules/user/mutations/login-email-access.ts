@@ -7,7 +7,7 @@ import {
 } from "../../../exceptions";
 import { randomUUID } from "crypto";
 import { AuthenticationLinkModel } from "../../../modules/authentication-link";
-import { sendEmail, UserLoginTemplate } from "../../mail";
+import { sendEmail, UserLoginTemplate } from "../../../notification";
 import { successField } from "@entria/graphql-mongo-helpers";
 
 export type LoginEmailAccessInput = {

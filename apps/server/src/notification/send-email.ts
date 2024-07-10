@@ -1,10 +1,10 @@
-import { env } from "../../config";
-import { UserLoginTemplate, resend } from ".";
+import { env } from "../config";
+import { UserConfirmationTemplate, UserLoginTemplate, resend } from ".";
 
 type SendEmailParams = {
   to: string;
   subject: string;
-  template: typeof UserLoginTemplate;
+  template: typeof UserLoginTemplate | typeof UserConfirmationTemplate;
   linkUri: string;
   code: string;
 };
@@ -21,7 +21,7 @@ export const sendEmail = ({
   link.searchParams.set("redirect", env.AUTH_REDIRECT_URL);
 
   return resend.emails.send({
-    from: "Bank <noreply@bank-woovi.joelf.tech>",
+    from: "Bank <noreply@bank.joelf.tech>",
     to,
     subject,
     react: template({

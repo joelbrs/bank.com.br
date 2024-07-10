@@ -33,7 +33,7 @@ const fetchResult = (variableValues: RegisterUserInput) => {
   });
 };
 
-jest.mock("../../mail");
+jest.mock("../../../notification");
 
 describe("RegisterUserMutation", () => {
   beforeAll(() => {
@@ -48,13 +48,30 @@ describe("RegisterUserMutation", () => {
     mongooseDisconnect();
   });
 
+  it("should throws if taxId is invalid", async () => {
+    const variableValues = {
+      fullName: "valid_fullname",
+      email: "valid_mail@mail.com",
+      password: "valid_password",
+      passwordConfirmation: "valid_password",
+      taxId: "invalid_taxId",
+    };
+
+    const { data, errors } = await fetchResult(variableValues);
+
+    expect(data?.RegisterUser).toBeNull();
+    expect((errors as GraphQLError[])[0]?.message).toBe(
+      "Informe um CPF ou CNPJ válido."
+    );
+  });
+
   it("should throws if password and passwordConfirmation dont match", async () => {
     const variableValues = {
       fullName: "valid_fullname",
       email: "valid_mail@mail.com",
       password: "valid_password",
       passwordConfirmation: "invalid_password",
-      taxId: "valid_valid_taxId",
+      taxId: "valid_taxId",
     };
 
     jest.spyOn(cpf, "isValid").mockReturnValueOnce(true);
@@ -65,23 +82,6 @@ describe("RegisterUserMutation", () => {
     expect(data?.RegisterUser).toBeNull();
     expect((errors as GraphQLError[])[0]?.message).toBe(
       "As senhas não são iguais."
-    );
-  });
-
-  it("should throws if taxId is invalid", async () => {
-    const variableValues = {
-      fullName: "valid_fullname",
-      email: "valid_mail@mail.com",
-      password: "valid_password",
-      passwordConfirmation: "valid_password",
-      taxId: "invalid_valid_taxId",
-    };
-
-    const { data, errors } = await fetchResult(variableValues);
-
-    expect(data?.RegisterUser).toBeNull();
-    expect((errors as GraphQLError[])[0]?.message).toBe(
-      "Informe um CPF ou CNPJ válido."
     );
   });
 
@@ -98,7 +98,6 @@ describe("RegisterUserMutation", () => {
     jest.spyOn(cnpj, "isValid").mockReturnValueOnce(true);
 
     const { data } = await fetchResult(variableValues);
-
     expect(data?.RegisterUser.user?.fullName).toBe("valid_fullname");
   });
 });
