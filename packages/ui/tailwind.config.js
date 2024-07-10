@@ -6,7 +6,7 @@ module.exports = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
-    "../../packages/ui/components/ui/*.{ts,tsx}",
+    "../../packages/ui/components/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -25,7 +25,7 @@ module.exports = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#00eda3",
+          DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
