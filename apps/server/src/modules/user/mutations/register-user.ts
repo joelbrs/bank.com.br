@@ -4,8 +4,7 @@ import { GraphQLNonNull, GraphQLString } from "graphql";
 import { UserType } from "../user-type";
 import { successField } from "@entria/graphql-mongo-helpers";
 import { randomUUID } from "crypto";
-import { env } from "../../../config";
-import { resend, UserConfirmationTemplate } from "../../../mail";
+import { sendEmail, UserConfirmationTemplate } from "../../mail";
 import { ConfirmationLinkModel } from "../../confirmation-link";
 import { cnpj, cpf } from "cpf-cnpj-validator";
 import { BusinessRuleException } from "../../../exceptions";
@@ -56,24 +55,18 @@ export const RegisterUserMutation = mutationWithClientMutationId({
       taxId,
     }).save();
 
-    const confirmationCode = randomUUID();
+    const code = randomUUID();
 
-    const confirmationLink = new URL("/confirmacao", env.API_BASE_URL);
-    confirmationLink.searchParams.set("code", confirmationCode);
-    confirmationLink.searchParams.set("redirect", env.AUTH_REDIRECT_URL);
-
-    await resend.emails.send({
-      from: "Bank <noreply@bank-woovi.joelf.tech>",
-      to: email,
+    await sendEmail({
+      code,
+      linkUri: "/confirmation",
       subject: "[Bank] Link de Confirmação",
-      react: UserConfirmationTemplate({
-        email,
-        link: confirmationLink.toString(),
-      }),
+      template: UserConfirmationTemplate,
+      to: email,
     });
 
     await new ConfirmationLinkModel({
-      code: confirmationCode,
+      code,
       userTaxId: user.taxId,
     }).save();
 
