@@ -7,6 +7,7 @@ import { mongooseDisconnect } from "../../../../test/mongoose-disconnect";
 import { createConfirmationLink } from "../../../modules/confirmation-link";
 import { createUser } from "../fixture";
 import { ConfirmUserInput } from "../mutations/confirm-user";
+import { AccountModel } from "../../account";
 
 interface ConfirmUserMutationResponse {
   ConfirmUser: {
@@ -67,6 +68,24 @@ describe("ConfirmUserMutation", () => {
     expect((errors as GraphQLError[])[0]?.message).toBe(
       "Usuário não encontrado."
     );
+  });
+
+  it("should create an user account if fields are valid", async () => {
+    const { taxId } = await createUser();
+    const { code } = await createConfirmationLink({ userTaxId: taxId });
+
+    const variableValues = {
+      code,
+      redirect: "/",
+    };
+
+    const accountSpy = jest.spyOn(AccountModel, "create");
+
+    await fetchResult(variableValues);
+
+    expect(accountSpy).toHaveBeenCalledWith({
+      userTaxId: taxId,
+    });
   });
 
   it("should returns user's id when sucessfull", async () => {

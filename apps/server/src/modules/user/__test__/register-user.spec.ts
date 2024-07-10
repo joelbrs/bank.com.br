@@ -33,7 +33,7 @@ const fetchResult = (variableValues: RegisterUserInput) => {
   });
 };
 
-jest.mock("../../../mail");
+jest.mock("../../mail");
 
 describe("RegisterUserMutation", () => {
   beforeAll(() => {
