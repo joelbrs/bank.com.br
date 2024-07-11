@@ -1,12 +1,11 @@
 import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect } from 'react'
-import { AuthProvider, useAuth } from "../context/auth-context";
+import { AuthProvider } from "../context/auth-context";
 import { fetchMutation } from "../relay";
 import { graphql } from 'relay-runtime'
 import { useMutation } from 'react-relay'
 
 export function AppLayout(): JSX.Element {
-    const { getUser } = useAuth()
     const navigate = useNavigate()
     const [searchParams] = useSearchParams();
 
@@ -21,14 +20,7 @@ export function AppLayout(): JSX.Element {
     const [request] = useMutation(validateLinkMutation)
 
     useEffect(() => {
-        if (!searchParams.size) {
-            getUser({
-                onError: () => {
-                    navigate('/sign-in')
-                }
-            })
-            return
-        }
+        if (!searchParams.size) return
 
         validateAuthenticationLink()
     }, [])

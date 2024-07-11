@@ -10,12 +10,18 @@ import { RecentTransactions } from "./recent-transactions";
 import { ChartTransactions } from "./chart-transactions";
 import { useAuth } from "../../context/auth-context";
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export function DashboardPage(): JSX.Element {
     const { user, getUser } = useAuth()
+    const navigate = useNavigate()
 
     useEffect(() => {
-        getUser()
+        getUser({
+          onError: () => {
+            navigate('/sign-in')
+          }
+        })
     }, [])
 
     return (
