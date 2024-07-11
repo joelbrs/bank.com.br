@@ -16,12 +16,10 @@ const TransactionSchema = new mongoose.Schema<Transaction>(
   {
     senderTaxId: {
       type: String,
-      ref: "User",
       required: true,
     },
     receiverTaxId: {
       type: String,
-      ref: "User",
       required: true,
     },
     value: {
