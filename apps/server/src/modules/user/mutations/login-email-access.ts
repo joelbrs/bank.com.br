@@ -5,7 +5,6 @@ import {
   BusinessRuleException,
   EntityNotFoundException,
 } from "../../../exceptions";
-import { randomUUID } from "crypto";
 import { AuthenticationLinkModel } from "../../../modules/authentication-link";
 import { sendEmail, UserLoginTemplate } from "../../../notification";
 import { successField } from "@entria/graphql-mongo-helpers";
@@ -34,19 +33,16 @@ export const LoginEmailAccessMutation = mutationWithClientMutationId({
       );
     }
 
-    const code = randomUUID();
-
-    await AuthenticationLinkModel.create({
-      userTaxId: user.taxId,
-      code,
-    });
-
-    await sendEmail({
-      code,
+    const { code } = await sendEmail({
       linkUri: "/authenticate",
       subject: "[Bank] Link para Login",
       template: UserLoginTemplate,
       to: email,
+    });
+
+    await AuthenticationLinkModel.create({
+      userTaxId: user.taxId,
+      code,
     });
 
     return {
