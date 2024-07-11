@@ -1,3 +1,4 @@
+import { TransactionMutations } from "../modules/transaction";
 import { UserMutations } from "../modules/user";
 import { GraphQLObjectType } from "graphql";
 
@@ -6,5 +7,6 @@ export const Mutation = new GraphQLObjectType({
   description: "Root mutations",
   fields: () => ({
     ...UserMutations,
+    ...TransactionMutations,
   }),
 });
