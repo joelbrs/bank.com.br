@@ -12,7 +12,7 @@ export function AppLayout(): JSX.Element {
 
     const validateLinkMutation = graphql`
         mutation appLayoutMutation($code: String!, $redirect: String!) {
-            ValidateAuthenticationLink({ code: $code, redirect: $redirect }) {
+            ValidateAuthenticationLink(input: { code: $code, redirect: $redirect }) {
                 userId
             }
         }
@@ -22,9 +22,11 @@ export function AppLayout(): JSX.Element {
 
     useEffect(() => {
         if (!searchParams.size) {
-            getUser({onError: () => {
-                navigate('/sign-in')
-            }})
+            getUser({
+                onError: () => {
+                    navigate('/sign-in')
+                }
+            })
             return
         }
 
@@ -52,7 +54,7 @@ export function AppLayout(): JSX.Element {
     return (
         <AuthProvider>
             <div className="px-10 py-5">
-                <Outlet />;
+                <Outlet />
             </div>
         </AuthProvider>
     )
