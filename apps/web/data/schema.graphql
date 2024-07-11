@@ -41,6 +41,22 @@ type Query {
     """Returns the last n items from the list."""
     last: Int
   ): Account
+  transactions(
+    _id: String
+
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): TransactionConnectionConnection
+  transaction(_id: String!): Transaction
 }
 
 """An object with an ID"""
@@ -89,6 +105,94 @@ type Account {
   updatedAt: String
 }
 
+"""A connection to a list of items."""
+type TransactionConnectionConnection implements Connection {
+  """Number of items in this connection."""
+  count: Int
+
+  """
+  A count of the total number of objects in this connection, ignoring pagination.
+  This allows a client to fetch the first five objects by passing "5" as the
+  argument to "first", then fetch the total count so it could display "5 of 83",
+  for example.
+  """
+  totalCount: Int
+
+  """Offset from start."""
+  startCursorOffset: Int!
+
+  """Offset till end."""
+  endCursorOffset: Int!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [TransactionConnectionEdge]!
+}
+
+"""A connection to a list of items."""
+interface Connection {
+  """Number of items in this connection."""
+  count: Int
+
+  """
+  A count of the total number of objects in this connection, ignoring pagination.
+  This allows a client to fetch the first five objects by passing "5" as the
+  argument to "first", then fetch the total count so it could display "5 of 83",
+  for example.
+  """
+  totalCount: Int
+
+  """Offset from start."""
+  startCursorOffset: Int!
+
+  """Offset till end."""
+  endCursorOffset: Int!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+"""An edge in a connection."""
+type TransactionConnectionEdge {
+  """The item at the end of the edge."""
+  node: Transaction
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+"""Transaction object that represents accounts transactions"""
+type Transaction {
+  """Represents transaction's id"""
+  _id: String!
+
+  """Represents transaction's value"""
+  value: String!
+
+  """Represents transaction's sender"""
+  sender: Account!
+
+  """Represents transaction's sender"""
+  receiver: Account!
+}
+
 """Root mutations"""
 type Mutation {
   RegisterUser(input: RegisterUserInput!): RegisterUserPayload
@@ -96,6 +200,7 @@ type Mutation {
   LoginPasswordAccess(input: LoginPasswordAccessInput!): LoginPasswordAccessPayload
   LoginEmailAccess(input: LoginEmailAccessInput!): LoginEmailAccessPayload
   ValidateAuthenticationLink(input: ValidateAuthenticationLinkInput!): ValidateAuthenticationLinkPayload
+  CreateTransaction(input: CreateTransactionInput!): CreateTransactionPayload
 }
 
 type RegisterUserPayload {
@@ -152,5 +257,16 @@ type ValidateAuthenticationLinkPayload {
 input ValidateAuthenticationLinkInput {
   code: String!
   redirect: String!
+  clientMutationId: String
+}
+
+type CreateTransactionPayload {
+  transactionId: String!
+  clientMutationId: String
+}
+
+input CreateTransactionInput {
+  receiverTaxId: String!
+  value: String!
   clientMutationId: String
 }

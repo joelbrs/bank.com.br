@@ -70,7 +70,13 @@ export function SignUpPage(): JSX.Element {
   const [request] = useMutation(mutation);
 
   const onSubmit = (variables: SchemaType) => {
-    fetchMutation({ request, variables });
+    fetchMutation({
+      request,
+      variables,
+      onCompleted: () => {
+        form.reset();
+      },
+    });
   };
 
   return (

@@ -8,7 +8,7 @@ import {
   Input,
   Label,
 } from "@repo/ui/components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { InputPassword } from "../../components";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -25,6 +25,8 @@ const schema = z.object({
 });
 
 export function PasswordSignInPage(): JSX.Element {
+  const navigate = useNavigate();
+
   const form = useForm<SchemaType>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -44,7 +46,13 @@ export function PasswordSignInPage(): JSX.Element {
   const [request] = useMutation(mutation);
 
   const onSubmit = (variables: SchemaType) => {
-    fetchMutation({ request, variables });
+    fetchMutation({
+      request,
+      variables,
+      onCompleted: () => {
+        navigate("/dashboard");
+      },
+    });
   };
 
   return (
