@@ -1,12 +1,12 @@
 import { env } from "../config";
 import { UserConfirmationTemplate, UserLoginTemplate, resend } from ".";
+import { randomUUID } from "node:crypto";
 
 type SendEmailParams = {
   to: string;
   subject: string;
   template: typeof UserLoginTemplate | typeof UserConfirmationTemplate;
   linkUri: string;
-  code: string;
 };
 
 export const sendEmail = async ({
@@ -14,13 +14,14 @@ export const sendEmail = async ({
   subject,
   to,
   linkUri,
-  code,
 }: SendEmailParams) => {
+  const code = randomUUID();
+
   const link = new URL(linkUri, env.API_BASE_URL);
   link.searchParams.set("code", code);
   link.searchParams.set("redirect", env.AUTH_REDIRECT_URL);
 
-  return await resend.emails.send({
+  await resend.emails.send({
     from: "Bank <noreply@bank-woovi.joelf.tech>",
     to,
     subject,
@@ -29,4 +30,8 @@ export const sendEmail = async ({
       link: link.toString(),
     }),
   });
+
+  return {
+    code,
+  };
 };

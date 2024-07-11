@@ -3,7 +3,6 @@ import { User, UserModel } from "../user-model";
 import { GraphQLNonNull, GraphQLString } from "graphql";
 import { UserType } from "../user-type";
 import { successField } from "@entria/graphql-mongo-helpers";
-import { randomUUID } from "crypto";
 import { sendEmail, UserConfirmationTemplate } from "../../../notification";
 import { ConfirmationLinkModel } from "../../confirmation-link";
 import { cnpj, cpf } from "cpf-cnpj-validator";
@@ -55,10 +54,7 @@ export const RegisterUserMutation = mutationWithClientMutationId({
       taxId,
     }).save();
 
-    const code = randomUUID();
-
-    await sendEmail({
-      code,
+    const { code } = await sendEmail({
       linkUri: "/confirmation",
       subject: "[Bank] Link de Confirmação",
       template: UserConfirmationTemplate,
