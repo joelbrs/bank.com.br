@@ -14,6 +14,10 @@ export const AccountType = new GraphQLObjectType<Account>({
       type: new GraphQLNonNull(GraphQLString),
       description: "Represents account's id",
     },
+    accountNumber: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Represents account' number",
+    },
     userTaxId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Represents owner's taxId of account",

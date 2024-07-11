@@ -74,6 +74,9 @@ type Account {
   """Represents account's id"""
   _id: String!
 
+  """Represents account' number"""
+  accountNumber: String!
+
   """Represents owner's taxId of account"""
   userTaxId: String!
 

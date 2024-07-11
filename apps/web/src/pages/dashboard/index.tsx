@@ -5,16 +5,24 @@ import {
     CardHeader,
     CardTitle,
   } from "@repo/ui/components";
-  import { Activity, DollarSign } from "lucide-react";
-  import { RecentTransactions } from "./recent-transactions";
-  import { ChartTransactions } from "./chart-transactions";
-  
-  export function DashboardPage(): JSX.Element {
+import { Activity, DollarSign } from "lucide-react";
+import { RecentTransactions } from "./recent-transactions";
+import { ChartTransactions } from "./chart-transactions";
+import { useAuth } from "../../context/auth-context";
+import { useEffect } from 'react'
+
+export function DashboardPage(): JSX.Element {
+    const { user, getUser } = useAuth()
+
+    useEffect(() => {
+        getUser()
+    }, [])
+
     return (
       <main className="flex flex-col items-start justify-center px-8 p-6 gap-5">
         <div className="flex items-center gap-2">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">Bem-vindo, Joel</h1>
+            <h1 className="text-4xl font-bold tracking-tight">Bem-vindo, {user?.account?.owner.fullName?.split(" ")[0]}!</h1>
             <h3 className="text-lg font-bold tracking-tight">
               Este é o acesso ao seu Dashboard
             </h3>
@@ -34,7 +42,7 @@ import {
                 </CardHeader>
   
                 <CardContent>
-                  <div className="text-2xl font-bold">123456789</div>
+                  <div className="text-2xl font-bold">{user?.account?.accountNumber}</div>
                 </CardContent>
               </Card>
   
@@ -47,7 +55,7 @@ import {
                 </CardHeader>
   
                 <CardContent>
-                  <div className="text-2xl font-bold">$45,231.89</div>
+                  <div className="text-2xl font-bold">${Number(user?.account?.balance).toFixed(2)}</div>
                 </CardContent>
               </Card>
             </div>

@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useState, useEffect } from "react"
+import { ReactNode, createContext, useContext, useState } from "react"
 import { fetchQuery, graphql } from "relay-runtime"
 import { authContextQuery$data } from '../../__generated__/authContextQuery.graphql'
 import { environment } from "../relay"
@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 interface AuthContextData {
     user: authContextQuery$data | null
-    getUser: ({onError}: {onError: Function}) => Promise<void>
+    getUser: (args?: {onError: Function}) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextData | undefined>(undefined)
@@ -14,26 +14,33 @@ const AuthContext = createContext<AuthContextData | undefined>(undefined)
 export const AuthProvider = ({children}: { children: ReactNode }) => {
     const [user, setUser] = useState<authContextQuery$data | null>(null)
 
-    const getUser = async ({onError}: {onError: Function}) => {
+    const getUser = async (args?: {onError: Function}) => {
         const query = graphql`
             query authContextQuery {
-                user {
-                    fullName
-                    taxId
-                    email
+                account {
+                    balance
+                    accountNumber
+                    owner {
+                        fullName
+                        taxId
+                    }
                 }
             }
         `
 
         fetchQuery(environment, query, {}).subscribe({
             next(value) {
-                if (!(value as authContextQuery$data).user) {
+                if (!(value as authContextQuery$data).account) {
                     toast.warning("Atenção!", {
                         description:
                           "Acesso não autorizado.",
                         duration: 1500,
                       });
-                    return onError()
+
+                      if (args?.onError) {
+                        args.onError()
+                      }
+                    return 
                 }
 
                 setUser(value as authContextQuery$data)
@@ -44,7 +51,10 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
                       "Verifique sua conexão com a internet e tente novamente mais tarde.",
                     duration: 1500,
                 });
-                return onError()
+                if (args?.onError) {
+                    args.onError()
+                  }
+                return 
             },
         })
     }
