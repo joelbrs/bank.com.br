@@ -1,12 +1,18 @@
 import { nodeField, nodesField } from "../modules/node";
-import { UserLoader, UserType } from "../modules/user";
-import { GraphQLObjectType, GraphQLString } from "graphql";
+import { UserLoader, UserModel, UserType } from "../modules/user";
+import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { connectionArgs, globalIdField } from "graphql-relay";
 import { isValidObjectId } from "mongoose";
 import { EntityNotFoundException, UnauthorizedException } from "../exceptions";
 import { AccountType } from "../modules/account/account-type";
 import { Account, AccountModel } from "../modules/account";
 import { AccountLoader } from "../modules/account/account-loader";
+import {
+  TransactionConnection,
+  TransactionLoader,
+  TransactionType,
+} from "@/modules/transaction";
+import { withFilter } from "@entria/graphql-mongo-helpers";
 
 export const Query = new GraphQLObjectType({
   name: "Query",
@@ -60,6 +66,51 @@ export const Query = new GraphQLObjectType({
         }
 
         return await AccountLoader.load(ctx, account._id as string);
+      },
+    },
+    transactions: {
+      type: TransactionConnection.connectionType,
+      args: {
+        _id: {
+          type: GraphQLString,
+        },
+        ...connectionArgs,
+      },
+      resolve: async (_, _args, ctx: any) => {
+        const { _id } = ctx.user;
+
+        if (!isValidObjectId(_id)) {
+          throw new UnauthorizedException();
+        }
+
+        const user = await UserModel.findById(_id);
+
+        const transactionsArgs = withFilter(_args, {
+          senderTaxId: user?.taxId,
+        });
+
+        return await TransactionLoader.loadAll(ctx, transactionsArgs);
+      },
+    },
+    transaction: {
+      type: TransactionType,
+      args: {
+        _id: {
+          type: new GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve: async (_, args, ctx: any) => {
+        const { _id } = ctx.user;
+
+        if (!isValidObjectId(_id)) {
+          throw new UnauthorizedException();
+        }
+
+        const transaction = await TransactionLoader.load(
+          ctx,
+          args?._id as string
+        );
+        return transaction;
       },
     },
   }),
