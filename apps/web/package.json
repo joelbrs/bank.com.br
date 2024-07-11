@@ -20,6 +20,7 @@
     "react-hook-form": "^7.52.1",
     "react-relay": "^17.0.0",
     "react-router-dom": "^6.24.1",
+    "recharts": "^2.12.7",
     "sonner": "^1.5.0",
     "vite-plugin-relay": "^2.1.0",
     "zod": "^3.23.8"
