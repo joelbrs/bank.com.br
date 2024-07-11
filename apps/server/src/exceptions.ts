@@ -15,5 +15,6 @@ export class EntityNotFoundException extends Error {
 export class UnauthorizedException extends Error {
   constructor() {
     super("Acesso não autorizado.");
+    this.name = "UnauthorizedException";
   }
 }

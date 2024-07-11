@@ -7,6 +7,8 @@ export type Account = {
   balance: Decimal128;
   createdAt: Date;
   updatedAt: Date;
+
+  sufficientFunds(amount: string): boolean;
 } & Document;
 
 type AccountDocument = Maybe<Document> & Account;
@@ -34,6 +36,12 @@ const AccountSchema = new mongoose.Schema<Account>(
     timestamps: true,
   }
 );
+
+AccountSchema.methods = {
+  sufficientFunds(amount: string) {
+    return mongoose.Types.Decimal128.fromString(amount) <= this.balance;
+  },
+};
 
 export const AccountModel = mongoose.model<AccountDocument>(
   "Account",
