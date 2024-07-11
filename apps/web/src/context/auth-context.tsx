@@ -27,7 +27,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
 
         fetchQuery(environment, query, {}).subscribe({
             next(value) {
-                if (!value) {
+                if (!(value as authContextQuery$data).user) {
                     toast.warning("Atenção!", {
                         description:
                           "Acesso não autorizado.",
