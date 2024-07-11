@@ -6,12 +6,14 @@ type Props<T> = {
   variables: Object;
   request: (_: UseMutationConfig<MutationParameters>) => void;
   onCompleted?: (_: T) => void;
+  onError?: () => void;
 };
 
 export const fetchMutation = <T>({
   request,
   variables,
   onCompleted,
+  onError,
 }: Props<T>) => {
   request({
     variables,
@@ -30,6 +32,10 @@ export const fetchMutation = <T>({
             duration: 1500,
           });
         });
+
+        if (onError) {
+          onError();
+        }
         return;
       }
       toast.success("Sucesso!", {
