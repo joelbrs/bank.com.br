@@ -22,16 +22,16 @@ export const TransactionType = new GraphQLObjectType<Transaction>({
     sender: {
       type: new GraphQLNonNull(AccountType),
       description: "Represents transaction's sender",
-      resolve: async ({ senderTaxId: userTaxId }) => {
-        const account = await AccountModel.findOne({ userTaxId });
+      resolve: async ({ senderAccountId }) => {
+        const account = await AccountModel.findById(senderAccountId);
         return account;
       },
     },
     receiver: {
       type: new GraphQLNonNull(AccountType),
       description: "Represents transaction's sender",
-      resolve: async ({ receiverTaxId: userTaxId }) => {
-        const account = await AccountModel.findOne({ userTaxId });
+      resolve: async ({ receiverAccountId }) => {
+        const account = await AccountModel.findById(receiverAccountId);
         return account;
       },
     },

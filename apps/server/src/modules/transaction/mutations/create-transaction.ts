@@ -10,14 +10,14 @@ import { TransactionModel } from "../transaction-model";
 import { successField } from "@entria/graphql-mongo-helpers";
 
 export type CreateTransactionInput = {
-  receiverTaxId: string;
+  receiverAccountNumber: string;
   value: string;
 };
 
 export const CreateTransactionMutation = mutationWithClientMutationId({
   name: "CreateTransaction",
   inputFields: {
-    receiverTaxId: {
+    receiverAccountNumber: {
       type: new GraphQLNonNull(GraphQLString),
     },
     value: {
@@ -25,21 +25,13 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { receiverTaxId, value }: CreateTransactionInput,
+    { receiverAccountNumber, value }: CreateTransactionInput,
     ctx
   ) => {
     const { idempotentKey, user } = await ctx;
 
     if (!idempotentKey) {
       throw new BusinessRuleException("A chave de idempotência é inválida.");
-    }
-
-    const existsTransaction = await TransactionModel.findOne({ idempotentKey });
-
-    if (existsTransaction) {
-      return {
-        transactionId: existsTransaction?._id,
-      };
     }
 
     const senderAccount = await AccountModel.findOne({
@@ -53,30 +45,51 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
     }
 
     const receiverAccount = await AccountModel.findOne({
-      userTaxId: receiverTaxId,
+      accountNumber: receiverAccountNumber,
     });
 
     if (!receiverAccount) {
       throw new EntityNotFoundException("Conta");
     }
 
-    await AccountModel.findByIdAndUpdate(senderAccount._id, {
-      $inc: { balance: mongoose.Types.Decimal128.fromString(`-${value}`) },
+    const existingTransaction = await TransactionModel.findOne({
+      idempotentKey,
+      senderAccountId: senderAccount?._id,
     });
 
-    await AccountModel.findByIdAndUpdate(receiverAccount._id, {
-      $inc: { balance: mongoose.Types.Decimal128.fromString(value) },
-    });
+    if (existingTransaction) {
+      return {
+        transactionId: existingTransaction?._id,
+      };
+    }
 
-    const transaction = await TransactionModel.create({
-      senderTaxId: senderAccount.userTaxId,
-      receiverTaxId: receiverAccount.userTaxId,
+    await AccountModel.updateOne(
+      {
+        _id: senderAccount?._id,
+      },
+      {
+        $inc: { balance: mongoose.Types.Decimal128.fromString(`-${value}`) },
+      }
+    );
+
+    await AccountModel.updateOne(
+      {
+        _id: receiverAccount?._id,
+      },
+      {
+        $inc: { balance: mongoose.Types.Decimal128.fromString(value) },
+      }
+    );
+
+    const { _id: transactionId } = await new TransactionModel({
+      senderAccountId: senderAccount._id,
+      receiverAccountId: receiverAccount._id,
       value,
       idempotentKey,
-    });
+    }).save();
 
     return {
-      transactionId: transaction?._id,
+      transactionId,
     };
   },
   outputFields: {
