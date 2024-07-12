@@ -28,6 +28,8 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
     { receiverAccountNumber, value }: CreateTransactionInput,
     ctx
   ) => {
+    const session = await mongoose.startSession();
+
     const { idempotentKey, user } = await ctx;
 
     if (!idempotentKey) {
@@ -63,34 +65,43 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
       };
     }
 
-    await AccountModel.updateOne(
-      {
-        _id: senderAccount?._id,
-      },
-      {
-        $inc: { balance: mongoose.Types.Decimal128.fromString(`-${value}`) },
-      }
-    );
+    try {
+      await AccountModel.updateOne(
+        {
+          _id: senderAccount?._id,
+        },
+        {
+          $inc: { balance: mongoose.Types.Decimal128.fromString(`-${value}`) },
+        },
+        { session }
+      );
 
-    await AccountModel.updateOne(
-      {
-        _id: receiverAccount?._id,
-      },
-      {
-        $inc: { balance: mongoose.Types.Decimal128.fromString(value) },
-      }
-    );
+      await AccountModel.updateOne(
+        {
+          _id: receiverAccount?._id,
+        },
+        {
+          $inc: { balance: mongoose.Types.Decimal128.fromString(value) },
+        },
+        { session }
+      );
 
-    const { _id: transactionId } = await new TransactionModel({
-      senderAccountId: senderAccount._id,
-      receiverAccountId: receiverAccount._id,
-      value,
-      idempotentKey,
-    }).save();
+      const { _id: transactionId } = await new TransactionModel({
+        senderAccountId: senderAccount._id,
+        receiverAccountId: receiverAccount._id,
+        value,
+        idempotentKey,
+      }).save();
 
-    return {
-      transactionId,
-    };
+      return {
+        transactionId,
+      };
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      await session.endSession();
+    }
   },
   outputFields: {
     transactionId: {
