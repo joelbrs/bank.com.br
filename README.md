@@ -1,33 +1,80 @@
-# `Turborepo` Vite starter
+# bank.com.br
 
-This is an official starter Turborepo.
+## Project's status: In Development
 
-## Using this example
+### 📝 Table of Contents
 
-Run the following command:
+- [Getting Started](#getting-started)
+- [How to Run](#how-to-run)
+- [Development](#development)
+- [Authors](#authors)
 
-```sh
-npx create-turbo@latest -e with-vite
-```
+## 🚀 Getting Started
 
-## What's inside?
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
-This Turborepo includes the following packages and apps:
+### 📋 Prerequisites
 
-### Apps and Packages
+Ensure you have the following installed:
 
-- `docs`: a vanilla [vite](https://vitejs.dev) ts app
-- `web`: another vanilla [vite](https://vitejs.dev) ts app
-- `@repo/ui`: a stub component & utility library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: shared `eslint` configurations
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- Git
+- Node.js
+- pnpm
+- Docker
 
-Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
+### 🔧 Installation
 
-### Utilities
+1. Clone the repository:
 
-This Turborepo has some additional tools already setup for you:
+   ```sh
+   git clone https://github.com/joelbrs/bank.com.br
+   ```
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+2. Navigate to the client project directory:
+
+   ```sh
+   cd ./bank.com.br
+   ```
+
+3. Set environment configuration file in the server and web folder inside app
+
+4. Install dependencies:
+   ```sh
+   pnpm install
+   ```
+
+## ⚙️ How to Run
+
+1. Start the development server:
+
+   ```sh
+   pnpm start:dev
+   ```
+
+2. Start the development web:
+
+   ```sh
+   pnpm dev
+   ```
+
+### 🛠️ Built With
+
+- Web:
+
+  - [React](https://reactjs.org/) - The library for building user interfaces
+  - [TypeScript](https://www.typescriptlang.org/) - The programming language
+  - [Vite](https://vitejs.dev/) - The build tool
+  - [Relay](https://relay.dev/) - The GraphQL framework
+  - [TailwindCSS](https://tailwindcss.com/) - The CSS framework
+
+- Server:
+  - [Node.js](https://nodejs.org/) - The runtime environment
+  - [Koa](https://koajs.com/) - The web framework
+  - [TypeScript](https://www.typescriptlang.org/) - The programming language
+  - [GraphQL](https://graphql.org/) - The query language
+  - [MongoDB](https://www.mongodb.com/) - The database
+  - [Jest](https://jestjs.io/) - The tests
+
+## ✒️ Authors
+
+- **Joel** - _Software Engineer_ - [GitHub](https://github.com/joelbrs), [Linkedin](https://linkedin.com/in/joelbrs)
