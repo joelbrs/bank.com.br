@@ -28,8 +28,22 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
     { receiverTaxId, value }: CreateTransactionInput,
     ctx
   ) => {
+    const { idempotentKey, user } = await ctx;
+
+    if (!idempotentKey) {
+      throw new BusinessRuleException("A chave de idempotência é inválida.");
+    }
+
+    const existsTransaction = await TransactionModel.findOne({ idempotentKey });
+
+    if (existsTransaction) {
+      return {
+        transactionId: existsTransaction?._id,
+      };
+    }
+
     const senderAccount = await AccountModel.findOne({
-      userTaxId: (await ctx).user?.taxId,
+      userTaxId: user?.taxId,
     });
 
     if (!senderAccount?.sufficientFunds(value)) {
@@ -58,6 +72,7 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
       senderTaxId: senderAccount.userTaxId,
       receiverTaxId: receiverAccount.userTaxId,
       value,
+      idempotentKey,
     });
 
     return {

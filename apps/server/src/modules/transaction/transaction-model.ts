@@ -4,6 +4,7 @@ import mongoose, { Decimal128, Document } from "mongoose";
 export type Transaction = {
   senderTaxId: string;
   receiverTaxId: string;
+  idempotentKey: string;
   value: Decimal128;
   description?: string;
   createdAt: Date;
@@ -17,6 +18,11 @@ const TransactionSchema = new mongoose.Schema<Transaction>(
     senderTaxId: {
       type: String,
       required: true,
+    },
+    idempotentKey: {
+      type: String,
+      required: true,
+      unique: true,
     },
     receiverTaxId: {
       type: String,

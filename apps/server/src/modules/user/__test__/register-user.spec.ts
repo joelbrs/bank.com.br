@@ -33,7 +33,13 @@ const fetchResult = (variableValues: RegisterUserInput) => {
   });
 };
 
-jest.mock("../../../notification");
+jest.mock("../../../notification/send-email.ts", () => ({
+  sendEmail: () => {
+    return {
+      code: jest.fn(),
+    };
+  },
+}));
 
 describe("RegisterUserMutation", () => {
   beforeAll(() => {

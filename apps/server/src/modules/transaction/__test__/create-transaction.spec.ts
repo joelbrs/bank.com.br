@@ -51,6 +51,24 @@ describe("CreateTransactionMutation", () => {
     mongooseDisconnect();
   });
 
+  it("should throw if no idempotent key is provided", async () => {
+    const contextUser = await createUser();
+    const variableValues: CreateTransactionInput = {
+      receiverTaxId: randomUUID(),
+      value: "10.00",
+    };
+
+    const { data, errors } = await fetchResult(
+      variableValues,
+      getContext({ user: contextUser })
+    );
+
+    expect(data?.CreateTransaction).toBeNull();
+    expect((errors as GraphQLError[])[0]?.message).toBe(
+      "A chave de idempotência é inválida."
+    );
+  });
+
   it("should throws if funds are insufficient", async () => {
     const contextUser = await createUser();
     await createAccount({ userTaxId: contextUser.taxId });
@@ -62,7 +80,7 @@ describe("CreateTransactionMutation", () => {
 
     const { data, errors } = await fetchResult(
       variableValues,
-      getContext({ user: contextUser })
+      getContext({ user: contextUser, idempotentKey: randomUUID() })
     );
 
     expect(data?.CreateTransaction).toBeNull();
@@ -85,7 +103,7 @@ describe("CreateTransactionMutation", () => {
 
     const { data, errors } = await fetchResult(
       variableValues,
-      getContext({ user: contextUser })
+      getContext({ user: contextUser, idempotentKey: randomUUID() })
     );
 
     expect(data?.CreateTransaction).toBeNull();
@@ -112,7 +130,10 @@ describe("CreateTransactionMutation", () => {
       value: "10.0",
     };
 
-    await fetchResult(variableValues, getContext({ user: contextUser }));
+    await fetchResult(
+      variableValues,
+      getContext({ user: contextUser, idempotentKey: randomUUID() })
+    );
 
     const [senderAccount, receiverAccount] = await Promise.all([
       AccountModel.findOne({
@@ -135,6 +156,8 @@ describe("CreateTransactionMutation", () => {
     const contextUser = await createUser();
     const receiverUser = await createUser();
 
+    const idempotentKey = randomUUID();
+
     await createAccount({
       userTaxId: contextUser.taxId,
       balance: new mongoose.Types.Decimal128("10.0") as any,
@@ -151,12 +174,16 @@ describe("CreateTransactionMutation", () => {
 
     const transactionModelSpy = jest.spyOn(TransactionModel, "create");
 
-    await fetchResult(variableValues, getContext({ user: contextUser }));
+    await fetchResult(
+      variableValues,
+      getContext({ user: contextUser, idempotentKey })
+    );
 
     expect(transactionModelSpy).toHaveBeenCalledWith({
       senderTaxId: contextUser.taxId,
       receiverTaxId: receiverTaxId,
       value: variableValues.value,
+      idempotentKey,
     });
   });
 
@@ -180,7 +207,7 @@ describe("CreateTransactionMutation", () => {
 
     const { data } = await fetchResult(
       variableValues,
-      getContext({ user: contextUser })
+      getContext({ user: contextUser, idempotentKey: randomUUID() })
     );
 
     expect(data?.CreateTransaction.transactionId).toBeDefined();
