@@ -11,7 +11,7 @@ import {
   TransactionConnection,
   TransactionLoader,
   TransactionType,
-} from "@/modules/transaction";
+} from "../modules/transaction";
 import { withFilter } from "@entria/graphql-mongo-helpers";
 
 export const Query = new GraphQLObjectType({

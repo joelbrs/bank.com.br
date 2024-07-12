@@ -6,7 +6,6 @@ import { mongooseConnection } from "../../../../test/mongoose-connection";
 import { mongooseDisconnect } from "../../../../test/mongoose-disconnect";
 import { createUser } from "../fixture";
 import { AuthenticationLinkModel } from "../../../modules/authentication-link";
-import crypto from "node:crypto";
 
 interface LoginEmailAccessResponse {
   LoginEmailAccess: {
@@ -29,6 +28,14 @@ const fetchResult = (variableValues: LoginEmailAccessInput) => {
     source: mutation,
   });
 };
+
+jest.mock("../../../notification/send-email.ts", () => ({
+  sendEmail: () => {
+    return {
+      code: "valid-u-u-i-d",
+    };
+  },
+}));
 
 describe("LoginEmailAccessMutation", () => {
   beforeAll(() => {
@@ -75,7 +82,6 @@ describe("LoginEmailAccessMutation", () => {
     };
 
     const authLinkModelSpy = jest.spyOn(AuthenticationLinkModel, "create");
-    jest.spyOn(crypto, "randomUUID").mockReturnValueOnce("valid-u-u-i-d");
 
     await fetchResult(variableValues);
 
