@@ -11,6 +11,7 @@ import { DetailTransaction } from "../../components/dashboard/transaction/detail
 import {
   AccountNumberCard,
   BalanceCard,
+  ChartTransactions,
   DashboardNavigation,
   LoadingSpinner,
   NewTransactionsCard,
@@ -86,18 +87,22 @@ export function DashboardPage(props: Props): JSX.Element {
             <AccountNumberCard accountNumber={account?.accountNumber} />
             <BalanceCard balance={account?.balance} />
           </div>
-          <RecentTransactions
-            query={recentTransactionsQuery}
-            onSelectRow={($event: string) => loadQuery({ _id: $event })}
-          />
+          <div className="flex items-center gap-2">
+            <RecentTransactions
+              query={recentTransactionsQuery}
+              onSelectRow={($event: string) => loadQuery({ _id: $event })}
+            />
+            {/* <ChartTransactions /> */}
+          </div>
         </div>
         {queryReference && (
-          <div className="sm:w-[40vw] w-full">
+          <div className="sm:w-[40vw] w-full space-y-10">
             <Suspense fallback={<LoadingSpinner />}>
               <DetailTransaction
                 queryReference={queryReference}
                 query={TransactionPage}
               />
+              <ChartTransactions />
             </Suspense>
           </div>
         )}
