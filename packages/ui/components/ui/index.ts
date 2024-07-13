@@ -6,3 +6,4 @@ export * from "./sonner";
 export * from "./card";
 export * from "./chart";
 export * from "./breadcrumb";
+export * from "./separator";
