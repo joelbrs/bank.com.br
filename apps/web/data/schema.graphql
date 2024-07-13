@@ -266,7 +266,7 @@ type CreateTransactionPayload {
 }
 
 input CreateTransactionInput {
-  receiverTaxId: String!
+  receiverAccountNumber: String!
   value: String!
   clientMutationId: String
 }

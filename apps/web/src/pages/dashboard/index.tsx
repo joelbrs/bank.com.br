@@ -1,41 +1,40 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@repo/ui/components";
+import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components";
 import { Activity, DollarSign } from "lucide-react";
 import { RecentTransactions } from "./recent-transactions";
 import { ChartTransactions } from "./chart-transactions";
-import { useAuth } from "../../context/auth-context";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { graphql, useFragment } from "react-relay";
+import { dashboardAccount_account$key } from "../../../__generated__/dashboardAccount_account.graphql";
 
-export function DashboardPage(): JSX.Element {
-  const { user, getUser } = useAuth();
-  const navigate = useNavigate();
+type Props = {
+  account?: dashboardAccount_account$key | null;
+};
 
-  useEffect(() => {
-    getUser({
-      onError: () => {
-        navigate("/sign-in");
-      },
-    });
-  }, []);
+export function DashboardPage(props: Props): JSX.Element {
+  const account = useFragment<dashboardAccount_account$key>(
+    graphql`
+      fragment dashboardAccount_account on Account {
+        balance
+        accountNumber
+        owner {
+          fullName
+          taxId
+        }
+      }
+    `,
+    props.account
+  );
 
   return (
     <main className="flex flex-col items-start justify-center px-8 p-6 gap-5">
       <div className="flex items-center gap-2">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">
-            Bem-vindo, {user?.account?.owner.fullName?.split(" ")[0]}!
+            Bem-vindo, {account?.owner.fullName?.split(" ")[0]}!
           </h1>
           <h3 className="text-lg font-bold tracking-tight">
             Este é o acesso ao seu Dashboard
           </h3>
         </div>
-        {/* <Loader2 className="w-5 h-5 animate-spin" /> */}
       </div>
 
       <div className="flex items-start justify-center w-full gap-2 sm:flex-nowrap flex-wrap">
@@ -51,7 +50,7 @@ export function DashboardPage(): JSX.Element {
 
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {user?.account?.accountNumber}
+                  {account?.accountNumber}
                 </div>
               </CardContent>
             </Card>
@@ -66,7 +65,7 @@ export function DashboardPage(): JSX.Element {
 
               <CardContent>
                 <div className="text-2xl font-bold">
-                  ${Number(user?.account?.balance).toFixed(2)}
+                  ${Number(account?.balance).toFixed(2)}
                 </div>
               </CardContent>
             </Card>
