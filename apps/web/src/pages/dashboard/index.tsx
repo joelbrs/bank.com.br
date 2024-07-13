@@ -96,7 +96,7 @@ export function DashboardPage(props: Props): JSX.Element {
           </div>
         </div>
         {queryReference && (
-          <div className="sm:w-[40vw] w-full space-y-10">
+          <div className="sm:w-[40vw] w-full space-y-5">
             <Suspense fallback={<LoadingSpinner />}>
               <DetailTransaction
                 queryReference={queryReference}
