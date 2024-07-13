@@ -29,6 +29,9 @@ export function ConfirmationPage(): JSX.Element {
       onCompleted: () => {
         navigate("/dashboard");
       },
+      onError: () => {
+        navigate("/sign-in");
+      },
     });
   }, []);
 
