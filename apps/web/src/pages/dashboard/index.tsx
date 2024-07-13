@@ -21,6 +21,7 @@ import {
   BreadcrumbSeparator,
 } from "@repo/ui/components";
 import { Link } from "react-router-dom";
+import { DetailTransaction } from "./detail-transaction";
 
 type Props = {
   account?: dashboardAccount_account$key | null;
@@ -122,6 +123,9 @@ export function DashboardPage(props: Props): JSX.Element {
             </Card>
           </div>
           <RecentTransactions query={recentTransactionsQuery} />
+        </div>
+        <div className="sm:w-[40vw] w-full">
+          <DetailTransaction />
         </div>
       </section>
     </main>

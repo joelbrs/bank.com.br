@@ -56,7 +56,7 @@ export function DashboardLayout(): JSX.Element | null {
 
   if (data.account) {
     return (
-      <div className="px-10 py-5">
+      <div className="sm:px-10 py-5">
         <DashboardPage account={data.account} />
       </div>
     );
