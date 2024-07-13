@@ -14,7 +14,7 @@ export function BalanceCard({ balance }: Props): JSX.Element {
       </CardHeader>
 
       <CardContent>
-        <div className="text-4xl font-bold">${Number(balance).toFixed(2)}</div>
+        <div className="text-3xl font-bold">${Number(balance).toFixed(2)}</div>
       </CardContent>
     </Card>
   );

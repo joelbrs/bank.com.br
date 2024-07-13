@@ -14,7 +14,7 @@ export function AccountNumberCard({ accountNumber }: Props): JSX.Element {
       </CardHeader>
 
       <CardContent>
-        <div className="text-4xl font-bold">{accountNumber}</div>
+        <div className="text-3xl font-bold">{accountNumber}</div>
       </CardContent>
     </Card>
   );
