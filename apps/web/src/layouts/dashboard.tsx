@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { fetchMutation } from "../relay";
 import { graphql } from "relay-runtime";
 import { useLazyLoadQuery, useMutation } from "react-relay";
@@ -14,32 +14,26 @@ const UserQuery = graphql`
   }
 `;
 
-export function DashboardLayout(): JSX.Element {
+const ValidateLinkMutation = graphql`
+  mutation dashboardLayoutMutation($code: String!, $redirect: String!) {
+    ValidateAuthenticationLink(input: { code: $code, redirect: $redirect }) {
+      userId
+    }
+  }
+`;
+
+export function DashboardLayout(): JSX.Element | null {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [params] = useSearchParams();
 
   const data = useLazyLoadQuery<dashboardQuery>(UserQuery, {});
 
-  const validateLinkMutation = graphql`
-    mutation dashboardLayoutMutation($code: String!, $redirect: String!) {
-      ValidateAuthenticationLink(input: { code: $code, redirect: $redirect }) {
-        userId
-      }
-    }
-  `;
+  const [request] = useMutation(ValidateLinkMutation);
 
-  const [request] = useMutation(validateLinkMutation);
-
-  useEffect(() => {
-    if (!searchParams.size) return;
-
-    validateAuthenticationLink();
-  }, []);
-
-  const validateAuthenticationLink = () => {
+  const confirmLink = useCallback(() => {
     const variables = {
-      code: searchParams.get("code"),
-      redirect: searchParams.get("redirect"),
+      code: params.get("code"),
+      redirect: params.get("redirect"),
     };
 
     fetchMutation({
@@ -52,11 +46,21 @@ export function DashboardLayout(): JSX.Element {
         navigate("/sign-in");
       },
     });
-  };
+  }, [params, request, navigate]);
 
-  return (
-    <div className="px-10 py-5">
-      <DashboardPage account={data.account} />
-    </div>
-  );
+  useEffect(() => {
+    if (!data.account) {
+      confirmLink();
+    }
+  }, [data, confirmLink]);
+
+  if (data.account) {
+    return (
+      <div className="px-10 py-5">
+        <DashboardPage account={data.account} />
+      </div>
+    );
+  }
+
+  return null;
 }
