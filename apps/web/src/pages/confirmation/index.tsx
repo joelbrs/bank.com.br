@@ -1,23 +1,23 @@
 import { graphql, useMutation } from "react-relay";
 import { fetchMutation } from "../../relay";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+
+const mutation = graphql`
+  mutation confirmationPageMutation($code: String!, $redirect: String!) {
+    ConfirmUser(input: { code: $code, redirect: $redirect }) {
+      userId
+    }
+  }
+`;
 
 export function ConfirmationPage(): JSX.Element {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const mutation = graphql`
-    mutation confirmationPageMutation($code: String!, $redirect: String!) {
-      ConfirmUser(input: { code: $code, redirect: $redirect }) {
-        userId
-      }
-    }
-  `;
-
   const [request] = useMutation(mutation);
 
-  useEffect(() => {
+  const confirmationLink = useCallback(() => {
     const variables = {
       code: searchParams.get("code"),
       redirect: searchParams.get("redirect"),
@@ -33,7 +33,11 @@ export function ConfirmationPage(): JSX.Element {
         navigate("/sign-in");
       },
     });
-  }, []);
+  }, [navigate, request, searchParams]);
+
+  useEffect(() => {
+    confirmationLink();
+  }, [confirmationLink]);
 
   return (
     <>
