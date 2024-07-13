@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
-import { fetchQuery, graphql } from "relay-runtime";
-import { environment } from "../../relay";
-import { recentTransactionsQuery$data } from "../../../__generated__/recentTransactionsQuery.graphql";
+import { graphql, usePaginationFragment } from "react-relay";
+import { recentTransactions_query$key } from "../../../__generated__/recentTransactions_query.graphql";
+import {
+  RecentTransactionsQuery,
+  RecentTransactionsQuery$data,
+} from "../../../__generated__/RecentTransactionsQuery.graphql";
 import {
   Card,
   CardContent,
@@ -10,89 +12,69 @@ import {
   CardTitle,
 } from "@repo/ui/components";
 
-type Transaction = {
-  _id: string;
-  value: string;
-  receiver: {
-    owner: {
-      fullName: string;
-      taxId: string;
-    };
-  };
+type Props = {
+  query: RecentTransactionsQuery$data;
 };
 
-export function RecentTransactions(): JSX.Element {
-  const [totalTransactions, setTotalTransactions] = useState(0);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-
-  const query = graphql`
-    query recentTransactionsQuery {
-      transactions {
-        count
-        edges {
-          node {
-            _id
-            value
-            receiver {
-              owner {
-                fullName
-                taxId
+export function RecentTransactions(props: Props): JSX.Element {
+  const { data } = usePaginationFragment<
+    RecentTransactionsQuery,
+    recentTransactions_query$key
+  >(
+    graphql`
+      fragment recentTransactions_query on Query
+      @argumentDefinitions(
+        first: { type: Int, defaultValue: 5 }
+        after: { type: String }
+      )
+      @refetchable(queryName: "RecentTransactionsQuery") {
+        transactions(first: $first, after: $after)
+          @connection(key: "RecentTransactions_transactions", filters: []) {
+          count
+          edges {
+            node {
+              _id
+              value
+              receiver {
+                accountNumber
+                owner {
+                  fullName
+                }
               }
             }
           }
         }
       }
-    }
-  `;
+    `,
+    props.query
+  );
 
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  const fetchTransactions = () => {
-    fetchQuery(environment, query, {}).subscribe({
-      next: (values) => {
-        const { transactions } = values as recentTransactionsQuery$data;
-        const edges = transactions?.edges;
-
-        if (edges) {
-          const transactionList = edges?.map((item) => item?.node);
-
-          setTransactions(transactionList as Transaction[]);
-          setTotalTransactions(transactions.count as number);
-        }
-      },
-    });
-  };
-
-  const formatDocument = (cpfCnpj: string) => {
-    return `${cpfCnpj.slice(0, 3)}.***.***-${cpfCnpj.slice(9, 11)}`;
-  };
+  const { transactions } = data;
 
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle>Transações Recentes</CardTitle>
         <CardDescription>
-          Você realizou {totalTransactions} transações no último mês.
+          Você realizou {transactions?.count || 0} transações no último mês.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-5">
-          {transactions?.map(({ receiver, value, _id }) => (
-            <div key={_id} className="flex items-center">
+          {transactions?.edges?.map(({ node }) => (
+            <div key={node?._id} className="flex items-center">
               <div className="space-y-1">
                 <div className="space-y-1">
                   <p className="text-sm font-medium leading-none">
-                    {receiver?.owner?.fullName}
+                    {node.receiver?.owner.fullName}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {formatDocument(receiver?.owner?.taxId)}
+                    {node.receiver?.accountNumber}
                   </p>
                 </div>
               </div>
               <div className="ml-auto font-medium">
-                +${Number(value).toFixed(2)}
+                +${Number(node.value).toFixed(2)}
               </div>
             </div>
           ))}

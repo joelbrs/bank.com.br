@@ -16,8 +16,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { graphql } from "relay-runtime";
 import { useMutation } from "react-relay";
 import { fetchMutation } from "../../relay";
+import { useCallback } from "react";
 
 type SchemaType = z.infer<typeof schema>;
+
+const mutation = graphql`
+  mutation passwordSignInPageMutation($taxId: String!, $password: String!) {
+    LoginPasswordAccess(input: { taxId: $taxId, password: $password }) {
+      userId
+    }
+  }
+`;
 
 const schema = z.object({
   taxId: z.string().min(11),
@@ -35,25 +44,20 @@ export function PasswordSignInPage(): JSX.Element {
     },
   });
 
-  const mutation = graphql`
-    mutation passwordSignInPageMutation($taxId: String!, $password: String!) {
-      LoginPasswordAccess(input: { taxId: $taxId, password: $password }) {
-        userId
-      }
-    }
-  `;
-
   const [request] = useMutation(mutation);
 
-  const onSubmit = (variables: SchemaType) => {
-    fetchMutation({
-      request,
-      variables,
-      onCompleted: () => {
-        navigate("/dashboard");
-      },
-    });
-  };
+  const onSubmit = useCallback(
+    (variables: SchemaType) => {
+      fetchMutation({
+        request,
+        variables,
+        onCompleted: () => {
+          navigate("/dashboard");
+        },
+      });
+    },
+    [request, navigate]
+  );
 
   return (
     <div className="space-y-10">
