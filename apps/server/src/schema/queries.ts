@@ -71,9 +71,6 @@ export const Query = new GraphQLObjectType({
     transactions: {
       type: TransactionConnection.connectionType,
       args: {
-        _id: {
-          type: GraphQLString,
-        },
         ...connectionArgs,
       },
       resolve: async (_, _args, ctx: any) => {
@@ -85,8 +82,12 @@ export const Query = new GraphQLObjectType({
 
         const user = await UserModel.findById(_id);
 
+        const userAccount = await AccountModel.findOne({
+          userTaxId: user?.taxId,
+        });
+
         const transactionsArgs = withFilter(_args, {
-          senderTaxId: user?.taxId,
+          senderAccountId: userAccount?._id,
         });
 
         return await TransactionLoader.loadAll(ctx, transactionsArgs);
