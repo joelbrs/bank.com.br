@@ -44,7 +44,7 @@ const TransactionSchema = new mongoose.Schema<Transaction>(
 );
 
 TransactionSchema.index(
-  { senderAccountId: 1, idempotentKey: 1 },
+  { senderAccountId: 1, idempotentKey: 1, receiverAccountId: 1 },
   { unique: true }
 );
 

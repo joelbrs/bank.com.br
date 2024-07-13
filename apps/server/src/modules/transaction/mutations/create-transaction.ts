@@ -59,6 +59,7 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
       const existingTransaction = await TransactionModel.findOne({
         idempotentKey,
         senderAccountId: senderAccount?._id,
+        receiverAccountId: receiverAccount?._id,
       }).session(session);
 
       if (existingTransaction) {
