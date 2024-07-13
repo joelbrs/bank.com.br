@@ -15,8 +15,17 @@ import { z } from "zod";
 import { graphql } from "relay-runtime";
 import { useMutation } from "react-relay";
 import { fetchMutation } from "../../relay";
+import { useCallback } from "react";
 
 type SchemaType = z.infer<typeof schema>;
+
+const mutation = graphql`
+  mutation emailSignInPageMutation($email: String!) {
+    LoginEmailAccess(input: { email: $email }) {
+      message
+    }
+  }
+`;
 
 const schema = z.object({
   email: z.string().email(),
@@ -30,19 +39,14 @@ export function EmailSignInPage(): JSX.Element {
     },
   });
 
-  const mutation = graphql`
-    mutation emailSignInPageMutation($email: String!) {
-      LoginEmailAccess(input: { email: $email }) {
-        message
-      }
-    }
-  `;
-
   const [request] = useMutation(mutation);
 
-  const onSubmit = (variables: SchemaType) => {
-    fetchMutation({ request, variables });
-  };
+  const onSubmit = useCallback(
+    (variables: SchemaType) => {
+      fetchMutation({ request, variables });
+    },
+    [request]
+  );
 
   return (
     <div className="space-y-10">

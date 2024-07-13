@@ -15,8 +15,33 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { graphql, useMutation } from "react-relay";
 import { fetchMutation } from "../../relay";
+import { useCallback } from "react";
 
 type SchemaType = z.infer<typeof schema>;
+
+const mutation = graphql`
+  mutation signUpPageMutation(
+    $fullName: String!
+    $email: String!
+    $password: String!
+    $passwordConfirmation: String!
+    $taxId: String!
+  ) {
+    RegisterUser(
+      input: {
+        fullName: $fullName
+        email: $email
+        password: $password
+        passwordConfirmation: $passwordConfirmation
+        taxId: $taxId
+      }
+    ) {
+      user {
+        _id
+      }
+    }
+  }
+`;
 
 const schema = z
   .object({
@@ -43,41 +68,20 @@ export function SignUpPage(): JSX.Element {
     },
   });
 
-  const mutation = graphql`
-    mutation signUpPageMutation(
-      $fullName: String!
-      $email: String!
-      $password: String!
-      $passwordConfirmation: String!
-      $taxId: String!
-    ) {
-      RegisterUser(
-        input: {
-          fullName: $fullName
-          email: $email
-          password: $password
-          passwordConfirmation: $passwordConfirmation
-          taxId: $taxId
-        }
-      ) {
-        user {
-          _id
-        }
-      }
-    }
-  `;
-
   const [request] = useMutation(mutation);
 
-  const onSubmit = (variables: SchemaType) => {
-    fetchMutation({
-      request,
-      variables,
-      onCompleted: () => {
-        form.reset();
-      },
-    });
-  };
+  const onSubmit = useCallback(
+    (variables: SchemaType) => {
+      fetchMutation({
+        request,
+        variables,
+        onCompleted: () => {
+          form.reset();
+        },
+      });
+    },
+    [request, form]
+  );
 
   return (
     <div className="lg:p-8 space-y-10">
