@@ -2,8 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components";
 import { Activity, DollarSign } from "lucide-react";
 import { RecentTransactions } from "./recent-transactions";
 import { ChartTransactions } from "./chart-transactions";
-import { graphql, useFragment } from "react-relay";
+import { graphql, useFragment, useLazyLoadQuery } from "react-relay";
 import { dashboardAccount_account$key } from "../../../__generated__/dashboardAccount_account.graphql";
+import { RecentTransactionsQuery } from "../../../__generated__/RecentTransactionsQuery.graphql";
 
 type Props = {
   account?: dashboardAccount_account$key | null;
@@ -22,6 +23,15 @@ export function DashboardPage(props: Props): JSX.Element {
       }
     `,
     props.account
+  );
+
+  const recentTransactionsQuery = useLazyLoadQuery<RecentTransactionsQuery>(
+    graphql`
+      query dashboardRecentTransactionsQuery {
+        ...recentTransactions_query
+      }
+    `,
+    {}
   );
 
   return (
@@ -74,7 +84,7 @@ export function DashboardPage(props: Props): JSX.Element {
             <ChartTransactions />
           </div>
         </div>
-        <RecentTransactions />
+        <RecentTransactions query={recentTransactionsQuery} />
       </div>
     </main>
   );

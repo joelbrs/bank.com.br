@@ -42,8 +42,6 @@ type Query {
     last: Int
   ): Account
   transactions(
-    _id: String
-
     """Returns the items in the list that come after the specified cursor."""
     after: String
 
