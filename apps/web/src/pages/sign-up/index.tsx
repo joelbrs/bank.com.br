@@ -9,13 +9,13 @@ import {
   Label,
 } from "@repo/ui/components";
 import { Link } from "react-router-dom";
-import { InputPassword } from "../../components";
+import { BtnLoading, InputPassword } from "../../components";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { graphql, useMutation } from "react-relay";
 import { fetchMutation } from "../../relay";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 type SchemaType = z.infer<typeof schema>;
 
@@ -57,6 +57,8 @@ const schema = z
   });
 
 export function SignUpPage(): JSX.Element {
+  const [isLoading, setLoading] = useState(false);
+
   const form = useForm<SchemaType>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -77,6 +79,10 @@ export function SignUpPage(): JSX.Element {
         variables,
         onCompleted: () => {
           form.reset();
+          setLoading(false);
+        },
+        onError: () => {
+          setLoading(false);
         },
       });
     },
@@ -187,9 +193,11 @@ export function SignUpPage(): JSX.Element {
               />
             </div>
 
-            <Button type="submit" className="w-full">
-              Finalizar cadastro
-            </Button>
+            <BtnLoading
+              type="submit"
+              placeholder="Finalizar Cadastro"
+              isLoading={isLoading}
+            />
           </form>
         </Form>
 

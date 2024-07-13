@@ -9,14 +9,14 @@ import {
   Label,
 } from "@repo/ui/components";
 import { Link, useNavigate } from "react-router-dom";
-import { InputPassword } from "../../components";
+import { BtnLoading, InputPassword } from "../../components";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { graphql } from "relay-runtime";
 import { useMutation } from "react-relay";
 import { fetchMutation } from "../../relay";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 type SchemaType = z.infer<typeof schema>;
 
@@ -35,6 +35,7 @@ const schema = z.object({
 
 export function PasswordSignInPage(): JSX.Element {
   const navigate = useNavigate();
+  const [isLoading, setLoading] = useState(false);
 
   const form = useForm<SchemaType>({
     resolver: zodResolver(schema),
@@ -52,7 +53,11 @@ export function PasswordSignInPage(): JSX.Element {
         request,
         variables,
         onCompleted: () => {
+          setLoading(false);
           navigate("/dashboard");
+        },
+        onError: () => {
+          setLoading(false);
         },
       });
     },
@@ -116,9 +121,11 @@ export function PasswordSignInPage(): JSX.Element {
           </Link>
 
           <div className="flex items-center justify-center mt-5">
-            <Button type="submit" className="w-full">
-              Acessar Painel
-            </Button>
+            <BtnLoading
+              type="submit"
+              placeholder="Acessar Painel"
+              isLoading={isLoading}
+            />
           </div>
         </form>
       </Form>
