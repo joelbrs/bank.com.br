@@ -2,8 +2,8 @@ import { Maybe } from "@repo/types/index";
 import mongoose, { Decimal128, Document } from "mongoose";
 
 export type Transaction = {
-  senderTaxId: string;
-  receiverTaxId: string;
+  senderAccountId: mongoose.Schema.Types.ObjectId;
+  receiverAccountId: mongoose.Schema.Types.ObjectId;
   idempotentKey: string;
   value: Decimal128;
   description?: string;
@@ -15,17 +15,18 @@ type TransactionDocument = Maybe<Document> & Transaction;
 
 const TransactionSchema = new mongoose.Schema<Transaction>(
   {
-    senderTaxId: {
-      type: String,
+    senderAccountId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Account",
       required: true,
     },
     idempotentKey: {
       type: String,
       required: true,
-      unique: true,
     },
-    receiverTaxId: {
-      type: String,
+    receiverAccountId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Account",
       required: true,
     },
     value: {
@@ -40,6 +41,11 @@ const TransactionSchema = new mongoose.Schema<Transaction>(
     collection: "Transaction",
     timestamps: true,
   }
+);
+
+TransactionSchema.index(
+  { senderAccountId: 1, idempotentKey: 1, receiverAccountId: 1 },
+  { unique: true }
 );
 
 export const TransactionModel = mongoose.model<TransactionDocument>(

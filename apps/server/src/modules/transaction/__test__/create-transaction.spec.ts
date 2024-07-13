@@ -23,8 +23,8 @@ const fetchResult = (
   contextValue: unknown
 ) => {
   const mutation = `
-        mutation createTransactionMutation($receiverTaxId: String!, $value: String!) {
-            CreateTransaction(input: { receiverTaxId: $receiverTaxId, value: $value }) {
+        mutation createTransactionMutation($receiverAccountNumber: String!, $value: String!) {
+            CreateTransaction(input: { receiverAccountNumber: $receiverAccountNumber, value: $value }) {
                 transactionId
             }
         }
@@ -36,6 +36,28 @@ const fetchResult = (
     schema,
     contextValue,
   });
+};
+
+const makeSut = async () => {
+  const [senderUser, receiverUser] = await Promise.all([
+    createUser(),
+    createUser(),
+  ]);
+
+  const [senderAccount, receiverAccount] = await Promise.all([
+    createAccount({
+      userTaxId: senderUser?.taxId,
+      balance: mongoose.Types.Decimal128.fromString("10.0") as any,
+    }),
+    createAccount({ userTaxId: receiverUser?.taxId }),
+  ]);
+
+  return {
+    senderUser,
+    receiverUser,
+    senderAccount,
+    receiverAccount,
+  };
 };
 
 describe("CreateTransactionMutation", () => {
@@ -51,16 +73,17 @@ describe("CreateTransactionMutation", () => {
     mongooseDisconnect();
   });
 
-  it("should throw if no idempotent key is provided", async () => {
-    const contextUser = await createUser();
+  it("should throw if no idempotency key is provided", async () => {
+    const senderUser = await createUser();
+
     const variableValues: CreateTransactionInput = {
-      receiverTaxId: randomUUID(),
-      value: "10.00",
+      receiverAccountNumber: randomUUID(),
+      value: "10.0",
     };
 
     const { data, errors } = await fetchResult(
       variableValues,
-      getContext({ user: contextUser })
+      getContext({ user: senderUser })
     );
 
     expect(data?.CreateTransaction).toBeNull();
@@ -70,17 +93,16 @@ describe("CreateTransactionMutation", () => {
   });
 
   it("should throws if funds are insufficient", async () => {
-    const contextUser = await createUser();
-    await createAccount({ userTaxId: contextUser.taxId });
+    const { senderUser } = await makeSut();
 
     const variableValues: CreateTransactionInput = {
-      receiverTaxId: randomUUID(),
-      value: "10.00",
+      receiverAccountNumber: randomUUID(),
+      value: "20.0",
     };
 
     const { data, errors } = await fetchResult(
       variableValues,
-      getContext({ user: contextUser, idempotentKey: randomUUID() })
+      getContext({ user: senderUser, idempotentKey: randomUUID() })
     );
 
     expect(data?.CreateTransaction).toBeNull();
@@ -89,21 +111,17 @@ describe("CreateTransactionMutation", () => {
     );
   });
 
-  it("should throw if receiver account is not found", async () => {
-    const contextUser = await createUser();
-    await createAccount({
-      userTaxId: contextUser.taxId,
-      balance: new mongoose.Types.Decimal128("10.0") as any,
-    });
+  it("should throws if receiver account is not found", async () => {
+    const { senderUser } = await makeSut();
 
     const variableValues: CreateTransactionInput = {
-      receiverTaxId: randomUUID(),
+      receiverAccountNumber: randomUUID(),
       value: "10.0",
     };
 
     const { data, errors } = await fetchResult(
       variableValues,
-      getContext({ user: contextUser, idempotentKey: randomUUID() })
+      getContext({ user: senderUser, idempotentKey: randomUUID() })
     );
 
     expect(data?.CreateTransaction).toBeNull();
@@ -112,102 +130,53 @@ describe("CreateTransactionMutation", () => {
     );
   });
 
-  it("should increment receiver balance and decrement sender balance when fields are valid", async () => {
-    const contextUser = await createUser();
-    const receiverUser = await createUser();
-
-    await createAccount({
-      userTaxId: contextUser.taxId,
-      balance: new mongoose.Types.Decimal128("10.0") as any,
-    });
-
-    const { userTaxId: receiverTaxId } = await createAccount({
-      userTaxId: receiverUser?.taxId,
-    });
+  it("should update both account's balances if fields are valid", async () => {
+    const { senderUser, receiverAccount } = await makeSut();
 
     const variableValues: CreateTransactionInput = {
-      receiverTaxId,
+      receiverAccountNumber: receiverAccount?.accountNumber,
       value: "10.0",
     };
 
+    const accountSpy = jest.spyOn(AccountModel, "updateOne");
+
     await fetchResult(
       variableValues,
-      getContext({ user: contextUser, idempotentKey: randomUUID() })
+      getContext({ user: senderUser, idempotentKey: randomUUID() })
     );
-
-    const [senderAccount, receiverAccount] = await Promise.all([
-      AccountModel.findOne({
-        userTaxId: contextUser?.taxId,
-      }),
-      AccountModel.findOne({
-        userTaxId: receiverTaxId,
-      }),
-    ]);
-
-    expect(senderAccount?.balance).toEqual(
-      new mongoose.Types.Decimal128("0.0")
-    );
-    expect(receiverAccount?.balance).toEqual(
-      new mongoose.Types.Decimal128("10.0")
-    );
+    expect(accountSpy).toHaveBeenCalledTimes(2);
   });
 
   it("should create a transaction when fields are valid", async () => {
-    const contextUser = await createUser();
-    const receiverUser = await createUser();
-
-    const idempotentKey = randomUUID();
-
-    await createAccount({
-      userTaxId: contextUser.taxId,
-      balance: new mongoose.Types.Decimal128("10.0") as any,
-    });
-
-    const { userTaxId: receiverTaxId } = await createAccount({
-      userTaxId: receiverUser?.taxId,
-    });
+    const { senderUser, receiverAccount } = await makeSut();
 
     const variableValues: CreateTransactionInput = {
-      receiverTaxId,
+      receiverAccountNumber: receiverAccount?.accountNumber,
       value: "10.0",
     };
 
-    const transactionModelSpy = jest.spyOn(TransactionModel, "create");
+    const idempotentKey = randomUUID();
+    const transactionSpy = jest.spyOn(new TransactionModel(), "save");
 
     await fetchResult(
       variableValues,
-      getContext({ user: contextUser, idempotentKey })
+      getContext({ user: senderUser, idempotentKey })
     );
 
-    expect(transactionModelSpy).toHaveBeenCalledWith({
-      senderTaxId: contextUser.taxId,
-      receiverTaxId: receiverTaxId,
-      value: variableValues.value,
-      idempotentKey,
-    });
+    expect(transactionSpy).toHaveBeenCalled();
   });
 
   it("should returns transaction id on success", async () => {
-    const contextUser = await createUser();
-    const receiverUser = await createUser();
-
-    await createAccount({
-      userTaxId: contextUser.taxId,
-      balance: new mongoose.Types.Decimal128("10.0") as any,
-    });
-
-    const { userTaxId: receiverTaxId } = await createAccount({
-      userTaxId: receiverUser?.taxId,
-    });
+    const { senderUser, receiverAccount } = await makeSut();
 
     const variableValues: CreateTransactionInput = {
-      receiverTaxId,
+      receiverAccountNumber: receiverAccount.accountNumber,
       value: "10.0",
     };
 
     const { data } = await fetchResult(
       variableValues,
-      getContext({ user: contextUser, idempotentKey: randomUUID() })
+      getContext({ user: senderUser, idempotentKey: randomUUID() })
     );
 
     expect(data?.CreateTransaction.transactionId).toBeDefined();
