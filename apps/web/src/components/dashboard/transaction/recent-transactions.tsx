@@ -63,6 +63,10 @@ export function RecentTransactions(props: Props): JSX.Element {
 
   const { transactions } = data;
 
+  const isSelected = (id: string) => {
+    return id === selected;
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -82,7 +86,10 @@ export function RecentTransactions(props: Props): JSX.Element {
           </TableHeader>
           <TableBody>
             {transactions?.edges?.map(({ node }) => (
-              <TableRow key={node?._id}>
+              <TableRow
+                className={isSelected(node?._id) ? "bg-muted/50" : ""}
+                key={node?._id}
+              >
                 <TableCell className="font-medium">
                   {node.receiver?.owner.fullName}
                 </TableCell>
@@ -96,7 +103,7 @@ export function RecentTransactions(props: Props): JSX.Element {
                       props.onSelectRow(node?._id);
                       setSelected(node?._id);
                     }}
-                    disabled={node?._id === selected}
+                    disabled={isSelected(node?._id)}
                   >
                     <Search className="w-4 h-4" />
                   </Button>
