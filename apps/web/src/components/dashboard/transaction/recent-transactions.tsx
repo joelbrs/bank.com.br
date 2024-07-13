@@ -1,9 +1,9 @@
 import { graphql, usePaginationFragment } from "react-relay";
-import { recentTransactions_query$key } from "../../../__generated__/recentTransactions_query.graphql";
+import { recentTransactions_query$key } from "../../../../__generated__/recentTransactions_query.graphql";
 import {
   RecentTransactionsQuery,
   RecentTransactionsQuery$data,
-} from "../../../__generated__/RecentTransactionsQuery.graphql";
+} from "../../../../__generated__/RecentTransactionsQuery.graphql";
 import {
   Card,
   CardContent,
