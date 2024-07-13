@@ -5,6 +5,7 @@ import {
   RecentTransactionsQuery$data,
 } from "../../../../__generated__/RecentTransactionsQuery.graphql";
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
@@ -17,12 +18,17 @@ import {
   TableHeader,
   TableRow,
 } from "@repo/ui/components";
+import { Search } from "lucide-react";
+import { useState } from "react";
 
 type Props = {
   query: RecentTransactionsQuery$data;
+  onSelectRow: (transactionId: string) => void;
 };
 
 export function RecentTransactions(props: Props): JSX.Element {
+  const [selected, setSelected] = useState<string | undefined>();
+
   const { data } = usePaginationFragment<
     RecentTransactionsQuery,
     recentTransactions_query$key
@@ -70,8 +76,8 @@ export function RecentTransactions(props: Props): JSX.Element {
           <TableHeader>
             <TableRow>
               <TableHead>Nome do Destinatário</TableHead>
-              <TableHead>Número da Conta do Desinatário</TableHead>
               <TableHead>Valor ($)</TableHead>
+              <TableHead />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -80,8 +86,21 @@ export function RecentTransactions(props: Props): JSX.Element {
                 <TableCell className="font-medium">
                   {node.receiver?.owner.fullName}
                 </TableCell>
-                <TableCell>{node.receiver?.accountNumber}</TableCell>
-                <TableCell>+${Number(node.value).toFixed(2)}</TableCell>
+                <TableCell>${Number(node.value).toFixed(2)}</TableCell>
+                <TableCell className="text-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    title="Detalhar Transação"
+                    onClick={() => {
+                      props.onSelectRow(node?._id);
+                      setSelected(node?._id);
+                    }}
+                    disabled={node?._id === selected}
+                  >
+                    <Search className="w-4 h-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
