@@ -10,6 +10,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@repo/ui/components";
 
 type Props = {
@@ -60,25 +66,26 @@ export function RecentTransactions(props: Props): JSX.Element {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-5">
-          {transactions?.edges?.map(({ node }) => (
-            <div key={node?._id} className="flex items-center">
-              <div className="space-y-1">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    {node.receiver?.owner.fullName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {node.receiver?.accountNumber}
-                  </p>
-                </div>
-              </div>
-              <div className="ml-auto font-medium">
-                +${Number(node.value).toFixed(2)}
-              </div>
-            </div>
-          ))}
-        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Nome do Destinatário</TableHead>
+              <TableHead>Número da Conta do Desinatário</TableHead>
+              <TableHead>Valor ($)</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {transactions?.edges?.map(({ node }) => (
+              <TableRow key={node?._id}>
+                <TableCell className="font-medium">
+                  {node.receiver?.owner.fullName}
+                </TableCell>
+                <TableCell>{node.receiver?.accountNumber}</TableCell>
+                <TableCell>+${Number(node.value).toFixed(2)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );
