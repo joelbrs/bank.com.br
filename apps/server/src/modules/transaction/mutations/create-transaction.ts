@@ -29,43 +29,44 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
     ctx
   ) => {
     const session = await mongoose.startSession();
-
-    const { idempotentKey, user } = await ctx;
-
-    if (!idempotentKey) {
-      throw new BusinessRuleException("A chave de idempotência é inválida.");
-    }
-
-    const senderAccount = await AccountModel.findOne({
-      userTaxId: user?.taxId,
-    });
-
-    if (!senderAccount?.sufficientFunds(value)) {
-      throw new BusinessRuleException(
-        "Saldo insuficiente para efetuar a transação."
-      );
-    }
-
-    const receiverAccount = await AccountModel.findOne({
-      accountNumber: receiverAccountNumber,
-    });
-
-    if (!receiverAccount) {
-      throw new EntityNotFoundException("Conta");
-    }
-
-    const existingTransaction = await TransactionModel.findOne({
-      idempotentKey,
-      senderAccountId: senderAccount?._id,
-    });
-
-    if (existingTransaction) {
-      return {
-        transactionId: existingTransaction?._id,
-      };
-    }
+    session.startTransaction();
 
     try {
+      const { idempotentKey, user } = await ctx;
+
+      if (!idempotentKey) {
+        throw new BusinessRuleException("A chave de idempotência é inválida.");
+      }
+
+      const senderAccount = await AccountModel.findOne({
+        userTaxId: user?.taxId,
+      }).session(session);
+
+      if (!senderAccount?.sufficientFunds(value)) {
+        throw new BusinessRuleException(
+          "Saldo insuficiente para efetuar a transação."
+        );
+      }
+
+      const receiverAccount = await AccountModel.findOne({
+        accountNumber: receiverAccountNumber,
+      }).session(session);
+
+      if (!receiverAccount) {
+        throw new EntityNotFoundException("Conta");
+      }
+
+      const existingTransaction = await TransactionModel.findOne({
+        idempotentKey,
+        senderAccountId: senderAccount?._id,
+      }).session(session);
+
+      if (existingTransaction) {
+        return {
+          transactionId: existingTransaction?._id,
+        };
+      }
+
       await AccountModel.updateOne(
         {
           _id: senderAccount?._id,
@@ -93,6 +94,7 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
         idempotentKey,
       }).save();
 
+      await session.commitTransaction();
       return {
         transactionId,
       };
