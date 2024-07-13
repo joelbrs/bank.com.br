@@ -1,10 +1,26 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@repo/ui/components";
 import { Activity, DollarSign } from "lucide-react";
 import { RecentTransactions } from "./recent-transactions";
-import { ChartTransactions } from "./chart-transactions";
 import { graphql, useFragment, useLazyLoadQuery } from "react-relay";
 import { dashboardAccount_account$key } from "../../../__generated__/dashboardAccount_account.graphql";
 import { RecentTransactionsQuery } from "../../../__generated__/RecentTransactionsQuery.graphql";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@repo/ui/components";
+import { Link } from "react-router-dom";
 
 type Props = {
   account?: dashboardAccount_account$key | null;
@@ -35,8 +51,21 @@ export function DashboardPage(props: Props): JSX.Element {
   );
 
   return (
-    <main className="flex flex-col items-start justify-center px-8 p-6 gap-5">
-      <div className="flex items-center gap-2">
+    <main className="flex flex-col items-start justify-center px-8 p-6 gap-2">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to={{ pathname: "/" }}>Dashboard</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Transações</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <section className="flex items-center gap-2">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">
             Bem-vindo, {account?.owner.fullName?.split(" ")[0]}!
@@ -45,12 +74,24 @@ export function DashboardPage(props: Props): JSX.Element {
             Este é o acesso ao seu Dashboard
           </h3>
         </div>
-      </div>
+      </section>
 
-      <div className="flex items-start justify-center w-full gap-2 sm:flex-nowrap flex-wrap">
-        <div className="w-full">
-          <div className="flex items-center justify-center gap-2 w-full">
-            <Card className="w-full">
+      <section className="flex items-start justify-center gap-2 mt-5 flex-wrap sm:flex-nowrap">
+        <div className="w-full space-y-3">
+          <div className="sm:grid sm:grid-cols-4 gap-3.5 space-y-5 sm:space-y-0 w-full">
+            <Card className="sm:col-span-2" x-chunk="dashboard-05-chunk-0">
+              <CardHeader className="pb-3">
+                <CardTitle>Suas Transações</CardTitle>
+                <CardDescription className="max-w-lg leading-relaxed">
+                  Apresentando Nosso Dinâmico Dashboard de Transações para
+                  Gestão e Análise Perspicaz
+                </CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Button>Criar Nova Transação</Button>
+              </CardFooter>
+            </Card>
+            <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Número da Conta
@@ -59,13 +100,13 @@ export function DashboardPage(props: Props): JSX.Element {
               </CardHeader>
 
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className="text-4xl font-bold">
                   {account?.accountNumber}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="w-full">
+            <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Saldo Atual
@@ -74,18 +115,15 @@ export function DashboardPage(props: Props): JSX.Element {
               </CardHeader>
 
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className="text-4xl font-bold">
                   ${Number(account?.balance).toFixed(2)}
                 </div>
               </CardContent>
             </Card>
           </div>
-          <div>
-            <ChartTransactions />
-          </div>
+          <RecentTransactions query={recentTransactionsQuery} />
         </div>
-        <RecentTransactions query={recentTransactionsQuery} />
-      </div>
+      </section>
     </main>
   );
 }
