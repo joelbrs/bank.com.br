@@ -22,6 +22,7 @@
     "react-router-dom": "^6.24.1",
     "recharts": "^2.12.7",
     "sonner": "^1.5.0",
+    "uuid": "^10.0.0",
     "vite-plugin-relay": "^2.1.0",
     "zod": "^3.23.8"
   },
@@ -33,6 +34,7 @@
     "@types/react-relay": "^16.0.6",
     "@types/react-router-dom": "^5.3.3",
     "@types/relay-runtime": "^17.0.1",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
     "@vitejs/plugin-react": "^4.3.1",
