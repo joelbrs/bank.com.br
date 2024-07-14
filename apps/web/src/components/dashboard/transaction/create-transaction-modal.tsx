@@ -94,6 +94,7 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
         form.reset();
         setOpen(false);
         setConfirmed(false);
+        setLoading(false);
       },
       onError: () => {
         setLoading(false);
@@ -107,10 +108,8 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
   };
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger onClick={() => setOpen(!open)}>
-        {children}
-      </AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="text-2xl">
