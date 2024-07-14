@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@repo/ui/components";
+import { CreateTransactionModal } from "../transaction";
 
 export function NewTransactionsCard(): JSX.Element {
   return (
@@ -18,7 +19,9 @@ export function NewTransactionsCard(): JSX.Element {
         </CardDescription>
       </CardHeader>
       <CardFooter>
-        <Button>Criar Nova Transação</Button>
+        <CreateTransactionModal>
+          <Button>Criar Nova Transação</Button>
+        </CreateTransactionModal>
       </CardFooter>
     </Card>
   );
