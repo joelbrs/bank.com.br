@@ -185,7 +185,7 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
                   </AlertDialogCancel>
                   <BtnLoading
                     isLoading={isLoading}
-                    placeholder="Salvar"
+                    placeholder={(confirmed && "Salvar") || "Continuar"}
                     type="submit"
                   />
                 </div>
