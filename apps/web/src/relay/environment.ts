@@ -16,6 +16,8 @@ async function fetchQuery(
   operation: RequestParameters,
   variables: Variables
 ): Promise<FetchQueryResponse> {
+  const idempotentKey = sessionStorage.getItem("idempotent-key");
+
   const response = await fetch(
     import.meta.env.VITE_PUBLIC_GRAPHQL_ENDPOINT as string,
     {
@@ -23,6 +25,7 @@ async function fetchQuery(
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        ...(idempotentKey && { idempotentKey }),
       },
       credentials: "include",
       body: JSON.stringify({

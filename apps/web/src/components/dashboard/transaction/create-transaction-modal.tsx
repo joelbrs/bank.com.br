@@ -24,6 +24,7 @@ import { graphql } from "relay-runtime";
 import { useQueryLoader } from "react-relay";
 import { createTransactionModalQuery } from "../../../../__generated__/createTransactionModalQuery.graphql";
 import { ResumeTransaction } from "./resume-transaction";
+import { v7 as uuid } from "uuid";
 
 type SchemaType = z.infer<typeof schema>;
 
@@ -65,10 +66,16 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
     receiverAccountNumber: accountNumber,
   }: SchemaType) => {
     if (!confirmed) {
+      createIdempotencyKey();
       loadQuery({ accountNumber });
       return setConfirmed(true);
     }
     console.log("Create Transaction");
+  };
+
+  const createIdempotencyKey = () => {
+    const idempotencyKey = uuid();
+    sessionStorage.setItem("idempotent-key", idempotencyKey);
   };
 
   return (
