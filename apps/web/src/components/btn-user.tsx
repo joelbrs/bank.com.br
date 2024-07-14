@@ -22,7 +22,10 @@ export function BtnUser({ account }: Props): JSX.Element {
           className="flex items-center justify-center gap-2 h-10"
           variant="outline"
         >
-          <h3>{account?.owner.fullName}</h3>
+          <h3 className="hidden sm:inline">{account?.owner.fullName}</h3>
+          <h3 className="sm:hidden">
+            {account?.owner.fullName?.split(" ")[0]}
+          </h3>
           <ChevronDown className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>
