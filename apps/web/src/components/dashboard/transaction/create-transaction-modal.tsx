@@ -37,7 +37,7 @@ const schema = z.object({
   receiverAccountNumber: z
     .string()
     .min(7, "O número da conta deve ter 7 dígitos."),
-  value: z.coerce.string(),
+  value: z.string(),
 });
 
 const DetailAccount = graphql`
@@ -170,6 +170,7 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
                     query={DetailAccount}
                     queryReference={queryReference}
                     value={form.getValues("value")}
+                    onNotFoundAccount={() => setConfirmed(false)}
                   />
                 )}
 
