@@ -48,18 +48,29 @@ export const Query = new GraphQLObjectType({
     account: {
       type: AccountType,
       args: {
+        accountNumber: {
+          type: GraphQLString,
+        },
         ...connectionArgs,
       },
-      resolve: async (_, __, ctx: any) => {
+      resolve: async (_, args, ctx: any) => {
         const { _id, taxId } = ctx.user;
 
         if (!isValidObjectId(_id)) {
           throw new UnauthorizedException();
         }
 
-        const account: Account | null = await AccountModel.findOne({
-          userTaxId: taxId,
-        });
+        let account: Account | null;
+
+        if (args.accountNumber) {
+          account = await AccountModel.findOne({
+            accountNumber: args.accountNumber,
+          });
+        } else {
+          account = await AccountModel.findOne({
+            userTaxId: taxId,
+          });
+        }
 
         if (!account) {
           throw new EntityNotFoundException("Conta");
