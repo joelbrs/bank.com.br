@@ -5,6 +5,8 @@ import { graphql } from "relay-runtime";
 import { useLazyLoadQuery, useMutation } from "react-relay";
 import { DashboardPage } from "../pages/dashboard";
 import { dashboardQuery } from "../../__generated__/dashboardQuery.graphql";
+import { Footer } from "../components/footer";
+import { Header } from "../components/header";
 
 const UserQuery = graphql`
   query dashboardQuery {
@@ -54,9 +56,14 @@ export function DashboardLayout(): JSX.Element | null {
 
   if (data.account) {
     return (
-      <div className="sm:px-10 py-5">
-        <DashboardPage account={data.account} />
-      </div>
+      <>
+        <Header />
+        <div className="sm:px-10">
+          <DashboardPage account={data.account} />
+        </div>
+
+        <Footer />
+      </>
     );
   }
 
