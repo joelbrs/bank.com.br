@@ -14,7 +14,7 @@ type Props = {
 export function InfoTransaction({ account, value }: Props): JSX.Element {
   return (
     <>
-      <div className="col-span-3 space-y-3.5">
+      <div className="col-span-3">
         <div className="grid gap-3">
           <div className="font-semibold">Detalhes da Transação</div>
           <ul className="grid gap-3">
@@ -24,8 +24,8 @@ export function InfoTransaction({ account, value }: Props): JSX.Element {
             </li>
           </ul>
         </div>
-        <Separator />
       </div>
+      <Separator className="my-3.5" />
       <div className="col-span-3 space-y-2">
         <div className="font-semibold">Informações do Destinatário</div>
         <dl className="grid gap-3">

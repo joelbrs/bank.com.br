@@ -92,7 +92,11 @@ export function RecentTransactions(props: Props): JSX.Element {
             <TableBody>
               {transactions?.edges?.map(({ node }) => (
                 <TableRow
-                  className={isSelected(node?._id) ? "bg-muted/50" : ""}
+                  className={
+                    isSelected(node?._id)
+                      ? "bg-muted/50 border-l-4 border-b-0 rounded-l-full border-primary"
+                      : ""
+                  }
                   key={node?._id}
                 >
                   <TableCell className="font-medium">
@@ -101,7 +105,7 @@ export function RecentTransactions(props: Props): JSX.Element {
                   <TableCell>${Number(node.value).toFixed(2)}</TableCell>
                   <TableCell className="text-end">
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       title="Detalhar Transação"
                       onClick={() => {
@@ -110,7 +114,7 @@ export function RecentTransactions(props: Props): JSX.Element {
                       }}
                       disabled={isSelected(node?._id)}
                     >
-                      <Search className="w-4 h-4" />
+                      <Search className="w-3.5 h-3.5" />
                     </Button>
                   </TableCell>
                 </TableRow>
