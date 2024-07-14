@@ -23,7 +23,7 @@ import { BtnLoading } from "../../btn-loading";
 import { graphql } from "relay-runtime";
 import { useQueryLoader } from "react-relay";
 import { createTransactionModalQuery } from "../../../../__generated__/createTransactionModalQuery.graphql";
-import { ResumeTransaction } from "./detail-receiver-account";
+import { ResumeTransaction } from "./resume-transaction";
 
 type SchemaType = z.infer<typeof schema>;
 
@@ -134,6 +134,7 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
                   <ResumeTransaction
                     query={DetailAccount}
                     queryReference={queryReference}
+                    value={form.getValues("value")}
                   />
                 )}
 
