@@ -32,6 +32,7 @@ const TransactionPage = graphql`
         accountNumber
         owner {
           fullName
+          email
         }
       }
     }
