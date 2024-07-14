@@ -19,13 +19,13 @@ import {
 import { ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { BtnLoading } from "../../btn-loading";
+import { BtnLoading } from "../../../btn-loading";
 import { graphql } from "relay-runtime";
 import { useMutation, useQueryLoader } from "react-relay";
-import { createTransactionModalQuery } from "../../../../__generated__/createTransactionModalQuery.graphql";
-import { ResumeTransaction } from "./resume-transaction";
+import { createTransactionModalQuery } from "../../../../../__generated__/createTransactionModalQuery.graphql";
+import { ResumeTransaction } from "../cards/resume-transaction";
 import { v7 as uuid } from "uuid";
-import { fetchMutation } from "../../../relay";
+import { fetchMutation } from "../../../../relay";
 
 type SchemaType = z.infer<typeof schema>;
 
