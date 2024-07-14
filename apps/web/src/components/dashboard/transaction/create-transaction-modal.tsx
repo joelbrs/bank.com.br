@@ -20,6 +20,10 @@ import { ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { BtnLoading } from "../../btn-loading";
+import { graphql } from "relay-runtime";
+import { useQueryLoader } from "react-relay";
+import { createTransactionModalQuery } from "../../../../__generated__/createTransactionModalQuery.graphql";
+import { ResumeTransaction } from "./detail-receiver-account";
 
 type SchemaType = z.infer<typeof schema>;
 
@@ -34,12 +38,38 @@ const schema = z.object({
   value: z.coerce.number(),
 });
 
+const DetailAccount = graphql`
+  query createTransactionModalQuery($accountNumber: String) {
+    account(accountNumber: $accountNumber) {
+      accountNumber
+      owner {
+        fullName
+        email
+      }
+    }
+  }
+`;
+
 export function CreateTransactionModal({ children }: Props): JSX.Element {
   const [open, setOpen] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+
+  const [queryReference, loadQuery] =
+    useQueryLoader<createTransactionModalQuery>(DetailAccount);
 
   const form = useForm<SchemaType>({
     resolver: zodResolver(schema),
   });
+
+  const handleSubmit = ({
+    receiverAccountNumber: accountNumber,
+  }: SchemaType) => {
+    if (!confirmed) {
+      loadQuery({ accountNumber });
+      return setConfirmed(true);
+    }
+    console.log("Create Transaction");
+  };
 
   return (
     <AlertDialog>
@@ -49,55 +79,72 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="text-2xl">
-            Nova Transação
+            {(!confirmed && "Nova Transação") || "Revisão da Transação"}
           </AlertDialogTitle>
           <Separator />
           <AlertDialogDescription>
             <Form {...form}>
               <form
                 className="sm:grid sm:grid-cols-3 sm:gap-3.5 space-y-3.5 sm:space-y-0"
-                onSubmit={form.handleSubmit(console.log)}
+                onSubmit={form.handleSubmit(handleSubmit)}
               >
-                <FormField
-                  control={form.control}
-                  name="receiverAccountNumber"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <Label htmlFor="accountNumber">Número da Conta</Label>
-                      <FormControl>
-                        <Input
-                          id="accountNumber"
-                          type="tel"
-                          placeholder="Número da Conta"
-                          maxLength={7}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="value"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label htmlFor="value">Valor ($)</Label>
-                      <FormControl>
-                        <Input
-                          id="value"
-                          type="number"
-                          placeholder="Valor ($)"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {!confirmed && (
+                  <>
+                    <FormField
+                      control={form.control}
+                      name="receiverAccountNumber"
+                      render={({ field }) => (
+                        <FormItem className="col-span-2">
+                          <Label htmlFor="accountNumber">Número da Conta</Label>
+                          <FormControl>
+                            <Input
+                              id="accountNumber"
+                              type="tel"
+                              placeholder="Número da Conta"
+                              maxLength={7}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="value"
+                      render={({ field }) => (
+                        <FormItem>
+                          <Label htmlFor="value">Valor ($)</Label>
+                          <FormControl>
+                            <Input
+                              id="value"
+                              type="number"
+                              placeholder="Valor ($)"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
+
+                {confirmed && queryReference && (
+                  <ResumeTransaction
+                    query={DetailAccount}
+                    queryReference={queryReference}
+                  />
+                )}
 
                 <div className="flex items-center gap-2">
-                  <AlertDialogCancel onClick={() => form.reset()} type="reset">
+                  <AlertDialogCancel
+                    onClick={() => {
+                      form.reset();
+                      setConfirmed(false);
+                    }}
+                    type="reset"
+                  >
                     Cancelar
                   </AlertDialogCancel>
                   <BtnLoading

@@ -29,6 +29,8 @@ type Query {
     last: Int
   ): User
   account(
+    accountNumber: String
+
     """Returns the items in the list that come after the specified cursor."""
     after: String
 
