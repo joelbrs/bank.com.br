@@ -49,6 +49,7 @@ export function DashboardPage(props: Props): JSX.Element {
         owner {
           fullName
           taxId
+          email
         }
       }
     `,
@@ -74,7 +75,7 @@ export function DashboardPage(props: Props): JSX.Element {
       <section className="flex items-center gap-2">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">
-            Bem-vindo, {account?.owner.fullName?.split(" ")[0]}!
+            Bem-vindo (a), {account?.owner.fullName?.split(" ")[0]}!
           </h1>
           <h3 className="text-lg font-bold tracking-tight">
             Este é o acesso ao seu Dashboard
@@ -94,7 +95,6 @@ export function DashboardPage(props: Props): JSX.Element {
               query={recentTransactionsQuery}
               onSelectRow={($event: string) => loadQuery({ _id: $event })}
             />
-            {/* <ChartTransactions /> */}
           </div>
         </div>
         <div className="sm:w-[40vw] w-full space-y-5">

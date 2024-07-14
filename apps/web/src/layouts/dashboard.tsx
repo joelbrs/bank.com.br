@@ -12,6 +12,7 @@ const UserQuery = graphql`
   query dashboardQuery {
     account {
       ...dashboardAccount_account
+      ...headerUser_account
     }
   }
 `;
@@ -57,7 +58,7 @@ export function DashboardLayout(): JSX.Element | null {
   if (data.account) {
     return (
       <>
-        <Header />
+        <Header account={data.account} />
         <div className="sm:px-10">
           <DashboardPage account={data.account} />
         </div>
