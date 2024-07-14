@@ -21,10 +21,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { BtnLoading } from "../../btn-loading";
 import { graphql } from "relay-runtime";
-import { useQueryLoader } from "react-relay";
+import { useMutation, useQueryLoader } from "react-relay";
 import { createTransactionModalQuery } from "../../../../__generated__/createTransactionModalQuery.graphql";
 import { ResumeTransaction } from "./resume-transaction";
 import { v7 as uuid } from "uuid";
+import { fetchMutation } from "../../../relay";
 
 type SchemaType = z.infer<typeof schema>;
 
@@ -36,7 +37,7 @@ const schema = z.object({
   receiverAccountNumber: z
     .string()
     .min(7, "O número da conta deve ter 7 dígitos."),
-  value: z.coerce.number(),
+  value: z.coerce.string(),
 });
 
 const DetailAccount = graphql`
@@ -51,8 +52,22 @@ const DetailAccount = graphql`
   }
 `;
 
+const CreateTransaction = graphql`
+  mutation createTransactionModalMutation(
+    $receiverAccountNumber: String!
+    $value: String!
+  ) {
+    CreateTransaction(
+      input: { receiverAccountNumber: $receiverAccountNumber, value: $value }
+    ) {
+      transactionId
+    }
+  }
+`;
+
 export function CreateTransactionModal({ children }: Props): JSX.Element {
   const [open, setOpen] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
 
   const [queryReference, loadQuery] =
@@ -62,15 +77,28 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
     resolver: zodResolver(schema),
   });
 
-  const handleSubmit = ({
-    receiverAccountNumber: accountNumber,
-  }: SchemaType) => {
+  const [createTransactionRequest] = useMutation(CreateTransaction);
+
+  const handleSubmit = (variables: SchemaType) => {
     if (!confirmed) {
       createIdempotencyKey();
-      loadQuery({ accountNumber });
+      loadQuery({ accountNumber: variables?.receiverAccountNumber });
       return setConfirmed(true);
     }
-    console.log("Create Transaction");
+
+    setLoading(true);
+    fetchMutation({
+      request: createTransactionRequest,
+      variables,
+      onCompleted: () => {
+        form.reset();
+        setOpen(false);
+        setConfirmed(false);
+      },
+      onError: () => {
+        setLoading(false);
+      },
+    });
   };
 
   const createIdempotencyKey = () => {
@@ -156,7 +184,7 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
                     Cancelar
                   </AlertDialogCancel>
                   <BtnLoading
-                    isLoading={false}
+                    isLoading={isLoading}
                     placeholder="Salvar"
                     type="submit"
                   />
