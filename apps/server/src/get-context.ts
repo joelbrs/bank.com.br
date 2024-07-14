@@ -16,6 +16,6 @@ export const getContext = async ({ ctx, user, idempotentKey }: ContextVars) => {
     ctx,
     dataloaders,
     user,
-    idempotentKey: idempotentKey || ctx?.request.headers["idempotentKey"],
+    idempotentKey: idempotentKey || ctx?.request.headers["idempotentkey"],
   } as const;
 };
