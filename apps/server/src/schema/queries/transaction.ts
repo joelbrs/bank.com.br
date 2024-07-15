@@ -1,7 +1,7 @@
-import { UnauthorizedException } from "@/exceptions";
-import { AccountModel } from "@/modules/account";
-import { TransactionLoader } from "@/modules/transaction";
-import { UserModel } from "@/modules/user";
+import { UnauthorizedException } from "../../exceptions";
+import { AccountModel } from "../../modules/account";
+import { TransactionLoader } from "../../modules/transaction";
+import { UserModel } from "../../modules/user";
 import { withFilter } from "@entria/graphql-mongo-helpers";
 import { GraphQLFieldConfigArgumentMap } from "graphql";
 import { isValidObjectId } from "mongoose";

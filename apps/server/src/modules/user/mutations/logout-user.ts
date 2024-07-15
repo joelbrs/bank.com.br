@@ -1,4 +1,4 @@
-import { UnauthorizedException } from "@/exceptions";
+import { UnauthorizedException } from "../../../exceptions";
 import { successField } from "@entria/graphql-mongo-helpers";
 import { GraphQLString } from "graphql";
 import { mutationWithClientMutationId } from "graphql-relay";

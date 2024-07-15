@@ -7,16 +7,10 @@ import {
   GraphQLString,
 } from "graphql";
 import { connectionArgs, globalIdField } from "graphql-relay";
-import { isValidObjectId } from "mongoose";
 import { UnauthorizedException } from "../exceptions";
 import { AccountType } from "../modules/account/account-type";
-import { AccountModel } from "../modules/account";
-import {
-  TransactionConnection,
-  TransactionModel,
-  TransactionType,
-} from "../modules/transaction";
-import { MetricsType } from "@/modules/transaction/metrics-types";
+import { TransactionConnection, TransactionType } from "../modules/transaction";
+import { MetricsType } from "../modules/transaction/metrics-types";
 import { getUser } from "./queries/user";
 import { getAccount } from "./queries/account";
 import { getTransactionById, getUserTransactions } from "./queries/transaction";

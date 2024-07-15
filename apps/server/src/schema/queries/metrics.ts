@@ -1,4 +1,4 @@
-import { TransactionModel } from "@/modules/transaction";
+import { TransactionModel } from "../../modules/transaction";
 
 type Metric = {
   _id: number;
