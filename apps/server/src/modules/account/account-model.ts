@@ -9,7 +9,7 @@ export type Account = {
   createdAt: Date;
   updatedAt: Date;
 
-  sufficientFunds(amount: string): boolean;
+  sufficientFunds(amount: string): Promise<boolean>;
   generateAccountNumber(): string;
 } & Document;
 
@@ -39,8 +39,19 @@ const AccountSchema = new mongoose.Schema<Account>(
 );
 
 AccountSchema.methods = {
-  sufficientFunds(amount: string) {
-    return mongoose.Types.Decimal128.fromString(amount) <= this.balance;
+  async sufficientFunds(amount: string) {
+    const result = await AccountModel.aggregate([
+      { $match: { userTaxId: this.userTaxId } },
+      {
+        $project: {
+          sufficientFunds: {
+            $gte: ["$balance", mongoose.Types.Decimal128.fromString(amount)],
+          },
+        },
+      },
+    ]);
+
+    return result.length > 0 && result[0].sufficientFunds;
   },
   generateAccountNumber() {
     const uuid = randomUUID();
