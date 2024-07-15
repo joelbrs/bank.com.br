@@ -106,14 +106,7 @@ export const Query = new GraphQLObjectType({
         });
 
         const transactionsArgs = withFilter(_args, {
-          $or: [
-            {
-              senderAccountId: userAccount?._id,
-            },
-            {
-              receiverAccountId: userAccount?._id,
-            },
-          ],
+          senderAccountId: userAccount?._id,
         });
 
         return await TransactionLoader.loadAll(ctx, transactionsArgs);
