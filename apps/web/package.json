@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@react-input/mask": "^1.2.5",
     "@repo/ui": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "lucide-react": "^0.400.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -27,7 +28,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@originjs/vite-plugin-commonjs": "^1.0.3",
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
