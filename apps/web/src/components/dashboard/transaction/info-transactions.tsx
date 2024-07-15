@@ -45,6 +45,12 @@ export function InfoTransaction({ account, value }: Props): JSX.Element {
               <span>{account?.accountNumber}</span>
             </dd>
           </div>
+          <div className="flex items-center justify-between">
+            <dt className="text-muted-foreground">Instituição</dt>
+            <dd>
+              <span>bank.com.br</span>
+            </dd>
+          </div>
         </dl>
       </div>
     </>

@@ -9,12 +9,35 @@ import {
 } from "@repo/ui/components";
 import { ChevronDown, LogOut } from "lucide-react";
 import { dashboardAccount_account$data } from "../../__generated__/dashboardAccount_account.graphql";
+import { fetchMutation } from "../relay";
+import { graphql, useMutation } from "react-relay";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   account?: dashboardAccount_account$data | null;
 };
 
 export function BtnUser({ account }: Props): JSX.Element {
+  const navigate = useNavigate();
+
+  const [request] = useMutation(graphql`
+    mutation btnUserLogoutMutation {
+      LogoutUser(input: {}) {
+        message
+      }
+    }
+  `);
+
+  const onLogOut = () => {
+    fetchMutation({
+      request,
+      variables: {},
+      onCompleted: () => {
+        navigate("/sign-in");
+      },
+    });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger as-child>
@@ -38,7 +61,7 @@ export function BtnUser({ account }: Props): JSX.Element {
         </p>
 
         <DropdownMenuSeparator className="mt-2" />
-        <DropdownMenuItem className="text-red-400">
+        <DropdownMenuItem onClick={() => onLogOut()} className="text-red-400">
           <LogOut className="mr-2 h-4 w-4" />
           <span>Sair</span>
         </DropdownMenuItem>

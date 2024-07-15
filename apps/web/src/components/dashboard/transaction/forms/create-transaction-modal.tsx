@@ -7,6 +7,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  Button,
   Form,
   FormControl,
   FormField,
@@ -26,6 +27,8 @@ import { createTransactionModalQuery } from "../../../../../__generated__/create
 import { ResumeTransaction } from "../cards/resume-transaction";
 import { v7 as uuid } from "uuid";
 import { fetchMutation } from "../../../../relay";
+import { Pencil } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type SchemaType = z.infer<typeof schema>;
 
@@ -70,6 +73,8 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
   const [isLoading, setLoading] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
 
+  const navigate = useNavigate();
+
   const [queryReference, loadQuery] =
     useQueryLoader<createTransactionModalQuery>(DetailAccount);
 
@@ -95,6 +100,7 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
         setOpen(false);
         setConfirmed(false);
         setLoading(false);
+        navigate(0);
       },
       onError: () => {
         setLoading(false);
@@ -112,8 +118,20 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
       <AlertDialogTrigger>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-2xl">
-            {(!confirmed && "Nova Transação") || "Revisão da Transação"}
+          <AlertDialogTitle className="text-2xl flex items-center justify-between">
+            <span>
+              {(!confirmed && "Nova Transação") || "Revisão da Transação"}
+            </span>
+            {confirmed && (
+              <Button
+                title="Editar Transação"
+                onClick={() => setConfirmed(false)}
+                variant="ghost"
+                size="icon"
+              >
+                <Pencil className="w-4 h-4" />
+              </Button>
+            )}
           </AlertDialogTitle>
           <Separator />
           <AlertDialogDescription>

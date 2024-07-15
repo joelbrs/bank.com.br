@@ -7,28 +7,60 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@repo/ui/components";
+import { graphql } from "relay-runtime";
+import { useLazyLoadQuery } from "react-relay";
+import { chartTransactionsMetricsQuery } from "../../../../__generated__/chartTransactionsMetricsQuery.graphql";
 
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
+const metricsQuery = graphql`
+  query chartTransactionsMetricsQuery {
+    metrics {
+      _id
+      sent
+      received
+    }
+  }
+`;
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  received: {
+    label: "Recebidas",
     color: "#00EDA3",
   },
-  mobile: {
-    label: "Mobile",
+  sent: {
+    label: "Enviadas",
     color: "rgb(80% 22% 22%)",
   },
 } satisfies ChartConfig;
 
 export function ChartTransactions(): JSX.Element {
+  const { metrics } = useLazyLoadQuery<chartTransactionsMetricsQuery>(
+    metricsQuery,
+    {}
+  );
+
+  const mapMonths = () => {
+    const months = [
+      "Jan",
+      "Fev",
+      "Mar",
+      "Abr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Set",
+      "Out",
+      "Nov",
+      "Dez",
+    ];
+
+    return metrics?.map((item, i) => ({ ...item, _id: months[i] }));
+  };
+
+  if (!metrics) {
+    return <></>;
+  }
+
   return (
     <>
       <h1 className="text-muted-foreground mb-3 ml-2">
@@ -37,7 +69,7 @@ export function ChartTransactions(): JSX.Element {
       <ChartContainer config={chartConfig}>
         <AreaChart
           accessibilityLayer
-          data={chartData}
+          data={mapMonths()}
           margin={{
             left: 12,
             right: 12,
@@ -45,7 +77,7 @@ export function ChartTransactions(): JSX.Element {
         >
           <CartesianGrid vertical={false} />
           <XAxis
-            dataKey="month"
+            dataKey="_id"
             tickLine={false}
             axisLine={false}
             tickMargin={8}
@@ -56,19 +88,19 @@ export function ChartTransactions(): JSX.Element {
             content={<ChartTooltipContent indicator="dot" />}
           />
           <Area
-            dataKey="mobile"
+            dataKey="sent"
             type="natural"
-            fill="var(--color-mobile)"
+            fill="var(--color-sent)"
             fillOpacity={0.4}
-            stroke="var(--color-mobile)"
+            stroke="var(--color-sent)"
             stackId="a"
           />
           <Area
-            dataKey="desktop"
+            dataKey="received"
             type="natural"
-            fill="var(--color-desktop)"
+            fill="var(--color-received)"
             fillOpacity={0.4}
-            stroke="var(--color-desktop)"
+            stroke="var(--color-received)"
             stackId="a"
           />
           <ChartLegend content={<ChartLegendContent />} />
