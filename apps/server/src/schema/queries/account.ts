@@ -1,5 +1,8 @@
-import { EntityNotFoundException, UnauthorizedException } from "@/exceptions";
-import { Account, AccountLoader, AccountModel } from "@/modules/account";
+import {
+  EntityNotFoundException,
+  UnauthorizedException,
+} from "../../exceptions";
+import { Account, AccountLoader, AccountModel } from "../../modules/account";
 import { isValidObjectId } from "mongoose";
 
 type Filters = {

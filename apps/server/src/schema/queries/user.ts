@@ -1,5 +1,5 @@
-import { UnauthorizedException } from "@/exceptions";
-import { UserLoader } from "@/modules/user";
+import { UnauthorizedException } from "../../exceptions";
+import { UserLoader } from "../../modules/user";
 import { isValidObjectId } from "mongoose";
 
 export const getUser = async (ctx: any) => {
