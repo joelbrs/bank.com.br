@@ -28,6 +28,7 @@ import { ResumeTransaction } from "../cards/resume-transaction";
 import { v7 as uuid } from "uuid";
 import { fetchMutation } from "../../../../relay";
 import { Pencil } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type SchemaType = z.infer<typeof schema>;
 
@@ -72,6 +73,8 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
   const [isLoading, setLoading] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
 
+  const navigate = useNavigate();
+
   const [queryReference, loadQuery] =
     useQueryLoader<createTransactionModalQuery>(DetailAccount);
 
@@ -97,6 +100,7 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
         setOpen(false);
         setConfirmed(false);
         setLoading(false);
+        navigate(0);
       },
       onError: () => {
         setLoading(false);
