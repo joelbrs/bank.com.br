@@ -47,6 +47,16 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
         userTaxId: user?.taxId,
       }).session(session);
 
+      if (receiverAccountNumber === senderAccount?.accountNumber?.toString()) {
+        throw new BusinessRuleException(
+          "Não é possível realizar transações entre a mesma conta."
+        );
+      }
+
+      if (+value === 0) {
+        throw new BusinessRuleException("Valor inválido.");
+      }
+
       if (!senderAccount?.sufficientFunds(value)) {
         throw new BusinessRuleException(
           "Saldo insuficiente para efetuar a transação."
