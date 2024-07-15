@@ -90,7 +90,7 @@ export function RecentTransactions(props: Props): JSX.Element {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {transactions?.edges?.map(({ node }) => (
+              {transactions?.edges?.map(({ node }: any) => (
                 <TableRow
                   className={
                     isSelected(node?._id)
