@@ -1,6 +1,7 @@
 import {
   BusinessRuleException,
   EntityNotFoundException,
+  UnauthorizedException,
 } from "../../../exceptions";
 import { AccountModel } from "../../account";
 import { GraphQLNonNull, GraphQLString } from "graphql";
@@ -34,6 +35,10 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
     try {
       const { idempotentKey, user } = await ctx;
 
+      if (!user) {
+        throw new UnauthorizedException();
+      }
+
       if (!idempotentKey) {
         throw new BusinessRuleException("A chave de idempotência é inválida.");
       }
@@ -41,6 +46,16 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
       const senderAccount = await AccountModel.findOne({
         userTaxId: user?.taxId,
       }).session(session);
+
+      if (receiverAccountNumber === senderAccount?.accountNumber?.toString()) {
+        throw new BusinessRuleException(
+          "Não é possível realizar transações entre a mesma conta."
+        );
+      }
+
+      if (+value === 0) {
+        throw new BusinessRuleException("Valor inválido.");
+      }
 
       if (!senderAccount?.sufficientFunds(value)) {
         throw new BusinessRuleException(
