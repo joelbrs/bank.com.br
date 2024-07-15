@@ -1,18 +1,12 @@
 import { nodeField, nodesField } from "../modules/node";
-import { UserLoader, UserModel, UserType } from "../modules/user";
+import { UserType } from "../modules/user";
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { connectionArgs, globalIdField } from "graphql-relay";
-import { isValidObjectId } from "mongoose";
-import { EntityNotFoundException, UnauthorizedException } from "../exceptions";
 import { AccountType } from "../modules/account/account-type";
-import { Account, AccountModel } from "../modules/account";
-import { AccountLoader } from "../modules/account/account-loader";
-import {
-  TransactionConnection,
-  TransactionLoader,
-  TransactionType,
-} from "../modules/transaction";
-import { withFilter } from "@entria/graphql-mongo-helpers";
+import { TransactionConnection, TransactionType } from "../modules/transaction";
+import { getUser } from "./queries/user";
+import { getAccount } from "./queries/account";
+import { getTransactionById, getUserTransactions } from "./queries/transaction";
 
 export const Query = new GraphQLObjectType({
   name: "Query",
@@ -30,18 +24,9 @@ export const Query = new GraphQLObjectType({
       args: {
         ...connectionArgs,
       },
-      resolve: async (_, __, ctx: any) => {
-        const userId = ctx.user?._id;
+      resolve: async (_, __, ctx) => {
+        const user = await getUser(ctx);
 
-        if (!isValidObjectId(userId)) {
-          throw new UnauthorizedException();
-        }
-
-        const user = await UserLoader.load(ctx, userId?.toString());
-
-        if (!user) {
-          throw new UnauthorizedException();
-        }
         return user;
       },
     },
@@ -53,34 +38,9 @@ export const Query = new GraphQLObjectType({
         },
         ...connectionArgs,
       },
-      resolve: async (_, args, ctx: any) => {
-        if (!ctx.user) {
-          throw new UnauthorizedException();
-        }
-
-        const { _id, taxId } = ctx.user;
-
-        if (!isValidObjectId(_id)) {
-          throw new UnauthorizedException();
-        }
-
-        let account: Account | null;
-
-        if (args.accountNumber) {
-          account = await AccountModel.findOne({
-            accountNumber: args.accountNumber,
-          });
-        } else {
-          account = await AccountModel.findOne({
-            userTaxId: taxId,
-          });
-        }
-
-        if (!account) {
-          throw new EntityNotFoundException("Conta");
-        }
-
-        return await AccountLoader.load(ctx, account._id as string);
+      resolve: async (_, args, ctx) => {
+        const account = await getAccount(ctx, args);
+        return account;
       },
     },
     transactions: {
@@ -88,28 +48,9 @@ export const Query = new GraphQLObjectType({
       args: {
         ...connectionArgs,
       },
-      resolve: async (_, _args, ctx: any) => {
-        if (!ctx.user) {
-          throw new UnauthorizedException();
-        }
-
-        const { _id } = ctx.user;
-
-        if (!isValidObjectId(_id)) {
-          throw new UnauthorizedException();
-        }
-
-        const user = await UserModel.findById(_id);
-
-        const userAccount = await AccountModel.findOne({
-          userTaxId: user?.taxId,
-        });
-
-        const transactionsArgs = withFilter(_args, {
-          senderAccountId: userAccount?._id,
-        });
-
-        return await TransactionLoader.loadAll(ctx, transactionsArgs);
+      resolve: async (_, _args, ctx) => {
+        const transactions = await getUserTransactions(ctx, _args);
+        return transactions;
       },
     },
     transaction: {
@@ -119,21 +60,8 @@ export const Query = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLString),
         },
       },
-      resolve: async (_, args, ctx: any) => {
-        if (!ctx.user) {
-          throw new UnauthorizedException();
-        }
-
-        const { _id } = ctx.user;
-
-        if (!isValidObjectId(_id)) {
-          throw new UnauthorizedException();
-        }
-
-        const transaction = await TransactionLoader.load(
-          ctx,
-          args?._id as string
-        );
+      resolve: async (_, args, ctx) => {
+        const transaction = await getTransactionById(ctx, args?._id as string);
         return transaction;
       },
     },
