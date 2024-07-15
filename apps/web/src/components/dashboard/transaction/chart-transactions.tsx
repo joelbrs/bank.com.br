@@ -35,7 +35,10 @@ const chartConfig = {
 export function ChartTransactions(): JSX.Element {
   const { metrics } = useLazyLoadQuery<chartTransactionsMetricsQuery>(
     metricsQuery,
-    {}
+    {},
+    {
+      fetchPolicy: "network-only",
+    }
   );
 
   const mapMonths = () => {

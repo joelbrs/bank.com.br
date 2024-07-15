@@ -29,7 +29,13 @@ export function DashboardLayout(): JSX.Element | null {
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
-  const data = useLazyLoadQuery<dashboardQuery>(UserQuery, {});
+  const data = useLazyLoadQuery<dashboardQuery>(
+    UserQuery,
+    {},
+    {
+      fetchPolicy: "network-only",
+    }
+  );
 
   const [request] = useMutation(ValidateLinkMutation);
 
