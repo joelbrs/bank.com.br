@@ -9,6 +9,10 @@ type Props<T> = {
   onError?: () => void;
 };
 
+type DefaultMutationResponse = {
+  message?: string;
+};
+
 export const fetchMutation = <T>({
   request,
   variables,
@@ -41,8 +45,11 @@ export const fetchMutation = <T>({
         }
         return;
       }
+
+      const { message } = response as DefaultMutationResponse;
+
       toast.success("Sucesso!", {
-        description: "Operação realizada com sucesso!",
+        description: message || "Operação realizada com sucesso.",
         duration: 1500,
       });
 
