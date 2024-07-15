@@ -1,6 +1,7 @@
 import {
   BusinessRuleException,
   EntityNotFoundException,
+  UnauthorizedException,
 } from "../../../exceptions";
 import { AccountModel } from "../../account";
 import { GraphQLNonNull, GraphQLString } from "graphql";
@@ -33,6 +34,10 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
 
     try {
       const { idempotentKey, user } = await ctx;
+
+      if (!user) {
+        throw new UnauthorizedException();
+      }
 
       if (!idempotentKey) {
         throw new BusinessRuleException("A chave de idempotência é inválida.");

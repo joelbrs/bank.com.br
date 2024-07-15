@@ -51,6 +51,10 @@ export const Query = new GraphQLObjectType({
         ...connectionArgs,
       },
       resolve: async (_, __, ctx: any) => {
+        if (!user) {
+          throw new UnauthorizedException();
+        }
+
         const { _id, taxId } = ctx.user;
 
         if (!isValidObjectId(_id)) {
@@ -74,6 +78,10 @@ export const Query = new GraphQLObjectType({
         ...connectionArgs,
       },
       resolve: async (_, _args, ctx: any) => {
+        if (!ctx.user) {
+          throw new UnauthorizedException();
+        }
+
         const { _id } = ctx.user;
 
         if (!isValidObjectId(_id)) {
@@ -101,6 +109,10 @@ export const Query = new GraphQLObjectType({
         },
       },
       resolve: async (_, args, ctx: any) => {
+        if (!ctx.user) {
+          throw new UnauthorizedException();
+        }
+
         const { _id } = ctx.user;
 
         if (!isValidObjectId(_id)) {
