@@ -8,16 +8,25 @@ import {
   Input,
   Label,
 } from "@repo/ui/components";
-import { Link } from "react-router-dom";
-import { InputPassword } from "../../components";
+import { Link, useNavigate } from "react-router-dom";
+import { BtnLoading, InputPassword } from "../../components";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { graphql } from "relay-runtime";
 import { useMutation } from "react-relay";
 import { fetchMutation } from "../../relay";
+import { useCallback, useState } from "react";
 
 type SchemaType = z.infer<typeof schema>;
+
+const mutation = graphql`
+  mutation passwordSignInPageMutation($taxId: String!, $password: String!) {
+    LoginPasswordAccess(input: { taxId: $taxId, password: $password }) {
+      userId
+    }
+  }
+`;
 
 const schema = z.object({
   taxId: z.string().min(11),
@@ -25,6 +34,9 @@ const schema = z.object({
 });
 
 export function PasswordSignInPage(): JSX.Element {
+  const navigate = useNavigate();
+  const [isLoading, setLoading] = useState(false);
+
   const form = useForm<SchemaType>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -33,19 +45,24 @@ export function PasswordSignInPage(): JSX.Element {
     },
   });
 
-  const mutation = graphql`
-    mutation passwordSignInPageMutation($taxId: String!, $password: String!) {
-      LoginPasswordAccess(input: { taxId: $taxId, password: $password }) {
-        userId
-      }
-    }
-  `;
-
   const [request] = useMutation(mutation);
 
-  const onSubmit = (variables: SchemaType) => {
-    fetchMutation({ request, variables });
-  };
+  const onSubmit = useCallback(
+    (variables: SchemaType) => {
+      fetchMutation({
+        request,
+        variables,
+        onCompleted: () => {
+          setLoading(false);
+          navigate("/dashboard");
+        },
+        onError: () => {
+          setLoading(false);
+        },
+      });
+    },
+    [request, navigate]
+  );
 
   return (
     <div className="space-y-10">
@@ -104,9 +121,11 @@ export function PasswordSignInPage(): JSX.Element {
           </Link>
 
           <div className="flex items-center justify-center mt-5">
-            <Button type="submit" className="w-full">
-              Acessar Painel
-            </Button>
+            <BtnLoading
+              type="submit"
+              placeholder="Acessar Painel"
+              isLoading={isLoading}
+            />
           </div>
         </form>
       </Form>

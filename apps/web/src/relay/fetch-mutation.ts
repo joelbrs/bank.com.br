@@ -3,7 +3,7 @@ import { MutationParameters } from "relay-runtime";
 import { toast } from "sonner";
 
 type Props<T> = {
-  variables: Object;
+  variables: object;
   request: (_: UseMutationConfig<MutationParameters>) => void;
   onCompleted?: (_: T) => void;
   onError?: () => void;
@@ -23,6 +23,9 @@ export const fetchMutation = <T>({
           "Verifique sua conexão com a internet e tente novamente mais tarde.",
         duration: 1500,
       });
+      if (onError) {
+        onError();
+      }
     },
     onCompleted: (response, errors) => {
       if (errors?.length) {

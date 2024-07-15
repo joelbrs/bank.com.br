@@ -8,7 +8,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "relay": "pnpm update:schema && relay-compiler",
-    "update:schema": "cd ../server && pnpm update:schema && cp ./schema/schema.graphql ../web/data/schema.graphql"
+    "update:schema": "cd ../server && pnpm update:schema && @powershell copy ./schema/schema.graphql ../web/data/schema.graphql"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -22,6 +22,7 @@
     "react-router-dom": "^6.24.1",
     "recharts": "^2.12.7",
     "sonner": "^1.5.0",
+    "uuid": "^10.0.0",
     "vite-plugin-relay": "^2.1.0",
     "zod": "^3.23.8"
   },
@@ -33,6 +34,7 @@
     "@types/react-relay": "^16.0.6",
     "@types/react-router-dom": "^5.3.3",
     "@types/relay-runtime": "^17.0.1",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
     "@vitejs/plugin-react": "^4.3.1",

@@ -1,86 +1,114 @@
+import { RecentTransactions } from "../../components/dashboard/transaction/cards/recent-transactions";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-  } from "@repo/ui/components";
-import { Activity, DollarSign } from "lucide-react";
-import { RecentTransactions } from "./recent-transactions";
-import { ChartTransactions } from "./chart-transactions";
-import { useAuth } from "../../context/auth-context";
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+  graphql,
+  useFragment,
+  useLazyLoadQuery,
+  useQueryLoader,
+} from "react-relay";
+import { dashboardAccount_account$key } from "../../../__generated__/dashboardAccount_account.graphql";
+import { RecentTransactionsQuery } from "../../../__generated__/RecentTransactionsQuery.graphql";
+import { DetailTransaction } from "../../components/dashboard/transaction/cards/detail-transaction";
+import {
+  AccountNumberCard,
+  BalanceCard,
+  ChartTransactions,
+  DashboardNavigation,
+  LoadingSpinner,
+  NewTransactionsCard,
+  TransactionNotFound,
+} from "../../components";
+import { Suspense } from "react";
+import { dashboardDetailTransactionQuery } from "../../../__generated__/dashboardDetailTransactionQuery.graphql";
 
-export function DashboardPage(): JSX.Element {
-    const { user, getUser } = useAuth()
-    const navigate = useNavigate()
+type Props = {
+  account?: dashboardAccount_account$key | null;
+};
 
-    useEffect(() => {
-        getUser({
-          onError: () => {
-            navigate('/sign-in')
-          }
-        })
-    }, [])
-
-    return (
-      <main className="flex flex-col items-start justify-center px-8 p-6 gap-5">
-        <div className="flex items-center gap-2">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight">Bem-vindo, {user?.account?.owner.fullName?.split(" ")[0]}!</h1>
-            <h3 className="text-lg font-bold tracking-tight">
-              Este é o acesso ao seu Dashboard
-            </h3>
-          </div>
-          {/* <Loader2 className="w-5 h-5 animate-spin" /> */}
-        </div>
-  
-        <div className="flex items-start justify-center w-full gap-2 sm:flex-nowrap flex-wrap">
-          <div className="w-full">
-            <div className="flex items-center justify-center gap-2 w-full">
-              <Card className="w-full">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Número da Conta
-                  </CardTitle>
-                  <Activity className="h-4 w-4 text-muted-foreground hidden sm:block" />
-                </CardHeader>
-  
-                <CardContent>
-                  <div className="text-2xl font-bold">{user?.account?.accountNumber}</div>
-                </CardContent>
-              </Card>
-  
-              <Card className="w-full">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Saldo Atual
-                  </CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-  
-                <CardContent>
-                  <div className="text-2xl font-bold">${Number(user?.account?.balance).toFixed(2)}</div>
-                </CardContent>
-              </Card>
-            </div>
-            <div>
-              <ChartTransactions />
-            </div>
-          </div>
-          <Card className="w-full">
-            <CardHeader>
-              <CardTitle>Transações Recentes</CardTitle>
-              <CardDescription>
-                Você realizou 249 transações no último mês.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RecentTransactions />
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    );
+const TransactionPage = graphql`
+  query dashboardDetailTransactionQuery($_id: String!) {
+    transaction(_id: $_id) {
+      _id
+      value
+      receiver {
+        accountNumber
+        owner {
+          fullName
+          email
+        }
+      }
+    }
   }
+`;
+
+export function DashboardPage(props: Props): JSX.Element {
+  const account = useFragment<dashboardAccount_account$key>(
+    graphql`
+      fragment dashboardAccount_account on Account {
+        balance
+        accountNumber
+        owner {
+          fullName
+          taxId
+          email
+        }
+      }
+    `,
+    props.account
+  );
+
+  const recentTransactionsQuery = useLazyLoadQuery<RecentTransactionsQuery>(
+    graphql`
+      query dashboardRecentTransactionsQuery {
+        ...recentTransactions_query
+      }
+    `,
+    {}
+  );
+
+  const [queryReference, loadQuery] =
+    useQueryLoader<dashboardDetailTransactionQuery>(TransactionPage);
+
+  return (
+    <main className="flex flex-col items-start justify-center px-8 p-6 gap-2">
+      <DashboardNavigation />
+
+      <section className="flex items-center gap-2">
+        <div>
+          <h1 className="text-4xl font-bold tracking-tight">
+            Bem-vindo (a), {account?.owner.fullName?.split(" ")[0]}!
+          </h1>
+          <h3 className="text-lg font-bold tracking-tight">
+            Este é o acesso ao seu Dashboard
+          </h3>
+        </div>
+      </section>
+
+      <section className="flex items-start justify-center gap-2 mt-5 flex-wrap sm:flex-nowrap w-full">
+        <div className="w-full space-y-3">
+          <div className="sm:grid sm:grid-cols-4 gap-3.5 space-y-5 sm:space-y-0 w-full">
+            <NewTransactionsCard />
+            <AccountNumberCard accountNumber={account?.accountNumber} />
+            <BalanceCard balance={account?.balance} />
+          </div>
+          <div className="flex items-center gap-2">
+            <RecentTransactions
+              query={recentTransactionsQuery}
+              onSelectRow={($event: string) => loadQuery({ _id: $event })}
+            />
+          </div>
+        </div>
+        <div className="sm:w-[40vw] w-full space-y-5">
+          {(queryReference && (
+            <Suspense fallback={<LoadingSpinner />}>
+              <DetailTransaction
+                queryReference={queryReference}
+                query={TransactionPage}
+              />
+            </Suspense>
+          )) || <TransactionNotFound />}
+          <ChartTransactions />
+        </div>
+      </section>
+    </main>
+  );
+}

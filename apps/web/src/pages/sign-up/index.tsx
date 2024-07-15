@@ -9,14 +9,39 @@ import {
   Label,
 } from "@repo/ui/components";
 import { Link } from "react-router-dom";
-import { InputPassword } from "../../components";
+import { BtnLoading, InputPassword } from "../../components";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { graphql, useMutation } from "react-relay";
 import { fetchMutation } from "../../relay";
+import { useCallback, useState } from "react";
 
 type SchemaType = z.infer<typeof schema>;
+
+const mutation = graphql`
+  mutation signUpPageMutation(
+    $fullName: String!
+    $email: String!
+    $password: String!
+    $passwordConfirmation: String!
+    $taxId: String!
+  ) {
+    RegisterUser(
+      input: {
+        fullName: $fullName
+        email: $email
+        password: $password
+        passwordConfirmation: $passwordConfirmation
+        taxId: $taxId
+      }
+    ) {
+      user {
+        _id
+      }
+    }
+  }
+`;
 
 const schema = z
   .object({
@@ -32,6 +57,8 @@ const schema = z
   });
 
 export function SignUpPage(): JSX.Element {
+  const [isLoading, setLoading] = useState(false);
+
   const form = useForm<SchemaType>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -43,35 +70,24 @@ export function SignUpPage(): JSX.Element {
     },
   });
 
-  const mutation = graphql`
-    mutation signUpPageMutation(
-      $fullName: String!
-      $email: String!
-      $password: String!
-      $passwordConfirmation: String!
-      $taxId: String!
-    ) {
-      RegisterUser(
-        input: {
-          fullName: $fullName
-          email: $email
-          password: $password
-          passwordConfirmation: $passwordConfirmation
-          taxId: $taxId
-        }
-      ) {
-        user {
-          _id
-        }
-      }
-    }
-  `;
-
   const [request] = useMutation(mutation);
 
-  const onSubmit = (variables: SchemaType) => {
-    fetchMutation({ request, variables });
-  };
+  const onSubmit = useCallback(
+    (variables: SchemaType) => {
+      fetchMutation({
+        request,
+        variables,
+        onCompleted: () => {
+          form.reset();
+          setLoading(false);
+        },
+        onError: () => {
+          setLoading(false);
+        },
+      });
+    },
+    [request, form]
+  );
 
   return (
     <div className="lg:p-8 space-y-10">
@@ -177,9 +193,11 @@ export function SignUpPage(): JSX.Element {
               />
             </div>
 
-            <Button type="submit" className="w-full">
-              Finalizar cadastro
-            </Button>
+            <BtnLoading
+              type="submit"
+              placeholder="Finalizar Cadastro"
+              isLoading={isLoading}
+            />
           </form>
         </Form>
 

@@ -15,14 +15,26 @@ import { z } from "zod";
 import { graphql } from "relay-runtime";
 import { useMutation } from "react-relay";
 import { fetchMutation } from "../../relay";
+import { useCallback, useState } from "react";
+import { BtnLoading } from "../../components";
 
 type SchemaType = z.infer<typeof schema>;
+
+const mutation = graphql`
+  mutation emailSignInPageMutation($email: String!) {
+    LoginEmailAccess(input: { email: $email }) {
+      message
+    }
+  }
+`;
 
 const schema = z.object({
   email: z.string().email(),
 });
 
 export function EmailSignInPage(): JSX.Element {
+  const [isLoading, setLoading] = useState(false);
+
   const form = useForm<SchemaType>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -30,19 +42,24 @@ export function EmailSignInPage(): JSX.Element {
     },
   });
 
-  const mutation = graphql`
-    mutation emailSignInPageMutation($email: String!) {
-      LoginEmailAccess(input: { email: $email }) {
-        message
-      }
-    }
-  `;
-
   const [request] = useMutation(mutation);
 
-  const onSubmit = (variables: SchemaType) => {
-    fetchMutation({ request, variables });
-  };
+  const onSubmit = useCallback(
+    (variables: SchemaType) => {
+      setLoading(true);
+      fetchMutation({
+        request,
+        variables,
+        onCompleted: () => {
+          setLoading(false);
+        },
+        onError: () => {
+          setLoading(false);
+        },
+      });
+    },
+    [request]
+  );
 
   return (
     <div className="space-y-10">
@@ -86,9 +103,11 @@ export function EmailSignInPage(): JSX.Element {
           </Link>
 
           <div className="flex items-center justify-center mt-5">
-            <Button type="submit" className="w-full">
-              Acessar Painel
-            </Button>
+            <BtnLoading
+              type="submit"
+              placeholder="Acessar Painel"
+              isLoading={isLoading}
+            />
           </div>
         </form>
       </Form>
