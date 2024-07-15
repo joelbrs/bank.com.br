@@ -68,7 +68,7 @@ export const RegisterUserMutation = mutationWithClientMutationId({
 
     return {
       user,
-      success:
+      message:
         "Operação realizada com sucesso! Verifique seu e-mail para confirmar a criação da sua conta.",
     };
   },
@@ -76,6 +76,11 @@ export const RegisterUserMutation = mutationWithClientMutationId({
     user: {
       type: UserType,
       resolve: async (payload) => (await payload)?.user,
+      ...successField,
+    },
+    message: {
+      type: GraphQLString,
+      resolve: async (payload) => (await payload)?.message,
       ...successField,
     },
   },
