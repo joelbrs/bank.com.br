@@ -57,6 +57,7 @@ type Query {
     last: Int
   ): TransactionConnectionConnection
   transaction(_id: String!): Transaction
+  metrics: [Metrics]
 }
 
 """An object with an ID"""
@@ -191,6 +192,23 @@ type Transaction {
 
   """Represents transaction's sender"""
   receiver: Account!
+  createdAt: String
+  updatedAt: String
+}
+
+"""Metrics object that represents transactions metrics of an account"""
+type Metrics {
+  """Represents metric's month"""
+  _id: Int!
+
+  """Represents metric's sum per month"""
+  total: Int!
+
+  """Represents metric's sent per month"""
+  sent: Int!
+
+  """Represents metric's received per month"""
+  received: Int!
 }
 
 """Root mutations"""
