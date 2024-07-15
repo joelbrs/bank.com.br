@@ -2,7 +2,10 @@ import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { Transaction } from "./transaction-model";
 import { AccountType } from "../account/account-type";
 import { AccountModel } from "../account";
-import { connectionDefinitions } from "@entria/graphql-mongo-helpers";
+import {
+  connectionDefinitions,
+  timestampResolver,
+} from "@entria/graphql-mongo-helpers";
 import { Load, registerTypeLoader } from "../node";
 import { AccountLoader } from "../account/account-loader";
 
@@ -35,6 +38,7 @@ export const TransactionType = new GraphQLObjectType<Transaction>({
         return account;
       },
     },
+    ...timestampResolver,
   }),
 });
 
