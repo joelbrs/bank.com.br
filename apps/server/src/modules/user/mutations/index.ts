@@ -3,6 +3,7 @@ import { ConfirmUserMutation as ConfirmUser } from "./confirm-user";
 import { LoginPasswordAccessMutation as LoginPasswordAccess } from "./login-password-access";
 import { LoginEmailAccessMutation as LoginEmailAccess } from "./login-email-access";
 import { ValidateAuthenticationLinkMutation as ValidateAuthenticationLink } from "./validate-authentication-link";
+import { LogoutUserMutation as LogoutUser } from "./logout-user";
 
 export const UserMutations = {
   RegisterUser,
@@ -10,4 +11,5 @@ export const UserMutations = {
   LoginPasswordAccess,
   LoginEmailAccess,
   ValidateAuthenticationLink,
+  LogoutUser,
 };
