@@ -200,11 +200,13 @@ type Mutation {
   LoginPasswordAccess(input: LoginPasswordAccessInput!): LoginPasswordAccessPayload
   LoginEmailAccess(input: LoginEmailAccessInput!): LoginEmailAccessPayload
   ValidateAuthenticationLink(input: ValidateAuthenticationLinkInput!): ValidateAuthenticationLinkPayload
+  LogoutUser(input: LogoutInput!): LogoutPayload
   CreateTransaction(input: CreateTransactionInput!): CreateTransactionPayload
 }
 
 type RegisterUserPayload {
   user: User
+  message: String
   clientMutationId: String
 }
 
@@ -257,6 +259,15 @@ type ValidateAuthenticationLinkPayload {
 input ValidateAuthenticationLinkInput {
   code: String!
   redirect: String!
+  clientMutationId: String
+}
+
+type LogoutPayload {
+  message: String
+  clientMutationId: String
+}
+
+input LogoutInput {
   clientMutationId: String
 }
 
