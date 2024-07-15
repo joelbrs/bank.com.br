@@ -10,8 +10,8 @@ import {
   PreloadedQuery,
   usePreloadedQuery,
 } from "react-relay";
-import { dashboardDetailTransactionQuery } from "../../../../__generated__/dashboardDetailTransactionQuery.graphql";
-import { InfoTransaction } from "./info-transactions";
+import { dashboardDetailTransactionQuery } from "../../../../../__generated__/dashboardDetailTransactionQuery.graphql";
+import { InfoTransaction } from "../info-transactions";
 
 type Props = {
   queryReference: PreloadedQuery<dashboardDetailTransactionQuery>;

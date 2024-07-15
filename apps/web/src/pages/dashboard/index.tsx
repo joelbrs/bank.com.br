@@ -1,4 +1,4 @@
-import { RecentTransactions } from "../../components/dashboard/transaction/recent-transactions";
+import { RecentTransactions } from "../../components/dashboard/transaction/cards/recent-transactions";
 import {
   graphql,
   useFragment,
@@ -7,7 +7,7 @@ import {
 } from "react-relay";
 import { dashboardAccount_account$key } from "../../../__generated__/dashboardAccount_account.graphql";
 import { RecentTransactionsQuery } from "../../../__generated__/RecentTransactionsQuery.graphql";
-import { DetailTransaction } from "../../components/dashboard/transaction/detail-transaction";
+import { DetailTransaction } from "../../components/dashboard/transaction/cards/detail-transaction";
 import {
   AccountNumberCard,
   BalanceCard,
@@ -15,6 +15,7 @@ import {
   DashboardNavigation,
   LoadingSpinner,
   NewTransactionsCard,
+  TransactionNotFound,
 } from "../../components";
 import { Suspense } from "react";
 import { dashboardDetailTransactionQuery } from "../../../__generated__/dashboardDetailTransactionQuery.graphql";
@@ -48,6 +49,7 @@ export function DashboardPage(props: Props): JSX.Element {
         owner {
           fullName
           taxId
+          email
         }
       }
     `,
@@ -73,7 +75,7 @@ export function DashboardPage(props: Props): JSX.Element {
       <section className="flex items-center gap-2">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">
-            Bem-vindo, {account?.owner.fullName?.split(" ")[0]}!
+            Bem-vindo (a), {account?.owner.fullName?.split(" ")[0]}!
           </h1>
           <h3 className="text-lg font-bold tracking-tight">
             Este é o acesso ao seu Dashboard
@@ -93,20 +95,19 @@ export function DashboardPage(props: Props): JSX.Element {
               query={recentTransactionsQuery}
               onSelectRow={($event: string) => loadQuery({ _id: $event })}
             />
-            {/* <ChartTransactions /> */}
           </div>
         </div>
-        {queryReference && (
-          <div className="sm:w-[40vw] w-full space-y-5">
+        <div className="sm:w-[40vw] w-full space-y-5">
+          {(queryReference && (
             <Suspense fallback={<LoadingSpinner />}>
               <DetailTransaction
                 queryReference={queryReference}
                 query={TransactionPage}
               />
-              <ChartTransactions />
             </Suspense>
-          </div>
-        )}
+          )) || <TransactionNotFound />}
+          <ChartTransactions />
+        </div>
       </section>
     </main>
   );

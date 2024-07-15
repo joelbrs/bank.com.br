@@ -3,9 +3,9 @@ import {
   PreloadedQuery,
   usePreloadedQuery,
 } from "react-relay";
-import { createTransactionModalQuery } from "../../../../__generated__/createTransactionModalQuery.graphql";
+import { createTransactionModalQuery } from "../../../../../__generated__/createTransactionModalQuery.graphql";
 import { toast } from "sonner";
-import { InfoTransaction } from "./info-transactions";
+import { InfoTransaction } from "../info-transactions";
 
 type Props = {
   queryReference: PreloadedQuery<createTransactionModalQuery>;

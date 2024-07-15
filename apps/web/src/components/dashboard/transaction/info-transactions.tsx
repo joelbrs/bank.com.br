@@ -26,7 +26,7 @@ export function InfoTransaction({ account, value }: Props): JSX.Element {
         </div>
         <Separator />
       </div>
-      <div className="col-span-3 space-y-2">
+      <div className="col-span-3 space-y-2 mt-2">
         <div className="font-semibold">Informações do Destinatário</div>
         <dl className="grid gap-3">
           <div className="flex items-center justify-between">

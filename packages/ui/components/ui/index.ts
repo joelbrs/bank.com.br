@@ -9,3 +9,4 @@ export * from "./breadcrumb";
 export * from "./separator";
 export * from "./table";
 export * from "./alert-dialog";
+export * from "./dropdown-menu";
