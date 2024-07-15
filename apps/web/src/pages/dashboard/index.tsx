@@ -62,7 +62,10 @@ export function DashboardPage(props: Props): JSX.Element {
         ...recentTransactions_query
       }
     `,
-    {}
+    {},
+    {
+      fetchPolicy: "network-only",
+    }
   );
 
   const [queryReference, loadQuery] =
