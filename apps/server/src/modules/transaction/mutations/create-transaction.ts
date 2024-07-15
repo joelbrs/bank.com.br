@@ -57,7 +57,7 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
         throw new BusinessRuleException("Valor inválido.");
       }
 
-      if (!senderAccount?.sufficientFunds(value)) {
+      if (!(await senderAccount?.sufficientFunds(value))) {
         throw new BusinessRuleException(
           "Saldo insuficiente para efetuar a transação."
         );
@@ -104,7 +104,7 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
       );
 
       const { _id: transactionId } = await new TransactionModel({
-        senderAccountId: senderAccount._id,
+        senderAccountId: senderAccount?._id,
         receiverAccountId: receiverAccount._id,
         value,
         idempotentKey,
