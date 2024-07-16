@@ -1,6 +1,7 @@
 import { Maybe } from "@repo/types/index";
 import mongoose, { Decimal128, Document } from "mongoose";
 import { randomUUID } from "node:crypto";
+import { getBalance } from "./services";
 
 export type Account = {
   accountNumber: string;
@@ -27,10 +28,6 @@ const AccountSchema = new mongoose.Schema<Account>(
       unique: true,
       required: true,
     },
-    balance: {
-      type: mongoose.Schema.Types.Decimal128,
-      default: new mongoose.Types.Decimal128("0.0"),
-    },
   },
   {
     collection: "Account",
@@ -40,18 +37,8 @@ const AccountSchema = new mongoose.Schema<Account>(
 
 AccountSchema.methods = {
   async sufficientFunds(amount: string) {
-    const result = await AccountModel.aggregate([
-      { $match: { userTaxId: this.userTaxId } },
-      {
-        $project: {
-          sufficientFunds: {
-            $gte: ["$balance", mongoose.Types.Decimal128.fromString(amount)],
-          },
-        },
-      },
-    ]);
-
-    return result.length > 0 && result[0].sufficientFunds;
+    const balance = await getBalance(this._id as string);
+    return Number(balance) >= Number(amount);
   },
   generateAccountNumber() {
     const uuid = randomUUID();

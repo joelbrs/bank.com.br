@@ -5,6 +5,7 @@ import { connectionDefinitions } from "graphql-relay";
 import { Load, registerTypeLoader } from "../node";
 import { AccountLoader } from "./account-loader";
 import { timestampResolver } from "@entria/graphql-mongo-helpers";
+import { getBalance } from "./services";
 
 export const AccountType = new GraphQLObjectType<Account>({
   name: "Account",
@@ -25,7 +26,10 @@ export const AccountType = new GraphQLObjectType<Account>({
     balance: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Represents account's balance",
-      resolve: ({ balance }) => `${balance}`,
+      resolve: async ({ _id }) => {
+        const balance = await getBalance(_id as string);
+        return balance?.toString();
+      },
     },
     owner: {
       type: new GraphQLNonNull(UserType),
