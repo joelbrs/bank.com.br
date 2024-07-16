@@ -5,6 +5,7 @@ import { PasswordSignInPage } from "./pages/sign-in/password-sign-in";
 import { SignUpPage } from "./pages/sign-up";
 import { ConfirmationPage } from "./pages/confirmation";
 import { DashboardLayout } from "./layouts/dashboard";
+import { NotFoundPage } from "./pages/not-found";
 
 export const router = createBrowserRouter([
   {
@@ -32,5 +33,9 @@ export const router = createBrowserRouter([
   {
     path: "/confirmation",
     element: <ConfirmationPage />,
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
