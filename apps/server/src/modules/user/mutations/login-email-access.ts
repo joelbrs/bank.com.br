@@ -34,7 +34,7 @@ export const LoginEmailAccessMutation = mutationWithClientMutationId({
     }
 
     const { code } = await sendEmail({
-      linkUri: "/authenticate",
+      linkUri: "/dashboard",
       subject: "[Bank] Link para Login",
       template: UserLoginTemplate,
       to: email,
