@@ -1,7 +1,7 @@
 import { Maybe } from "@repo/types/index";
 import mongoose, { Decimal128, Document } from "mongoose";
 import { randomUUID } from "node:crypto";
-import { getBalance } from "./services";
+import { getBalance } from "./utils";
 
 export type Account = {
   accountNumber: string;
