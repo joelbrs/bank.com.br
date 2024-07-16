@@ -5,7 +5,7 @@ import { connectionDefinitions } from "graphql-relay";
 import { Load, registerTypeLoader } from "../node";
 import { AccountLoader } from "./account-loader";
 import { timestampResolver } from "@entria/graphql-mongo-helpers";
-import { getBalance } from "./services";
+import { getBalance } from "./utils";
 
 export const AccountType = new GraphQLObjectType<Account>({
   name: "Account",

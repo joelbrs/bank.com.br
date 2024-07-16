@@ -1,4 +1,4 @@
-import { TransactionModel } from "../../transaction";
+import { TransactionModel } from "../../transaction/transaction-model";
 
 export const getBalance = async (_id: string) => {
   const result = await TransactionModel.aggregate([
