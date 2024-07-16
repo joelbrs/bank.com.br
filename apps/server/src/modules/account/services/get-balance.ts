@@ -1,4 +1,4 @@
-import { TransactionModel } from "../../transaction";
+import { TransactionModel } from "../../transaction/transaction-model";
 
 export const getBalance = async (_id: string) => {
   const result = await TransactionModel.aggregate([
@@ -13,14 +13,26 @@ export const getBalance = async (_id: string) => {
         balance: {
           $sum: {
             $cond: [
-              { $eq: ["$receiverAccountId", _id] },
+              {
+                $and: [
+                  { $eq: ["$senderAccountId", _id] },
+                  { $eq: ["$receiverAccountId", _id] },
+                ],
+              },
               "$value",
-              { $multiply: ["$value", -1] },
+              {
+                $cond: [
+                  { $eq: ["$receiverAccountId", _id] },
+                  "$value",
+                  { $multiply: ["$value", -1] },
+                ],
+              },
             ],
           },
         },
       },
     },
   ]);
-  return result[0].balance;
+
+  return (result[0]?.balance as number) || 0;
 };

@@ -98,7 +98,7 @@ type Account {
   userTaxId: String!
 
   """Represents account's balance"""
-  balance: Float!
+  balance: String!
 
   """Represents account's owner object"""
   owner: User!
