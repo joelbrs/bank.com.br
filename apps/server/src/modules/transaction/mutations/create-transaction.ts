@@ -83,26 +83,6 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
         };
       }
 
-      await AccountModel.updateOne(
-        {
-          _id: senderAccount?._id,
-        },
-        {
-          $inc: { balance: mongoose.Types.Decimal128.fromString(`-${value}`) },
-        },
-        { session }
-      );
-
-      await AccountModel.updateOne(
-        {
-          _id: receiverAccount?._id,
-        },
-        {
-          $inc: { balance: mongoose.Types.Decimal128.fromString(value) },
-        },
-        { session }
-      );
-
       const { _id: transactionId } = await new TransactionModel({
         senderAccountId: senderAccount?._id,
         receiverAccountId: receiverAccount._id,
