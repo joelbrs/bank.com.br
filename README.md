@@ -88,22 +88,21 @@ Ensure you have the following installed:
 7. **Transaction Metrics**: Displays a graph with the transactions carried out monthly by the user, detailing how many were as a recipient and how many as a sender.
 
  
-### 📷 Screenshots
-   ##### Dashboard Page (without transactions made)
+### 📷 Screenshots (Dashboard)
+   ##### Dashboard without transactions made
 ![image](https://github.com/user-attachments/assets/339986b9-3b7c-49cb-a7b2-5355c37f0315)
 
-   ##### Dashboard Page (with transactions made)
-![image](https://github.com/user-attachments/assets/2ce990a7-9b72-4c5d-87ec-27ea2c68ea00)
+   ##### Dashboard with transactions made
+![image](https://github.com/user-attachments/assets/583a5adf-74e7-4d47-a9d9-1d0cb4cc0226)
 
-   ##### Dashboard Page (with transaction's graph)
-![image](https://github.com/user-attachments/assets/195b0bd1-2f4f-486d-8828-1f5c4ea64dd1)
+   ##### Dashboard with transaction's graph
+![image](https://github.com/user-attachments/assets/b0aae1c2-c273-4e21-b74d-ce6ef6476426)
 
    ##### Create Transaction Modal
-![image](https://github.com/user-attachments/assets/cf57be8c-963f-4ab8-967a-70f176208170)
+![image](https://github.com/user-attachments/assets/802d94ef-6767-4f36-be02-ced7d8dd2f44)
 
    ##### Resume Transaction Modal
-![image](https://github.com/user-attachments/assets/e282f683-958e-4c77-9546-cfbadd6038df)
-
+![image](https://github.com/user-attachments/assets/ac74519c-1f1f-4636-93ea-47f2d9983348)
 
 ## ✒️ Authors
 
