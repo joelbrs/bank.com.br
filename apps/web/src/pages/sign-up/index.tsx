@@ -74,6 +74,7 @@ export function SignUpPage(): JSX.Element {
 
   const onSubmit = useCallback(
     (variables: SchemaType) => {
+      setLoading(true);
       fetchMutation({
         request,
         variables,

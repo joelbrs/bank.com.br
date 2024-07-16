@@ -1,4 +1,6 @@
 import { Separator } from "@repo/ui/components";
+import { ReactNode } from "react";
+import { AccountInfos } from "./account-infos";
 
 type Props = {
   account?: {
@@ -9,9 +11,14 @@ type Props = {
     accountNumber: string;
   };
   value?: string | number;
+  children?: ReactNode;
 };
 
-export function InfoTransaction({ account, value }: Props): JSX.Element {
+export function InfoTransaction({
+  account,
+  value,
+  children,
+}: Props): JSX.Element {
   return (
     <>
       <div className="col-span-3 space-y-3.5">
@@ -26,33 +33,15 @@ export function InfoTransaction({ account, value }: Props): JSX.Element {
         </div>
         <Separator />
       </div>
-      <div className="col-span-3 space-y-2 mt-2">
-        <div className="font-semibold">Informações do Destinatário</div>
-        <dl className="grid gap-3">
-          <div className="flex items-center justify-between">
-            <dt className="text-muted-foreground">Nome Completo</dt>
-            <dd>{account?.owner.fullName}</dd>
-          </div>
-          <div className="flex items-center justify-between">
-            <dt className="text-muted-foreground">E-mail</dt>
-            <dd>
-              <span>{account?.owner.email}</span>
-            </dd>
-          </div>
-          <div className="flex items-center justify-between">
-            <dt className="text-muted-foreground">Número da Conta</dt>
-            <dd>
-              <span>{account?.accountNumber}</span>
-            </dd>
-          </div>
-          <div className="flex items-center justify-between">
-            <dt className="text-muted-foreground">Instituição</dt>
-            <dd>
-              <span>bank.com.br</span>
-            </dd>
-          </div>
-        </dl>
-      </div>
+      {children}
+      <AccountInfos
+        title="Informações do Destinatário"
+        account={{
+          accountNumber: account?.accountNumber,
+          email: account?.owner.email,
+          fullName: account?.owner.fullName,
+        }}
+      />
     </>
   );
 }

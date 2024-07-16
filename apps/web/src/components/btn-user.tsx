@@ -12,6 +12,7 @@ import { dashboardAccount_account$data } from "../../__generated__/dashboardAcco
 import { fetchMutation } from "../relay";
 import { graphql, useMutation } from "react-relay";
 import { useNavigate } from "react-router-dom";
+import { setMaskTaskId } from "../utils";
 
 type Props = {
   account?: dashboardAccount_account$data | null;
@@ -54,7 +55,7 @@ export function BtnUser({ account }: Props): JSX.Element {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="relative right-6 w-56">
         <DropdownMenuLabel className="pb-0">
-          {account?.owner.taxId}
+          {setMaskTaskId(account?.owner.taxId as string)}
         </DropdownMenuLabel>
         <p className="text-xs text-muted-foreground px-2">
           {account?.owner.email}
