@@ -1,5 +1,4 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useCallback } from "react";
 import { fetchMutation } from "../relay";
 import { graphql } from "relay-runtime";
 import { useLazyLoadQuery, useMutation } from "react-relay";
@@ -39,7 +38,7 @@ export function DashboardLayout(): JSX.Element | null {
 
   const [request] = useMutation(ValidateLinkMutation);
 
-  const confirmLink = useCallback(() => {
+  const confirmLink = () => {
     if (!params.size) {
       return navigate("/sign-in");
     }
@@ -59,7 +58,7 @@ export function DashboardLayout(): JSX.Element | null {
         navigate("/sign-in");
       },
     });
-  }, [params, request, navigate]);
+  };
 
   if (data.account) {
     return (

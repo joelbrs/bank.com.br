@@ -4,6 +4,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Separator,
 } from "@repo/ui/components";
 import {
   GraphQLTaggedNode,
@@ -12,6 +13,7 @@ import {
 } from "react-relay";
 import { dashboardDetailTransactionQuery } from "../../../../../__generated__/dashboardDetailTransactionQuery.graphql";
 import { InfoTransaction } from "../info-transactions";
+import { AccountInfos } from "../account-infos";
 
 type Props = {
   queryReference: PreloadedQuery<dashboardDetailTransactionQuery>;
@@ -38,7 +40,19 @@ export function DetailTransaction({
         <InfoTransaction
           account={transaction?.receiver}
           value={transaction?.value}
-        />
+        >
+          <div className="mt-2">
+            <AccountInfos
+              title="Informações do Remetente"
+              account={{
+                accountNumber: transaction?.sender.accountNumber,
+                email: transaction?.sender.owner.email,
+                fullName: transaction?.sender.owner.fullName,
+              }}
+            />
+            <Separator className="mt-2" />
+          </div>
+        </InfoTransaction>
       </CardContent>
     </Card>
   );

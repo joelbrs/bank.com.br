@@ -1,6 +1,6 @@
 import { graphql, useMutation } from "react-relay";
 import { fetchMutation } from "../../relay";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const mutation = graphql`
@@ -17,7 +17,7 @@ export function ConfirmationPage(): JSX.Element {
 
   const [request] = useMutation(mutation);
 
-  const confirmationLink = useCallback(() => {
+  const confirmationLink = () => {
     const variables = {
       code: searchParams.get("code"),
       redirect: searchParams.get("redirect"),
@@ -27,13 +27,13 @@ export function ConfirmationPage(): JSX.Element {
       request,
       variables,
       onCompleted: () => {
-        navigate("/dashboard");
+        navigate("/sign-in");
       },
       onError: () => {
         navigate("/sign-in");
       },
     });
-  }, [navigate, request, searchParams]);
+  };
 
   useEffect(() => {
     confirmationLink();

@@ -47,8 +47,12 @@ export function RecentTransactions(props: Props): JSX.Element {
             node {
               _id
               value
+              sender {
+                owner {
+                  fullName
+                }
+              }
               receiver {
-                accountNumber
                 owner {
                   fullName
                 }
@@ -73,7 +77,8 @@ export function RecentTransactions(props: Props): JSX.Element {
         <CardTitle>Transações Recentes</CardTitle>
         {transactions?.count ? (
           <CardDescription>
-            Você realizou {transactions?.count} transações.
+            Você realizou {transactions?.count}{" "}
+            {transactions?.count > 0 ? "transações" : "transação"}
           </CardDescription>
         ) : (
           <></>
@@ -84,6 +89,7 @@ export function RecentTransactions(props: Props): JSX.Element {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Nome do Remetente</TableHead>
                 <TableHead>Nome do Destinatário</TableHead>
                 <TableHead>Valor ($)</TableHead>
                 <TableHead />
@@ -92,13 +98,16 @@ export function RecentTransactions(props: Props): JSX.Element {
             <TableBody>
               {transactions?.edges?.map(({ node }: any) => (
                 <TableRow
+                  key={node?._id}
                   className={
                     isSelected(node?._id)
-                      ? "bg-muted/50 border-l-4 border-b-0 rounded-l-full border-primary"
+                      ? "bg-muted/50 border-l-4 border-b-0 rounded-l border-primary"
                       : ""
                   }
-                  key={node?._id}
                 >
+                  <TableCell className="font-medium">
+                    {node.sender?.owner.fullName}
+                  </TableCell>
                   <TableCell className="font-medium">
                     {node.receiver?.owner.fullName}
                   </TableCell>

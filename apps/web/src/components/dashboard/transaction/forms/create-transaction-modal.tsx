@@ -19,7 +19,7 @@ import {
 } from "@repo/ui/components";
 import { ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { z } from "../../../../utils";
 import { BtnLoading } from "../../../btn-loading";
 import { graphql } from "relay-runtime";
 import { useMutation, useQueryLoader } from "react-relay";
@@ -86,8 +86,10 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
 
   const handleSubmit = (variables: SchemaType) => {
     if (!confirmed) {
+      setLoading(true);
       createIdempotencyKey();
       loadQuery({ accountNumber: variables?.receiverAccountNumber });
+      setLoading(false);
       return setConfirmed(true);
     }
 
@@ -171,6 +173,7 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
                             <Input
                               id="value"
                               type="number"
+                              step="0.01"
                               placeholder="Valor ($)"
                               {...field}
                             />

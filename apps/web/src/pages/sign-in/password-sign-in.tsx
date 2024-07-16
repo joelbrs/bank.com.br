@@ -10,7 +10,7 @@ import {
 } from "@repo/ui/components";
 import { Link, useNavigate } from "react-router-dom";
 import { BtnLoading, InputPassword } from "../../components";
-import { z } from "zod";
+import { z } from "../../utils";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { graphql } from "relay-runtime";
@@ -49,6 +49,7 @@ export function PasswordSignInPage(): JSX.Element {
 
   const onSubmit = useCallback(
     (variables: SchemaType) => {
+      setLoading(true);
       fetchMutation({
         request,
         variables,
