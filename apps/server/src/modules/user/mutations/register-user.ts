@@ -47,6 +47,17 @@ export const RegisterUserMutation = mutationWithClientMutationId({
       throw new BusinessRuleException("As senhas não são iguais.");
     }
 
+    const [emailExists, taxIdExists] = await Promise.all([
+      UserModel.exists({ email }),
+      UserModel.exists({ taxId }),
+    ]);
+
+    if (emailExists || taxIdExists) {
+      throw new BusinessRuleException(
+        "CPF/CNPJ e/ou E-mail já pertence(m) a uma conta."
+      );
+    }
+
     const user = await new UserModel({
       email,
       fullName,
