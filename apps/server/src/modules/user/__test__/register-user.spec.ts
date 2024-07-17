@@ -6,6 +6,7 @@ import { mongooseDisconnect } from "../../../../test/mongoose-disconnect";
 import { cnpj, cpf } from "cpf-cnpj-validator";
 import { GraphQLError } from "graphql";
 import { RegisterUserInput } from "../mutations/register-user";
+import { createUser } from "../fixture";
 
 interface RegisterMutationResponse {
   RegisterUser: {
@@ -105,5 +106,47 @@ describe("RegisterUserMutation", () => {
 
     const { data } = await fetchResult(variableValues);
     expect(data?.RegisterUser.user?.fullName).toBe("valid_fullname");
+  });
+
+  it("should throw if email already exists", async () => {
+    const user = await createUser();
+
+    const variableValues = {
+      fullName: "valid_fullname",
+      email: user.email,
+      password: "valid_password",
+      passwordConfirmation: "valid_password",
+      taxId: "valid_taxId",
+    };
+
+    jest.spyOn(cpf, "isValid").mockReturnValueOnce(true);
+    jest.spyOn(cnpj, "isValid").mockReturnValueOnce(true);
+
+    const { data, errors } = await fetchResult(variableValues);
+    expect(data?.RegisterUser).toBeNull();
+    expect((errors as GraphQLError[])[0].message)?.toBe(
+      "CPF/CNPJ e/ou E-mail já pertence(m) a uma conta."
+    );
+  });
+
+  it("should throw if taxId already exists", async () => {
+    const user = await createUser();
+
+    const variableValues = {
+      fullName: "valid_fullname",
+      email: "valid_email@mail.com",
+      password: "valid_password",
+      passwordConfirmation: "valid_password",
+      taxId: user.taxId,
+    };
+
+    jest.spyOn(cpf, "isValid").mockReturnValueOnce(true);
+    jest.spyOn(cnpj, "isValid").mockReturnValueOnce(true);
+
+    const { data, errors } = await fetchResult(variableValues);
+    expect(data?.RegisterUser).toBeNull();
+    expect((errors as GraphQLError[])[0].message)?.toBe(
+      "CPF/CNPJ e/ou E-mail já pertence(m) a uma conta."
+    );
   });
 });
