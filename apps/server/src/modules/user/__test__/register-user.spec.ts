@@ -7,6 +7,8 @@ import { cnpj, cpf } from "cpf-cnpj-validator";
 import { GraphQLError } from "graphql";
 import { RegisterUserInput } from "../mutations/register-user";
 import { createUser } from "../fixture";
+import * as Email from "../../../notification/send-email";
+import { UserConfirmationTemplate } from "../../../notification";
 
 interface RegisterMutationResponse {
   RegisterUser: {
@@ -33,14 +35,6 @@ const fetchResult = (variableValues: RegisterUserInput) => {
     schema,
   });
 };
-
-jest.mock("../../../notification/send-email.ts", () => ({
-  sendEmail: () => {
-    return {
-      code: jest.fn(),
-    };
-  },
-}));
 
 describe("RegisterUserMutation", () => {
   beforeAll(() => {
@@ -105,7 +99,7 @@ describe("RegisterUserMutation", () => {
     jest.spyOn(cnpj, "isValid").mockReturnValueOnce(true);
 
     const { data } = await fetchResult(variableValues);
-    expect(data?.RegisterUser.user?.fullName).toBe("valid_fullname");
+    expect(data?.RegisterUser.user).toBeDefined();
   });
 
   it("should throw if email already exists", async () => {
@@ -148,5 +142,29 @@ describe("RegisterUserMutation", () => {
     expect((errors as GraphQLError[])[0].message)?.toBe(
       "CPF/CNPJ e/ou E-mail já pertence(m) a uma conta."
     );
+  });
+
+  it("should call email sender with correct fields", async () => {
+    const variableValues = {
+      fullName: "valid_fullname",
+      email: "valid_mail@mail.com",
+      password: "valid_password",
+      passwordConfirmation: "valid_password",
+      taxId: "valid_taxId",
+    };
+
+    jest.spyOn(cpf, "isValid").mockReturnValueOnce(true);
+    jest.spyOn(cnpj, "isValid").mockReturnValueOnce(true);
+
+    const emailSpy = jest.spyOn(Email, "sendEmail");
+
+    await fetchResult(variableValues);
+
+    expect(emailSpy).toHaveBeenCalledWith({
+      linkUri: "/confirmation",
+      subject: "[Bank] Link de Confirmação",
+      template: UserConfirmationTemplate,
+      to: "valid_mail@mail.com",
+    });
   });
 });

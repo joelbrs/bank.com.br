@@ -4,7 +4,7 @@ import { CreateTransactionInput } from "../mutations/create-transaction";
 import { getGraphqlResult } from "../../../../test/get-graphql-result";
 import { schema } from "../../../schema";
 import { createUser } from "../../../modules/user/fixture";
-import { AccountModel, createAccount } from "../../../modules/account";
+import { createAccount } from "../../../modules/account";
 import { randomUUID } from "crypto";
 import { getContext } from "../../../get-context";
 import { GraphQLError } from "graphql";
