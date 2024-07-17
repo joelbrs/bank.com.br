@@ -16,6 +16,7 @@ import {
   Input,
   Label,
   Separator,
+  Textarea,
 } from "@repo/ui/components";
 import { ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -41,6 +42,7 @@ const schema = z.object({
     .string()
     .min(7, "O número da conta deve ter 7 dígitos."),
   value: z.string(),
+  description: z.string().optional(),
 });
 
 const DetailAccount = graphql`
@@ -59,9 +61,14 @@ const CreateTransaction = graphql`
   mutation createTransactionModalMutation(
     $receiverAccountNumber: String!
     $value: String!
+    $description: String
   ) {
     CreateTransaction(
-      input: { receiverAccountNumber: $receiverAccountNumber, value: $value }
+      input: {
+        receiverAccountNumber: $receiverAccountNumber
+        value: $value
+        description: $description
+      }
     ) {
       transactionId
     }
@@ -182,6 +189,25 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem className="col-span-3">
+                          <Label htmlFor="description">
+                            Descrição (Opcional)
+                          </Label>
+                          <FormControl>
+                            <Textarea
+                              id="description"
+                              maxLength={100}
+                              placeholder="Descrição (Opcional)"
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
                   </>
                 )}
 
@@ -190,6 +216,7 @@ export function CreateTransactionModal({ children }: Props): JSX.Element {
                     query={DetailAccount}
                     queryReference={queryReference}
                     value={form.getValues("value")}
+                    description={form.getValues("description")}
                     onNotFoundAccount={() => setConfirmed(false)}
                   />
                 )}

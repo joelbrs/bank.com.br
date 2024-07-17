@@ -187,6 +187,9 @@ type Transaction {
   """Represents transaction's value"""
   value: String!
 
+  """Represents transaction's description"""
+  description: String
+
   """Represents transaction's sender"""
   sender: Account!
 
@@ -297,5 +300,6 @@ type CreateTransactionPayload {
 input CreateTransactionInput {
   receiverAccountNumber: String!
   value: String!
+  description: String
   clientMutationId: String
 }

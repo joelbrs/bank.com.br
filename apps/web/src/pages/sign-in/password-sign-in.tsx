@@ -49,6 +49,7 @@ export function PasswordSignInPage(): JSX.Element {
 
   const onSubmit = useCallback(
     (variables: SchemaType) => {
+      variables.taxId = variables.taxId?.replace(/[^\d]+/g, "");
       setLoading(true);
       fetchMutation({
         request,

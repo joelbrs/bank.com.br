@@ -10,6 +10,7 @@ type Props = {
     };
     accountNumber: string;
   };
+  description?: string | null;
   value?: string | number;
   children?: ReactNode;
 };
@@ -18,6 +19,7 @@ export function InfoTransaction({
   account,
   value,
   children,
+  description,
 }: Props): JSX.Element {
   return (
     <>
@@ -29,6 +31,15 @@ export function InfoTransaction({
               <span className="text-muted-foreground">Valor</span>
               <span>${Number(value).toFixed(2)}</span>
             </li>
+
+            {description && (
+              <li className="flex items-center justify-between flex-wrap">
+                <span className="text-muted-foreground">Descrição</span>
+                <span className="text-justify text-wrap font-sans">
+                  {description}
+                </span>
+              </li>
+            )}
           </ul>
         </div>
         <Separator />

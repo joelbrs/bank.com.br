@@ -29,6 +29,7 @@ const TransactionPage = graphql`
     transaction(_id: $_id) {
       _id
       value
+      description
       sender {
         accountNumber
         owner {

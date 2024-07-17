@@ -74,6 +74,7 @@ export function SignUpPage(): JSX.Element {
 
   const onSubmit = useCallback(
     (variables: SchemaType) => {
+      variables.taxId = variables.taxId?.replace(/[^\d]+/g, "");
       setLoading(true);
       fetchMutation({
         request,
