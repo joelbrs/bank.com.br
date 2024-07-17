@@ -6,6 +6,8 @@ import { mongooseConnection } from "../../../../test/mongoose-connection";
 import { mongooseDisconnect } from "../../../../test/mongoose-disconnect";
 import { createUser } from "../fixture";
 import { AuthenticationLinkModel } from "../../../modules/authentication-link";
+import * as Email from "../../../notification/send-email";
+import { UserLoginTemplate } from "../../../notification";
 
 interface LoginEmailAccessResponse {
   LoginEmailAccess: {
@@ -28,14 +30,6 @@ const fetchResult = (variableValues: LoginEmailAccessInput) => {
     source: mutation,
   });
 };
-
-jest.mock("../../../notification/send-email.ts", () => ({
-  sendEmail: () => {
-    return {
-      code: "valid-u-u-i-d",
-    };
-  },
-}));
 
 describe("LoginEmailAccessMutation", () => {
   beforeAll(() => {
@@ -74,6 +68,25 @@ describe("LoginEmailAccessMutation", () => {
     );
   });
 
+  it("should call email sender with correct fields", async () => {
+    const { email } = await createUser({ confirmed: true });
+
+    const variableValues: LoginEmailAccessInput = {
+      email,
+    };
+
+    const emailSpy = jest.spyOn(Email, "sendEmail");
+
+    await fetchResult(variableValues);
+
+    expect(emailSpy).toHaveBeenCalledWith({
+      linkUri: "/dashboard",
+      subject: "[Bank] Link para Login",
+      template: UserLoginTemplate,
+      to: email,
+    });
+  });
+
   it("should create an authentication link model document", async () => {
     const { email, taxId } = await createUser({ confirmed: true });
 
@@ -82,6 +95,10 @@ describe("LoginEmailAccessMutation", () => {
     };
 
     const authLinkModelSpy = jest.spyOn(AuthenticationLinkModel, "create");
+
+    jest
+      .spyOn(Email, "sendEmail")
+      .mockReturnValueOnce(Promise.resolve({ code: "valid-u-u-i-d" }));
 
     await fetchResult(variableValues);
 
