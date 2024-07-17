@@ -99,7 +99,7 @@ Ensure you have the following installed:
 ![image](https://github.com/user-attachments/assets/b0aae1c2-c273-4e21-b74d-ce6ef6476426)
 
    ##### Create Transaction Modal
-![image](https://github.com/user-attachments/assets/802d94ef-6767-4f36-be02-ced7d8dd2f44)
+![image](https://github.com/user-attachments/assets/2c2743a8-5513-4378-8765-0ea4ba47266e)
 
    ##### Resume Transaction Modal
 ![image](https://github.com/user-attachments/assets/ac74519c-1f1f-4636-93ea-47f2d9983348)
