@@ -15,6 +15,7 @@ import { User, UserModel } from "../../../modules/user";
 export type CreateTransactionInput = {
   receiverAccountNumber: string;
   value: string;
+  description?: string;
 };
 
 export const CreateTransactionMutation = mutationWithClientMutationId({
@@ -26,9 +27,12 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
     value: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    description: {
+      type: GraphQLString,
+    },
   },
   mutateAndGetPayload: async (
-    { receiverAccountNumber, value }: CreateTransactionInput,
+    { receiverAccountNumber, value, description }: CreateTransactionInput,
     ctx
   ) => {
     const session = await mongoose.startSession();
@@ -90,6 +94,7 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
         receiverAccountId: receiverAccount._id,
         value,
         idempotentKey,
+        description,
       }).save();
 
       const receiverUser = await UserModel.findOne({
