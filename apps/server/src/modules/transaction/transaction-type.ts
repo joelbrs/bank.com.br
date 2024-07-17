@@ -22,6 +22,11 @@ export const TransactionType = new GraphQLObjectType<Transaction>({
       description: "Represents transaction's value",
       resolve: ({ value }) => `${value}`,
     },
+    description: {
+      type: GraphQLString,
+      description: "Represents transaction's description",
+      resolve: ({ description }) => description,
+    },
     sender: {
       type: new GraphQLNonNull(AccountType),
       description: "Represents transaction's sender",
