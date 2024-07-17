@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema<User>(
   {
     fullName: {
       type: String,
-      minlength: 10,
+      minlength: 3,
       required: true,
     },
     taxId: {
