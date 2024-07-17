@@ -1,12 +1,22 @@
 import { env } from "../config";
-import { UserConfirmationTemplate, UserLoginTemplate, resend } from ".";
+import {
+  TransactionReceivedTemplate,
+  UserConfirmationTemplate,
+  UserLoginTemplate,
+  resend,
+} from ".";
 import { randomUUID } from "node:crypto";
 
 type SendEmailParams = {
   to: string;
   subject: string;
-  template: typeof UserLoginTemplate | typeof UserConfirmationTemplate;
-  linkUri: string;
+  template:
+    | typeof UserLoginTemplate
+    | typeof UserConfirmationTemplate
+    | typeof TransactionReceivedTemplate;
+  linkUri?: string;
+  senderName?: string;
+  value?: string;
 };
 
 export const sendEmail = async ({
@@ -14,10 +24,12 @@ export const sendEmail = async ({
   subject,
   to,
   linkUri,
+  senderName,
+  value,
 }: SendEmailParams) => {
   const code = randomUUID();
 
-  const link = new URL(linkUri, env.API_BASE_URL);
+  const link = new URL(linkUri || "", env.API_BASE_URL);
   link.searchParams.set("code", code);
   link.searchParams.set("redirect", env.AUTH_REDIRECT_URL);
 
@@ -28,6 +40,8 @@ export const sendEmail = async ({
     react: template({
       email: to,
       link: link.toString(),
+      senderName,
+      value,
     }),
   });
 

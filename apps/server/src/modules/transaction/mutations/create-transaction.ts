@@ -9,6 +9,8 @@ import { mutationWithClientMutationId } from "graphql-relay";
 import mongoose from "mongoose";
 import { TransactionModel } from "../transaction-model";
 import { successField } from "@entria/graphql-mongo-helpers";
+import { sendEmail, TransactionReceivedTemplate } from "../../../notification";
+import { User, UserModel } from "../../../modules/user";
 
 export type CreateTransactionInput = {
   receiverAccountNumber: string;
@@ -89,6 +91,18 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
         value,
         idempotentKey,
       }).save();
+
+      const receiverUser = await UserModel.findOne({
+        taxId: receiverAccount.userTaxId,
+      });
+
+      await sendEmail({
+        subject: "[Bank] Transação recebida!",
+        template: TransactionReceivedTemplate,
+        to: (receiverUser as User).email,
+        senderName: user.fullName,
+        value,
+      });
 
       await session.commitTransaction();
       return {

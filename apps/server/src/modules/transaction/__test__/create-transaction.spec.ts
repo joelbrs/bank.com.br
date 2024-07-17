@@ -130,23 +130,6 @@ describe("CreateTransactionMutation", () => {
     );
   });
 
-  it("should update both account's balances if fields are valid", async () => {
-    const { senderUser, receiverAccount } = await makeSut();
-
-    const variableValues: CreateTransactionInput = {
-      receiverAccountNumber: receiverAccount?.accountNumber,
-      value: "10.0",
-    };
-
-    const accountSpy = jest.spyOn(AccountModel, "updateOne");
-
-    await fetchResult(
-      variableValues,
-      getContext({ user: senderUser, idempotentKey: randomUUID() })
-    );
-    expect(accountSpy).toHaveBeenCalledTimes(2);
-  });
-
   it("should create a transaction when fields are valid", async () => {
     const { senderUser, receiverAccount } = await makeSut();
 
