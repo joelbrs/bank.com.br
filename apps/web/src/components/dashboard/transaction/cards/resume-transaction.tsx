@@ -11,6 +11,7 @@ type Props = {
   queryReference: PreloadedQuery<createTransactionModalQuery>;
   query: GraphQLTaggedNode;
   value: string | number;
+  description?: string;
   onNotFoundAccount: () => void;
 };
 
@@ -19,6 +20,7 @@ export function ResumeTransaction({
   queryReference,
   value,
   onNotFoundAccount,
+  description,
 }: Props): JSX.Element {
   const { account } = usePreloadedQuery(query, queryReference);
 
@@ -30,5 +32,11 @@ export function ResumeTransaction({
     return <></>;
   }
 
-  return <InfoTransaction account={account} value={value} />;
+  return (
+    <InfoTransaction
+      account={account}
+      value={value}
+      description={description}
+    />
+  );
 }

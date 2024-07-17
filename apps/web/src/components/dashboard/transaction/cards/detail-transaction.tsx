@@ -40,6 +40,7 @@ export function DetailTransaction({
         <InfoTransaction
           account={transaction?.receiver}
           value={transaction?.value}
+          description={transaction?.description}
         >
           <div className="mt-2">
             <AccountInfos
