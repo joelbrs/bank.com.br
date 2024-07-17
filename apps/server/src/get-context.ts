@@ -9,7 +9,7 @@ interface ContextVars {
   idempotentKey?: string;
 }
 
-export const getContext = async ({ ctx, user, idempotentKey }: ContextVars) => {
+export const getContext = ({ ctx, user, idempotentKey }: ContextVars) => {
   const dataloaders = getDataloaders();
 
   return {

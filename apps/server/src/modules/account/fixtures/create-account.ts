@@ -4,7 +4,6 @@ import { Account, AccountModel } from "../account-model";
 export const createAccount = async (args: DeepPartial<Account>) => {
   return await new AccountModel({
     userTaxId: args.userTaxId,
-    balance: args.balance,
     ...args,
   }).save();
 };
