@@ -6,6 +6,7 @@ import { DashboardPage } from "../pages/dashboard";
 import { dashboardQuery } from "../../__generated__/dashboardQuery.graphql";
 import { Footer } from "../components/footer";
 import { Header } from "../components/header";
+import { useEffect } from "react";
 
 const UserQuery = graphql`
   query dashboardQuery {
@@ -51,9 +52,6 @@ export function DashboardLayout(): JSX.Element | null {
     fetchMutation({
       request,
       variables,
-      onCompleted: () => {
-        navigate("/dashboard");
-      },
       onError: () => {
         navigate("/sign-in");
       },
@@ -73,6 +71,8 @@ export function DashboardLayout(): JSX.Element | null {
     );
   }
 
-  confirmLink();
+  useEffect(() => {
+    confirmLink();
+  }, []);
   return null;
 }
