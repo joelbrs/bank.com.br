@@ -1,16 +1,19 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
+import { MongoMemoryReplSet } from "mongodb-memory-server";
 import NodeEnvironment from "jest-environment-node";
 import { JestEnvironmentConfig, EnvironmentContext } from "@jest/environment";
 
 class MongoDbEnvironment extends NodeEnvironment {
-  private mongod: MongoMemoryServer;
+  private mongod: MongoMemoryReplSet;
 
   constructor(config: JestEnvironmentConfig, context: EnvironmentContext) {
     super(config, context);
 
-    this.mongod = new MongoMemoryServer({
+    this.mongod = new MongoMemoryReplSet({
       binary: {
         version: "6.0.4",
+      },
+      replSet: {
+        count: 1,
       },
     });
   }
