@@ -4,5 +4,5 @@ import { env } from "./config";
 export const redis = new Redis({
   username: env.REDIS_HOST,
   password: env.REDIS_PASSWORD,
-  port: env.PORT,
+  port: env.REDIS_PORT,
 });
