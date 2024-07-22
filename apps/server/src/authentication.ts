@@ -9,7 +9,7 @@ export const setCookies = (ctx: Context, token: string) => {
     httpOnly: true,
     sameSite: true,
     path: "/",
-    maxAge: 86400 * 7, // 7 days,
+    maxAge: 604800000, // 7 days
   });
 };
 
