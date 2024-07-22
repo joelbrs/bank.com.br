@@ -11,9 +11,9 @@ const environment_schema = z.object({
   API_BASE_URL: z.string(),
   AUTH_REDIRECT_URL: z.string(),
   NODE_ENV: z
-    .enum(["development", "staging", "production"])
+    .enum(["development", "staging", "production", "test"])
     .default("production"),
-  REDIS_HOST: z.string(),
+  REDIS_HOST: z.string().optional(),
   REDIS_PORT: z.coerce.number().default(6379),
   REDIS_PASSWORD: z.string(),
 });
