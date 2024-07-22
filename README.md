@@ -2,6 +2,10 @@
 
 ## Project's status: In Development
 
+#### OBS.: This project has resulted in the publication of two articles on my profile in dev.to
+   - [Idempotência: Melhorando a Resiliência de Seu Sistema - Parte I](https://dev.to/joelbrs/idempotencia-melhorando-a-resiliencia-de-seu-sistema-parte-i-1c99)
+   - [Idempotência: Melhorando a Resiliência de Seu Sistema - Parte II](https://dev.to/joelbrs/idempotencia-melhorando-a-resiliencia-de-seu-sistema-parte-ii-4p6k)
+
 ### 📝 Table of Contents
 
 - [Getting Started](#getting-started)
