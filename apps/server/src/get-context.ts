@@ -6,16 +6,14 @@ import { ParameterizedContext } from "koa";
 interface ContextVars {
   ctx?: ParameterizedContext;
   user: Maybe<UserDocument>;
-  idempotentKey?: string;
 }
 
-export const getContext = ({ ctx, user, idempotentKey }: ContextVars) => {
+export const getContext = ({ ctx, user }: ContextVars) => {
   const dataloaders = getDataloaders();
 
   return {
     ctx,
     dataloaders,
     user,
-    idempotentKey: idempotentKey || ctx?.request.headers["idempotentkey"],
   } as const;
 };

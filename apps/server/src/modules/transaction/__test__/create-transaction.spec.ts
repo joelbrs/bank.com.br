@@ -110,7 +110,7 @@ describe("CreateTransactionMutation", () => {
 
     const { data, errors } = await fetchResult(
       variableValues,
-      getContext({ user: senderUser, idempotentKey: randomUUID() })
+      getContext({ user: senderUser })
     );
 
     expect(data?.CreateTransaction).toBeNull();
@@ -129,7 +129,7 @@ describe("CreateTransactionMutation", () => {
 
     const { data, errors } = await fetchResult(
       variableValues,
-      getContext({ user: senderUser, idempotentKey: randomUUID() })
+      getContext({ user: senderUser })
     );
 
     expect(data?.CreateTransaction).toBeNull();
@@ -146,13 +146,9 @@ describe("CreateTransactionMutation", () => {
       value: "10.0",
     };
 
-    const idempotentKey = randomUUID();
     const transactionSpy = jest.spyOn(TransactionModel.prototype, "save");
 
-    await fetchResult(
-      variableValues,
-      getContext({ user: senderUser, idempotentKey })
-    );
+    await fetchResult(variableValues, getContext({ user: senderUser }));
 
     expect(transactionSpy).toHaveBeenCalled();
   });
@@ -184,13 +180,9 @@ describe("CreateTransactionMutation", () => {
       value: "10.0",
     };
 
-    const idempotentKey = randomUUID();
     const emailSpy = jest.spyOn(Email, "sendEmail");
 
-    await fetchResult(
-      variableValues,
-      getContext({ user: senderUser, idempotentKey })
-    );
+    await fetchResult(variableValues, getContext({ user: senderUser }));
 
     expect(emailSpy).toHaveBeenCalledWith({
       subject: "[Bank] Transação recebida!",
