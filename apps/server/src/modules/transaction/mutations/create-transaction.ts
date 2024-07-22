@@ -11,6 +11,8 @@ import { TransactionModel } from "../transaction-model";
 import { successField } from "@entria/graphql-mongo-helpers";
 import { sendEmail, TransactionReceivedTemplate } from "../../../notification";
 import { User, UserModel } from "../../../modules/user";
+import { createHash } from "crypto";
+import { redis } from "../../../redis";
 
 export type CreateTransactionInput = {
   receiverAccountNumber: string;
@@ -39,14 +41,10 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
     session.startTransaction();
 
     try {
-      const { idempotentKey, user } = await ctx;
+      const { user } = await ctx;
 
       if (!user) {
         throw new UnauthorizedException();
-      }
-
-      if (!idempotentKey) {
-        throw new BusinessRuleException("A chave de idempotência é inválida.");
       }
 
       const senderAccount = await AccountModel.findOne({
@@ -77,16 +75,24 @@ export const CreateTransactionMutation = mutationWithClientMutationId({
         throw new EntityNotFoundException("Conta");
       }
 
-      const existingTransaction = await TransactionModel.findOne({
+      const dataToBeHashed = `${senderAccount?._id}-${receiverAccount?._id}-${value}-${description}`;
+
+      const idempotentKey = createHash("sha256")
+        .update(dataToBeHashed)
+        .digest("hex");
+
+      const existingTransaction = await redis.set(
         idempotentKey,
-        senderAccountId: senderAccount?._id,
-        receiverAccountId: receiverAccount?._id,
-      }).session(session);
+        "transaction",
+        "EX",
+        60 * 5,
+        "GET"
+      );
 
       if (existingTransaction) {
-        return {
-          transactionId: existingTransaction?._id,
-        };
+        throw new BusinessRuleException(
+          "Não é possível gerar transações idênticas consecutivamente. Tente novamente mais tarde."
+        );
       }
 
       const { _id: transactionId } = await new TransactionModel({

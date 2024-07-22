@@ -15,6 +15,7 @@ import mongoose, { Decimal128, ObjectId } from "mongoose";
 import { DeepPartial } from "@repo/types/index";
 import * as Email from "../../../notification/send-email";
 import { TransactionReceivedTemplate } from "../../../notification";
+import { redis } from "../../../redis";
 
 interface CreateTransactionResponse {
   CreateTransaction: {
@@ -81,25 +82,6 @@ describe("CreateTransactionMutation", () => {
     mongooseDisconnect();
   });
 
-  it("should throw if no idempotency key is provided", async () => {
-    const senderUser = await createUser();
-
-    const variableValues: CreateTransactionInput = {
-      receiverAccountNumber: randomUUID(),
-      value: "10.0",
-    };
-
-    const { data, errors } = await fetchResult(
-      variableValues,
-      getContext({ user: senderUser })
-    );
-
-    expect(data?.CreateTransaction).toBeNull();
-    expect((errors as GraphQLError[])[0]?.message).toBe(
-      "A chave de idempotência é inválida."
-    );
-  });
-
   it("should throws if funds are insufficient", async () => {
     const { senderUser } = await makeSut();
 
@@ -110,7 +92,7 @@ describe("CreateTransactionMutation", () => {
 
     const { data, errors } = await fetchResult(
       variableValues,
-      getContext({ user: senderUser, idempotentKey: randomUUID() })
+      getContext({ user: senderUser })
     );
 
     expect(data?.CreateTransaction).toBeNull();
@@ -129,12 +111,53 @@ describe("CreateTransactionMutation", () => {
 
     const { data, errors } = await fetchResult(
       variableValues,
-      getContext({ user: senderUser, idempotentKey: randomUUID() })
+      getContext({ user: senderUser })
     );
 
     expect(data?.CreateTransaction).toBeNull();
     expect((errors as GraphQLError[])[0]?.message).toBe(
       "Conta não encontrado."
+    );
+  });
+
+  // TODO: verify ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING_FLAG error
+  // it("should generate idempotency key with payload", async () => {
+  //   const { senderUser, senderAccount, receiverAccount } = await makeSut();
+
+  //   const hashSpy = jest.spyOn(crypto.createHash("sha256"), "update");
+
+  //   const variableValues: CreateTransactionInput = {
+  //     receiverAccountNumber: receiverAccount?.accountNumber,
+  //     value: "10.0",
+  //     description: "valid_description",
+  //   };
+
+  //   await fetchResult(variableValues, getContext({ user: senderUser }));
+
+  //   expect(hashSpy).toHaveBeenCalledWith(
+  //     `${senderAccount?._id}-${receiverAccount?._id}-${variableValues.value}-${variableValues.description}`
+  //   );
+  // });
+
+  it("should throws if transaction already exists", async () => {
+    const { senderUser, receiverAccount } = await makeSut();
+
+    const variableValues: CreateTransactionInput = {
+      receiverAccountNumber: receiverAccount?.accountNumber,
+      value: "10.0",
+      description: "valid_description",
+    };
+
+    jest.spyOn(redis, "set").mockReturnValue(Promise.resolve(randomUUID()));
+
+    const { data, errors } = await fetchResult(
+      variableValues,
+      getContext({ user: senderUser })
+    );
+
+    expect(data?.CreateTransaction).toBeNull();
+    expect((errors as GraphQLError[])[0].message).toBe(
+      "Não é possível gerar transações idênticas consecutivamente. Tente novamente mais tarde."
     );
   });
 
@@ -146,13 +169,9 @@ describe("CreateTransactionMutation", () => {
       value: "10.0",
     };
 
-    const idempotentKey = randomUUID();
     const transactionSpy = jest.spyOn(TransactionModel.prototype, "save");
 
-    await fetchResult(
-      variableValues,
-      getContext({ user: senderUser, idempotentKey })
-    );
+    await fetchResult(variableValues, getContext({ user: senderUser }));
 
     expect(transactionSpy).toHaveBeenCalled();
   });
@@ -184,13 +203,9 @@ describe("CreateTransactionMutation", () => {
       value: "10.0",
     };
 
-    const idempotentKey = randomUUID();
     const emailSpy = jest.spyOn(Email, "sendEmail");
 
-    await fetchResult(
-      variableValues,
-      getContext({ user: senderUser, idempotentKey })
-    );
+    await fetchResult(variableValues, getContext({ user: senderUser }));
 
     expect(emailSpy).toHaveBeenCalledWith({
       subject: "[Bank] Transação recebida!",
