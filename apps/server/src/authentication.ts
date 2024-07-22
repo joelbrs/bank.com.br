@@ -5,11 +5,11 @@ import { UserModel } from "./modules/user";
 
 export const setCookies = (ctx: Context, token: string) => {
   ctx.cookies.set("bank.auth.token", token, {
-    domain: undefined, //TODO: set domain production,
+    domain: (env.NODE_ENV === "production" && "bank.joelf.tech") || undefined,
     httpOnly: true,
     sameSite: true,
     path: "/",
-    maxAge: 30 * 60 * 1000, // 30min,
+    maxAge: 86400 * 7, // 7 days,
   });
 };
 

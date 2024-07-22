@@ -10,6 +10,9 @@ const environment_schema = z.object({
   RESEND_API_KEY: z.string(),
   API_BASE_URL: z.string(),
   AUTH_REDIRECT_URL: z.string(),
+  NODE_ENV: z
+    .enum(["development", "staging", "production"])
+    .default("production"),
 });
 
 const _env = environment_schema.safeParse(process.env);
