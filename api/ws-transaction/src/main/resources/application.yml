@@ -53,6 +53,10 @@ server:
   servlet:
     context-path: /ws-transaction
 
+authorizer:
+  url: ${AUTHORIZER_URL:https://util.devi.tools}
+  path: ${AUTHORIZER_PATH:api/v2/}
+
 amqp:
   queues:
     transaction:

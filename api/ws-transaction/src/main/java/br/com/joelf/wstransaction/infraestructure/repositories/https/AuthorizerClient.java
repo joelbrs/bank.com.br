@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @FeignClient(
         name = "authorizer",
-        url = "${authorizer.url",
+        url = "${authorizer.url}",
         path = "${authorizer.path}"
 )
 public interface AuthorizerClient {
