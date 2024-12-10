@@ -28,8 +28,10 @@ public class CreateTransactionUseCaseImpl implements CreateTransactionUseCase {
             validation.validate(request);
 
             Transaction result = transactionDataProvider.insert(buildTransaction(request));
-            publisherDataProvider.publishTransaction(result);
-        } catch (ValidationException | PublisherDataProviderException e) {
+            Thread.startVirtualThread(() ->
+                    publisherDataProvider.publishTransaction(result)
+            );
+        } catch (ValidationException e) {
             throw new CreateTransactionUseCaseException(e.getMessage());
         }
     }
