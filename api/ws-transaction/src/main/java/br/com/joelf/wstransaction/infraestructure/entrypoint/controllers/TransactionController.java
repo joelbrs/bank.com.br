@@ -2,6 +2,7 @@ package br.com.joelf.wstransaction.infraestructure.entrypoint.controllers;
 
 import br.com.joelf.wstransaction.domain.dtos.TransactionRequest;
 import br.com.joelf.wstransaction.domain.usecases.CreateTransactionUseCase;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,8 @@ public class TransactionController {
     private final CreateTransactionUseCase createTransactionUseCase;
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createTransaction(@RequestBody TransactionRequest request) {
+    public ResponseEntity<Void> createTransaction(@RequestBody @Valid TransactionRequest request) {
+        createTransactionUseCase.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
