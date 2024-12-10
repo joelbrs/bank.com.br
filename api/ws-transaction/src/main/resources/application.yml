@@ -26,6 +26,8 @@ resilience4j:
         max-attempts: 3
         wait-duration:
           seconds: 1
+        ignore-exceptions:
+          - com.fasterxml.jackson.core.JsonProcessingException
     instances:
       authorizer:
         base-config: default
@@ -39,6 +41,8 @@ resilience4j:
         minimum-number-of-calls: 5
         failure-rate-threshold: 50
         wait-duration-in-open-state: 10000
+        ignore-exceptions:
+          - com.fasterxml.jackson.core.JsonProcessingException
     instances:
       authorizer:
         base-config: default
