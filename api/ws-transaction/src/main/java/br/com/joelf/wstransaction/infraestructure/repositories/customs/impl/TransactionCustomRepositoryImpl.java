@@ -1,5 +1,6 @@
 package br.com.joelf.wstransaction.infraestructure.repositories.customs.impl;
 
+import br.com.joelf.wstransaction.domain.entities.TransactionStatusEnum;
 import br.com.joelf.wstransaction.infraestructure.repositories.customs.TransactionCustomRepository;
 import br.com.joelf.wstransaction.infraestructure.repositories.customs.models.Balance;
 import br.com.joelf.wstransaction.infraestructure.repositories.entities.TransactionMongoDB;
@@ -26,6 +27,8 @@ public class TransactionCustomRepositoryImpl implements TransactionCustomReposit
                         new Criteria().orOperator(
                                 Criteria.where("payerAccountIdentifier").is(accountIdentifier),
                                 Criteria.where("receiverAccountIdentifier").is(accountIdentifier)
+                        ).andOperator(
+                                Criteria.where("status").is(TransactionStatusEnum.SUCCESS.getDescription())
                         )
                 ),
                 Aggregation.project()
