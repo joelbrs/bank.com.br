@@ -1,19 +1,21 @@
 package br.com.joelf.wstransaction.infraestructure.configuration;
 
 import br.com.joelf.wstransaction.application.dataprovider.AccountDataProvider;
+import br.com.joelf.wstransaction.application.dataprovider.AuthorizerDataProvider;
 import br.com.joelf.wstransaction.application.dataprovider.PublisherDataProvider;
 import br.com.joelf.wstransaction.application.dataprovider.TransactionDataProvider;
 import br.com.joelf.wstransaction.application.usecases.CreateTransactionUseCaseImpl;
+import br.com.joelf.wstransaction.application.usecases.ProcessTransactionUseCaseImpl;
 import br.com.joelf.wstransaction.application.usecases.validations.AccountBalanceValidation;
 import br.com.joelf.wstransaction.application.usecases.validations.AccountExistanceValidation;
 import br.com.joelf.wstransaction.application.usecases.validations.ValidationComposite;
 import br.com.joelf.wstransaction.domain.usecases.CreateTransactionUseCase;
+import br.com.joelf.wstransaction.domain.usecases.ProcessTransactionUseCase;
 import br.com.joelf.wstransaction.domain.usecases.validations.Validation;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -32,6 +34,16 @@ public class UseCaseConfig {
 
         return new CreateTransactionUseCaseImpl(
                 validationComposite, transactionDataProvider, publisherDataProvider
+        );
+    }
+
+    @Bean
+    public ProcessTransactionUseCase processTransactionUseCase(
+            AuthorizerDataProvider authorizerDataProvider,
+            TransactionDataProvider transactionDataProvider
+    ) {
+        return new ProcessTransactionUseCaseImpl(
+                authorizerDataProvider, transactionDataProvider
         );
     }
 
