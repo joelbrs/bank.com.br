@@ -29,6 +29,8 @@ resilience4j:
     instances:
       authorizer:
         base-config: default
+      amqp:
+        base-config: default
   circuitbreaker:
     configs:
       default:
@@ -37,6 +39,11 @@ resilience4j:
         minimum-number-of-calls: 5
         failure-rate-threshold: 50
         wait-duration-in-open-state: 10000
+    instances:
+      authorizer:
+        base-config: default
+      amqp:
+        base-config: default
 
 server:
   servlet:

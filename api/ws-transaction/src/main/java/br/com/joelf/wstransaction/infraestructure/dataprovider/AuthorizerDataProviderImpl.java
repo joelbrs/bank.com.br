@@ -4,16 +4,16 @@ import br.com.joelf.wstransaction.application.dataprovider.AuthorizerDataProvide
 import br.com.joelf.wstransaction.application.dataprovider.exceptions.AuthorizerDataProviderException;
 import br.com.joelf.wstransaction.infraestructure.repositories.AuthorizerClient;
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.AllArgsConstructor;
-import org.springframework.retry.annotation.CircuitBreaker;
 
 @AllArgsConstructor
 public class AuthorizerDataProviderImpl implements AuthorizerDataProvider {
 
     private final AuthorizerClient authorizerClient;
 
-    @CircuitBreaker
+    @CircuitBreaker(name = "authorizer")
     @Retry(name = "authorizer")
     @Override
     public void authorize() throws AuthorizerDataProviderException {

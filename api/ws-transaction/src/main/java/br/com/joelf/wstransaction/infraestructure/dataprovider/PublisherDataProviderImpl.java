@@ -5,6 +5,8 @@ import br.com.joelf.wstransaction.application.dataprovider.exceptions.PublisherD
 import br.com.joelf.wstransaction.domain.entities.Transaction;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Queue;
@@ -16,6 +18,8 @@ public class PublisherDataProviderImpl implements PublisherDataProvider {
     private final Queue queue;
     private final RabbitTemplate rabbitTemplate;
 
+    @CircuitBreaker(name = "amqp")
+    @Retry(name = "amqp")
     @Override
     public void publishTransaction(Transaction transaction) {
         try {
