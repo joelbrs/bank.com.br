@@ -1,0 +1,20 @@
+services:
+  database:
+    image: mongo
+    container_name: ws-transaction-db
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=root
+  rabbitmq:
+    container_name: ws-transaction-rabbitmq
+    image: 'rabbitmq:3.13-management'
+    environment:
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: guest
+    ports:
+      - '5672:5672'
+      - '15672:15672'
