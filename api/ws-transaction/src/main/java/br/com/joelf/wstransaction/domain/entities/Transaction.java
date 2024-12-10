@@ -2,11 +2,13 @@ package br.com.joelf.wstransaction.domain.entities;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 public class Transaction {
     private Long id;

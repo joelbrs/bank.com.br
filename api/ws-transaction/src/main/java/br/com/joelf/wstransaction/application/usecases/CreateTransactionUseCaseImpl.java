@@ -8,6 +8,7 @@ import br.com.joelf.wstransaction.domain.entities.TransactionStatusEnum;
 import br.com.joelf.wstransaction.domain.usecases.CreateTransactionUseCase;
 import br.com.joelf.wstransaction.domain.usecases.validations.Validation;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 public class CreateTransactionUseCaseImpl implements CreateTransactionUseCase {
@@ -17,6 +18,7 @@ public class CreateTransactionUseCaseImpl implements CreateTransactionUseCase {
     private final TransactionDataProvider transactionDataProvider;
     private final PublisherDataProvider publisherDataProvider;
 
+    @Transactional
     @Override
     public void execute(TransactionRequest request) {
         validation.validate(request);

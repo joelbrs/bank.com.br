@@ -1,9 +1,15 @@
 package br.com.joelf.wstransaction.infraestructure.configuration;
 
+import br.com.joelf.wstransaction.application.dataprovider.AccountDataProvider;
+import br.com.joelf.wstransaction.application.dataprovider.AuthorizerDataProvider;
 import br.com.joelf.wstransaction.application.dataprovider.PublisherDataProvider;
 import br.com.joelf.wstransaction.application.dataprovider.TransactionDataProvider;
+import br.com.joelf.wstransaction.infraestructure.dataprovider.AccountDataProviderImpl;
+import br.com.joelf.wstransaction.infraestructure.dataprovider.AuthorizerDataProviderImpl;
 import br.com.joelf.wstransaction.infraestructure.dataprovider.PublisherDataProviderImpl;
 import br.com.joelf.wstransaction.infraestructure.dataprovider.TransactionDataProviderImpl;
+import br.com.joelf.wstransaction.infraestructure.repositories.AccountMongoDBRepository;
+import br.com.joelf.wstransaction.infraestructure.repositories.AuthorizerClient;
 import br.com.joelf.wstransaction.infraestructure.repositories.TransactionMongoDBRepository;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -27,5 +33,19 @@ public class DataProviderConfig {
             TransactionMongoDBRepository repository
     ) {
         return new TransactionDataProviderImpl(repository);
+    }
+
+    @Bean
+    public AccountDataProvider accountDataProvider(
+            AccountMongoDBRepository repository
+    ) {
+        return new AccountDataProviderImpl(repository);
+    }
+
+    @Bean
+    public AuthorizerDataProvider authorizerDataProvider(
+            AuthorizerClient authorizerClient
+    ) {
+        return new AuthorizerDataProviderImpl(authorizerClient);
     }
 }

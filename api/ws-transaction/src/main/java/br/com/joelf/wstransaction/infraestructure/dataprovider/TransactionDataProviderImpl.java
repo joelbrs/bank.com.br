@@ -22,6 +22,11 @@ public class TransactionDataProviderImpl implements TransactionDataProvider {
     }
 
     @Override
+    public void update(Transaction transaction) {
+        this.insert(transaction);
+    }
+
+    @Override
     public BigDecimal getBalance(String accountIdetifier) {
         return repository.getBalance(accountIdetifier);
     }
