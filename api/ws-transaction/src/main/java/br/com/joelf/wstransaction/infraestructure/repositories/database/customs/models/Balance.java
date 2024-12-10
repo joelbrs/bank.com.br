@@ -1,4 +1,4 @@
-package br.com.joelf.wstransaction.infraestructure.repositories.customs.models;
+package br.com.joelf.wstransaction.infraestructure.repositories.database.customs.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

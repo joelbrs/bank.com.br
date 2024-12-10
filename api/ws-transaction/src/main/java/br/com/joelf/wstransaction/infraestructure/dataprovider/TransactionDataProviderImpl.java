@@ -2,8 +2,8 @@ package br.com.joelf.wstransaction.infraestructure.dataprovider;
 
 import br.com.joelf.wstransaction.application.dataprovider.TransactionDataProvider;
 import br.com.joelf.wstransaction.domain.entities.Transaction;
-import br.com.joelf.wstransaction.infraestructure.repositories.TransactionMongoDBRepository;
-import br.com.joelf.wstransaction.infraestructure.repositories.entities.TransactionMongoDB;
+import br.com.joelf.wstransaction.infraestructure.repositories.database.TransactionMongoDBRepository;
+import br.com.joelf.wstransaction.infraestructure.repositories.database.entities.TransactionMongoDB;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 

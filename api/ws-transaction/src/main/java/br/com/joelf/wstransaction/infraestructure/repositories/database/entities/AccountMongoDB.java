@@ -1,4 +1,4 @@
-package br.com.joelf.wstransaction.infraestructure.repositories.entities;
+package br.com.joelf.wstransaction.infraestructure.repositories.database.entities;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

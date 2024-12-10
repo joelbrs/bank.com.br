@@ -1,4 +1,4 @@
-package br.com.joelf.wstransaction.infraestructure.repositories.entities;
+package br.com.joelf.wstransaction.infraestructure.repositories.database.entities;
 
 import br.com.joelf.wstransaction.domain.entities.TransactionStatusEnum;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package br.com.joelf.wstransaction.infraestructure.repositories.customs;
+package br.com.joelf.wstransaction.infraestructure.repositories.database.customs;
 
 import java.math.BigDecimal;
 

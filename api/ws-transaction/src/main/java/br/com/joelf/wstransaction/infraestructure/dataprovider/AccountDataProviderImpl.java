@@ -1,7 +1,7 @@
 package br.com.joelf.wstransaction.infraestructure.dataprovider;
 
 import br.com.joelf.wstransaction.application.dataprovider.AccountDataProvider;
-import br.com.joelf.wstransaction.infraestructure.repositories.AccountMongoDBRepository;
+import br.com.joelf.wstransaction.infraestructure.repositories.database.AccountMongoDBRepository;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

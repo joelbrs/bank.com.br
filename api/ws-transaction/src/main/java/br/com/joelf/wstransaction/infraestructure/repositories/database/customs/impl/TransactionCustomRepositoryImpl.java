@@ -1,9 +1,9 @@
-package br.com.joelf.wstransaction.infraestructure.repositories.customs.impl;
+package br.com.joelf.wstransaction.infraestructure.repositories.database.customs.impl;
 
 import br.com.joelf.wstransaction.domain.entities.TransactionStatusEnum;
-import br.com.joelf.wstransaction.infraestructure.repositories.customs.TransactionCustomRepository;
-import br.com.joelf.wstransaction.infraestructure.repositories.customs.models.Balance;
-import br.com.joelf.wstransaction.infraestructure.repositories.entities.TransactionMongoDB;
+import br.com.joelf.wstransaction.infraestructure.repositories.database.customs.TransactionCustomRepository;
+import br.com.joelf.wstransaction.infraestructure.repositories.database.customs.models.Balance;
+import br.com.joelf.wstransaction.infraestructure.repositories.database.entities.TransactionMongoDB;
 import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;

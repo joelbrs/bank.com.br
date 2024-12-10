@@ -8,9 +8,9 @@ import br.com.joelf.wstransaction.infraestructure.dataprovider.AccountDataProvid
 import br.com.joelf.wstransaction.infraestructure.dataprovider.AuthorizerDataProviderImpl;
 import br.com.joelf.wstransaction.infraestructure.dataprovider.PublisherDataProviderImpl;
 import br.com.joelf.wstransaction.infraestructure.dataprovider.TransactionDataProviderImpl;
-import br.com.joelf.wstransaction.infraestructure.repositories.AccountMongoDBRepository;
-import br.com.joelf.wstransaction.infraestructure.repositories.AuthorizerClient;
-import br.com.joelf.wstransaction.infraestructure.repositories.TransactionMongoDBRepository;
+import br.com.joelf.wstransaction.infraestructure.repositories.database.AccountMongoDBRepository;
+import br.com.joelf.wstransaction.infraestructure.repositories.https.AuthorizerClient;
+import br.com.joelf.wstransaction.infraestructure.repositories.database.TransactionMongoDBRepository;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
