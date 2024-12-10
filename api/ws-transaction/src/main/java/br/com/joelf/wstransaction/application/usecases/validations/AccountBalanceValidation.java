@@ -24,6 +24,6 @@ public class AccountBalanceValidation implements Validation {
     }
 
     private boolean isSufficientBalance(BigDecimal amount, BigDecimal balance) {
-        return balance.compareTo(amount) > 0 && balance.compareTo(BigDecimal.ZERO) > 0;
+        return balance.compareTo(amount) >= 0 && balance.compareTo(BigDecimal.ZERO) > 0;
     }
 }
