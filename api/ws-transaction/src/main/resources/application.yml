@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: ws-transaction
+  data:
+    mongodb:
+      authentication-database: ${AUTH_DB:admin}
+      username: ${DB_USERNAME:mongo}
+      password: ${DB_PASSWORD:root}
+      database: ${DB_NAME:transaction-ws}
+      host: ${DB_HOST:localhost}
+      port: ${DB_PORT:27017}
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    template:
+      retry:
+        enabled: true
+        initial-interval: 5s
+
+server:
+  servlet:
+    context-path: /ws-transaction
+
+amqp:
+  queues:
+    transaction:
+      name: ${TRANSACTION_QUEUE_NAME:AMQP.BANK.TRANSACTION}
