@@ -26,7 +26,6 @@ public class PublisherDataProviderImpl implements PublisherDataProvider {
             ObjectMapper mapper = new ObjectMapper();
             rabbitTemplate.convertAndSend(queue.getName(), mapper.writeValueAsString(transaction));
         } catch (JsonProcessingException | AmqpException e) {
-            //TODO: add retry mechanism
             throw new PublisherDataProviderException(e.getMessage());
         }
     }
