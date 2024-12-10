@@ -2,11 +2,14 @@ package br.com.joelf.wstransaction.application.usecases;
 
 import br.com.joelf.wstransaction.application.dataprovider.PublisherDataProvider;
 import br.com.joelf.wstransaction.application.dataprovider.TransactionDataProvider;
+import br.com.joelf.wstransaction.application.dataprovider.exceptions.PublisherDataProviderException;
 import br.com.joelf.wstransaction.domain.dtos.TransactionRequest;
 import br.com.joelf.wstransaction.domain.entities.Transaction;
 import br.com.joelf.wstransaction.domain.entities.TransactionStatusEnum;
 import br.com.joelf.wstransaction.domain.usecases.CreateTransactionUseCase;
+import br.com.joelf.wstransaction.domain.usecases.exceptions.CreateTransactionUseCaseException;
 import br.com.joelf.wstransaction.domain.usecases.validations.Validation;
+import br.com.joelf.wstransaction.domain.usecases.validations.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +24,14 @@ public class CreateTransactionUseCaseImpl implements CreateTransactionUseCase {
     @Transactional
     @Override
     public void execute(TransactionRequest request) {
-        validation.validate(request);
+        try {
+            validation.validate(request);
 
-        //TODO: add exception treatments
-        Transaction result = transactionDataProvider.insert(buildTransaction(request));
-        publisherDataProvider.publishTransaction(result);
+            Transaction result = transactionDataProvider.insert(buildTransaction(request));
+            publisherDataProvider.publishTransaction(result);
+        } catch (ValidationException | PublisherDataProviderException e) {
+            throw new CreateTransactionUseCaseException(e.getMessage());
+        }
     }
 
     private Transaction buildTransaction(TransactionRequest request) {

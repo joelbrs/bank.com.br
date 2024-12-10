@@ -26,7 +26,7 @@ public class ProcessTransactionUseCaseImpl implements ProcessTransactionUseCase 
 
             //TODO: call notification system
         } catch (AuthorizerDataProviderException e) {
-            // TODO: add exception treatments
+            throw new AuthorizerDataProviderException(e.getMessage());
         }
     }
 
