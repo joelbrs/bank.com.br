@@ -3,6 +3,7 @@ package br.com.joelf.wstransaction.infraestructure.repositories.database.entitie
 import br.com.joelf.wstransaction.domain.entities.TransactionStatusEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Document(collection = "transaction")
 public class TransactionMongoDB {
