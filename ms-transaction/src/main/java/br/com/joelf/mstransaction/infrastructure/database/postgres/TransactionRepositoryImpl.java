@@ -95,7 +95,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                         when type = 'DEBIT' then -amount
                         else amount
                     end
-                ) from tb_transacao where sender_account_number = :account_number or receiver_account_number = :account_number;
+                ) from tb_transacao 
+                where (sender_account_number = :account_number or receiver_account_number = :account_number) and status = 'COMPLETED';
             """;
 
         SqlParameterSource parameters = new MapSqlParameterSource()
@@ -107,7 +108,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     @Override
     public boolean existsByIdempotencyKey(String idempotencyKey) {
         String query = """
-            select exists(select 1 from tb_transacao where idempotent_key = :idempotency_key);    
+            select exists(select 1 from tb_transacao where idempotent_key = :idempotency_key) and status = 'COMPLETED' or status = 'PENDING';    
             """;
 
         SqlParameterSource parameters = new MapSqlParameterSource()
