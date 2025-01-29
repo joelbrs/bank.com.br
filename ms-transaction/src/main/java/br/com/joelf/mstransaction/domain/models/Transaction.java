@@ -9,7 +9,7 @@ import br.com.joelf.mstransaction.domain.models.enums.TransactionType;
 
 public record Transaction(
     UUID id,
-    String senderAccounNumber,
+    String senderAccountNumber,
     String receiverAccountNumber,
     BigDecimal amount,
     String description,
