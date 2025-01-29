@@ -1,7 +1,8 @@
-package br.com.joelf.mstransaction.application.services;
+package br.com.joelf.mstransaction.application.services.transactions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.joelf.mstransaction.application.validators.Validator;
 import br.com.joelf.mstransaction.domain.dtos.TransactionDTOIn;
 import br.com.joelf.mstransaction.domain.models.Transaction;
 import br.com.joelf.mstransaction.domain.models.enums.TransactionStatus;
@@ -18,22 +19,27 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final MessagePublisher transactionMessagePublisher;
     private final AuthorizerClient authorizerClient;
+    private final Validator<TransactionDTOIn> validator;
     
     public TransactionServiceImpl(
         TransactionRepository transactionRepository,
         MessagePublisher transactionMessagePublisher,
-        AuthorizerClient authorizerClient
+        AuthorizerClient authorizerClient,
+        Validator<TransactionDTOIn> validator
     ) {
         this.transactionRepository = transactionRepository;
         this.transactionMessagePublisher = transactionMessagePublisher;
         this.authorizerClient = authorizerClient;
+        this.validator = validator;
     }
 
     @Override
     public void create(TransactionDTOIn dto) {
-        //TODO: validate balance
-        //TODO: validate if senderAccountNumber is different from receiverAccountNumber
-        //TODO: validate if receiverAccountNumber exists
+        Throwable error = validator.validate(dto);
+
+        if (error != null) {
+            //TODO: handle it
+        }
 
         Transaction transaction = MAPPER.convertValue(dto, Transaction.class);
         transaction = transactionRepository.save(transaction);
