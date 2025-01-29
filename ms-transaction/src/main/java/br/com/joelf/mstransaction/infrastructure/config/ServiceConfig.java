@@ -13,11 +13,18 @@ import br.com.joelf.mstransaction.domain.dtos.TransactionDTOIn;
 import br.com.joelf.mstransaction.domain.services.TransactionService;
 import br.com.joelf.mstransaction.infrastructure.async.MessagePublisher;
 import br.com.joelf.mstransaction.infrastructure.clients.AuthorizerClient;
+import br.com.joelf.mstransaction.infrastructure.database.AccountRepository;
 import br.com.joelf.mstransaction.infrastructure.database.TransactionRepository;
 
 @Configuration
 public class ServiceConfig {
-    
+
+    private final AccountRepository accountRepository;
+
+    public ServiceConfig(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
+
     @Bean
     public TransactionService transactionService(
         TransactionRepository transactionRepository,
@@ -27,7 +34,7 @@ public class ServiceConfig {
         
         @SuppressWarnings({ "rawtypes", "unchecked" })
         Validator<TransactionDTOIn> validator = new ValidatorComposite(
-            new BalanceValidation(), new ReceiverAccountValidation()
+            new BalanceValidation(), new ReceiverAccountValidation(accountRepository)
         );
 
         return new TransactionServiceImpl(

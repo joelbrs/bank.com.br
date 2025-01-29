@@ -7,8 +7,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import br.com.joelf.mstransaction.domain.models.Transaction;
+import br.com.joelf.mstransaction.infrastructure.database.AccountRepository;
 import br.com.joelf.mstransaction.infrastructure.database.TransactionRepository;
 import br.com.joelf.mstransaction.infrastructure.database.mapper.TransactionRowMapper;
+import br.com.joelf.mstransaction.infrastructure.database.postgres.AccountRepositoryImpl;
 import br.com.joelf.mstransaction.infrastructure.database.postgres.TransactionRepositoryImpl;
 
 @Configuration
@@ -21,6 +23,11 @@ public class RepositoryConfig {
         RowMapper<Transaction> transactionRowMapper
     ) {
         return new TransactionRepositoryImpl(jdbcTemplate, namedParameterJdbcTemplate, transactionRowMapper);
+    }
+
+    @Bean
+    public AccountRepository accountRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        return new AccountRepositoryImpl(namedParameterJdbcTemplate);
     }
     
     @Bean
