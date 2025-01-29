@@ -16,16 +16,16 @@ public class TransactionServiceImpl implements TransactionService {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     
     private final TransactionRepository transactionRepository;
-    private final MessagePublisher messagePublisher;
+    private final MessagePublisher transactionMessagePublisher;
     private final AuthorizerClient authorizerClient;
     
     public TransactionServiceImpl(
         TransactionRepository transactionRepository,
-        MessagePublisher messagePublisher,
+        MessagePublisher transactionMessagePublisher,
         AuthorizerClient authorizerClient
     ) {
         this.transactionRepository = transactionRepository;
-        this.messagePublisher = messagePublisher;
+        this.transactionMessagePublisher = transactionMessagePublisher;
         this.authorizerClient = authorizerClient;
     }
 
@@ -39,7 +39,7 @@ public class TransactionServiceImpl implements TransactionService {
         transaction = transactionRepository.save(transaction);
         
         try {
-            messagePublisher.handleMessage(MAPPER.writeValueAsString(transaction));
+            transactionMessagePublisher.handleMessage(MAPPER.writeValueAsString(transaction));
         } catch (Exception e) {
             // TODO: handle it
         }

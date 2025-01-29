@@ -31,12 +31,12 @@ public class AsyncConfig {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    @Bean
+    @Bean("transactionQueue")
     public Queue transactionQueue() {
         return new Queue(transactionQueueName, Boolean.TRUE);
     }
 
-    @Bean
+    @Bean("transactionContainer")
     public SimpleMessageListenerContainer transactionContainer(
         ConnectionFactory connectionFactory
     ) {
@@ -48,19 +48,19 @@ public class AsyncConfig {
         return container;
     }
 
-    @Bean
+    @Bean("transactionListenerAdapter")
     public MessageListenerAdapter transactionListenerAdapter() {
         return new MessageListenerAdapter(transactionPublisher());
     }
 
-    @Bean
+    @Bean("transactionListener")
     public MessageListener transactionListener(
         TransactionService transactionService
     ) {
         return new RabbitTransactionMessageListener(transactionService);
     }
 
-    @Bean
+    @Bean("transactionPublisher")
     public MessagePublisher transactionPublisher() {
         return new RabbitMessagePublisher(rabbitTemplate, transactionQueue());
     }

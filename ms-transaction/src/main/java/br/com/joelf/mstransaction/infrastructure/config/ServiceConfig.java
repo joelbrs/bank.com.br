@@ -1,5 +1,6 @@
 package br.com.joelf.mstransaction.infrastructure.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,12 +16,12 @@ public class ServiceConfig {
     @Bean
     public TransactionService transactionService(
         TransactionRepository transactionRepository,
-        MessagePublisher messagePublisher,
+        @Qualifier("transactionPublisher") MessagePublisher transactionMessagePublisher,
         AuthorizerClient authorizerClient
     ) {
         return new TransactionServiceImpl(
             transactionRepository,
-            messagePublisher,
+            transactionMessagePublisher,
             authorizerClient
         );
     }
