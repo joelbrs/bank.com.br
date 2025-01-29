@@ -33,7 +33,7 @@ public class ServiceConfig {
     ) {
         
         Validator<TransactionDTOIn> validator = new ValidatorComposite<>(
-            new BalanceValidation(), new ReceiverAccountValidation(accountRepository)
+            new BalanceValidation(transactionRepository), new ReceiverAccountValidation(accountRepository)
         );
 
         return new TransactionServiceImpl(

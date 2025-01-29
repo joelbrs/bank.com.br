@@ -1,5 +1,6 @@
 package br.com.joelf.mstransaction.infrastructure.database.postgres;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -83,5 +84,23 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             transaction.getId()
         );
         return transaction.getId();
+    }
+
+    @Override
+    public BigDecimal getBalance(String accountNumber) {
+        String query = """
+                select sum(
+                    case 
+                        when sender_account_number = receiver_account_number then amount
+                        when type = 'DEBIT' then -amount
+                        else amount
+                    end
+                ) from tb_transacao where sender_account_number = :account_number or receiver_account_number = :account_number;
+            """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource()
+            .addValue("sender_account_number", accountNumber);
+
+        return namedParameterJdbcTemplate.queryForObject(query, parameters, BigDecimal.class);
     }
 }
