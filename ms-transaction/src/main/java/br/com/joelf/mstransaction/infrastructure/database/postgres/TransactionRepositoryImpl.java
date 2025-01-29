@@ -103,4 +103,15 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         return namedParameterJdbcTemplate.queryForObject(query, parameters, BigDecimal.class);
     }
+
+    @Override
+    public boolean existsByIdempotencyKey(String idempotencyKey) {
+        String query = """
+            select exists(select 1 from tb_transacao where idempotent_key = :idempotency_key);    
+            """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource()
+            .addValue("idempotency_key", idempotencyKey);
+        return namedParameterJdbcTemplate.queryForObject(query, parameters, Boolean.class);
+    }
 }

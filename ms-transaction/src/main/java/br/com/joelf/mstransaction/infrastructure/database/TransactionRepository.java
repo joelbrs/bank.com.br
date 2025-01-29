@@ -10,4 +10,5 @@ public interface TransactionRepository {
     Transaction save(Transaction transaction);
     UUID update(Transaction transaction);
     BigDecimal getBalance(String accountNumber);
+    boolean existsByIdempotencyKey(String idempotencyKey);
 }

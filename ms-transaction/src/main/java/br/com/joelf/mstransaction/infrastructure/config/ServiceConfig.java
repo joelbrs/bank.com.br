@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import br.com.joelf.mstransaction.application.ports.TokenHandler;
 import br.com.joelf.mstransaction.application.services.transactions.TransactionServiceImpl;
 import br.com.joelf.mstransaction.application.services.transactions.validations.BalanceValidation;
+import br.com.joelf.mstransaction.application.services.transactions.validations.IdempotencyKeyValidation;
 import br.com.joelf.mstransaction.application.services.transactions.validations.ReceiverAccountValidation;
 import br.com.joelf.mstransaction.domain.dtos.TransactionDTOIn;
 import br.com.joelf.mstransaction.domain.services.TransactionService;
@@ -35,7 +36,9 @@ public class ServiceConfig {
     ) {
         
         Validator<TransactionDTOIn> validator = new ValidatorComposite<>(
-            new BalanceValidation(transactionRepository), new ReceiverAccountValidation(accountRepository)
+            new IdempotencyKeyValidation(transactionRepository, tokenHandler),
+            new ReceiverAccountValidation(accountRepository),
+            new BalanceValidation(transactionRepository)
         );
 
         return new TransactionServiceImpl(
