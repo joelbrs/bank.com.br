@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: ms-transaction
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/transaction-db}
+    username: ${POSTGRES_USER:docker}
+    password: ${POSTGRES_PASSWORD:docker}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql

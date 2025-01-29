@@ -1,0 +1,18 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    hostname: db
+    env_file:
+      - ./environments/.env         
+    ports:
+      - '5432:5432'
+
+  redis:
+    image: redis
+    hostname: redis
+    restart: always
+    env_file:
+      - ./environments/.env
+    ports:
+      - '6379:6379'  
