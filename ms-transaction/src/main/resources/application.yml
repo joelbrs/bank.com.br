@@ -31,5 +31,10 @@ amqp:
     max-retries: 5
 
 authorizer:
-    url: ${AUTHORIZER_URL:https://util.devi.tools}
-    path: ${AUTHORIZER_PATH:api/v2/}
+  url: ${AUTHORIZER_URL:https://util.devi.tools}
+  path: ${AUTHORIZER_PATH:api/v2/}
+
+jwt:
+  secret: ${JWT_SECRET:secret}
+  expiration: ${JWT_EXPIRATION:3600}
+  

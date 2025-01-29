@@ -3,7 +3,9 @@ package br.com.joelf.mstransaction.application.services.transactions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.joelf.mstransaction.application.ports.TokenHandler;
 import br.com.joelf.mstransaction.application.services.exceptions.BusinessRuleException;
+import br.com.joelf.mstransaction.domain.dtos.IdempotencyKeyDTOIn;
 import br.com.joelf.mstransaction.domain.dtos.TransactionDTOIn;
 import br.com.joelf.mstransaction.domain.models.Transaction;
 import br.com.joelf.mstransaction.domain.models.enums.TransactionStatus;
@@ -23,17 +25,20 @@ public class TransactionServiceImpl implements TransactionService {
     private final MessagePublisher transactionMessagePublisher;
     private final AuthorizerClient authorizerClient;
     private final Validator<TransactionDTOIn> validator;
+    private final TokenHandler<Object> tokenHandler;
     
     public TransactionServiceImpl(
         TransactionRepository transactionRepository,
         MessagePublisher transactionMessagePublisher,
         AuthorizerClient authorizerClient,
-        Validator<TransactionDTOIn> validator
+        Validator<TransactionDTOIn> validator,
+        TokenHandler<Object> tokenHandler
     ) {
         this.transactionRepository = transactionRepository;
         this.transactionMessagePublisher = transactionMessagePublisher;
         this.authorizerClient = authorizerClient;
         this.validator = validator;
+        this.tokenHandler = tokenHandler;
     }
 
     @Override
@@ -68,5 +73,14 @@ public class TransactionServiceImpl implements TransactionService {
 
         //TODO: send success notification
         transactionRepository.update(transaction);
+    }
+
+    @Override
+    public String generateIdempotencyKey(IdempotencyKeyDTOIn dto) {
+        String issuer = "ms-transaction";
+        String subject = 
+            dto.receiverAccountNumber() + dto.senderAccountNumber();
+
+        return tokenHandler.generateToken(issuer, subject, dto);
     }
 }

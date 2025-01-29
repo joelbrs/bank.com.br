@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import br.com.joelf.mstransaction.application.ports.TokenHandler;
 import br.com.joelf.mstransaction.application.services.transactions.TransactionServiceImpl;
 import br.com.joelf.mstransaction.application.services.transactions.validations.BalanceValidation;
 import br.com.joelf.mstransaction.application.services.transactions.validations.ReceiverAccountValidation;
@@ -29,7 +30,8 @@ public class ServiceConfig {
     public TransactionService transactionService(
         TransactionRepository transactionRepository,
         @Qualifier("transactionPublisher") MessagePublisher transactionMessagePublisher,
-        AuthorizerClient authorizerClient
+        AuthorizerClient authorizerClient,
+        TokenHandler<Object> tokenHandler
     ) {
         
         Validator<TransactionDTOIn> validator = new ValidatorComposite<>(
@@ -40,7 +42,8 @@ public class ServiceConfig {
             transactionRepository,
             transactionMessagePublisher,
             authorizerClient,
-            validator
+            validator,
+            tokenHandler
         );
     }
 }
