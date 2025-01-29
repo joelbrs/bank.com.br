@@ -1,4 +1,6 @@
-package br.com.joelf.mstransaction.application.validators;
+package br.com.joelf.mstransaction.infrastructure.validators;
+
+import br.com.joelf.mstransaction.domain.validators.Validator;
 
 public class ValidatorComposite<T> implements Validator<T> {
 

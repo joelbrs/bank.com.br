@@ -2,11 +2,11 @@ package br.com.joelf.mstransaction.application.services.transactions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.joelf.mstransaction.application.validators.Validator;
 import br.com.joelf.mstransaction.domain.dtos.TransactionDTOIn;
 import br.com.joelf.mstransaction.domain.models.Transaction;
 import br.com.joelf.mstransaction.domain.models.enums.TransactionStatus;
 import br.com.joelf.mstransaction.domain.services.TransactionService;
+import br.com.joelf.mstransaction.domain.validators.Validator;
 import br.com.joelf.mstransaction.infrastructure.async.MessagePublisher;
 import br.com.joelf.mstransaction.infrastructure.clients.AuthorizerClient;
 import br.com.joelf.mstransaction.infrastructure.database.TransactionRepository;
