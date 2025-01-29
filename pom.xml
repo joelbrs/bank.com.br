@@ -11,6 +11,10 @@
 	<groupId>br.com.joelf</groupId>
 	<artifactId>bank.com.br</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>ms-transaction</module>
+	</modules>
 	<name>bank.com.br</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
