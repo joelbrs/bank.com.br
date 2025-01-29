@@ -21,13 +21,16 @@ import br.com.joelf.mstransaction.infrastructure.async.rabbitmq.listeners.Rabbit
 public class AsyncConfig {
     
     private final String transactionQueueName;
+    private final Integer maxRetries;
     private final RabbitTemplate rabbitTemplate;
 
     public AsyncConfig(
         @Value("${amqp.queue.transaction.name}") String transactionQueueName,
+        @Value("${amqp.queue.max-retries}") Integer maxRetries,
         RabbitTemplate rabbitTemplate
     ) {
         this.transactionQueueName = transactionQueueName;
+        this.maxRetries = maxRetries;
         this.rabbitTemplate = rabbitTemplate;
     }
 
@@ -62,6 +65,6 @@ public class AsyncConfig {
 
     @Bean("transactionPublisher")
     public MessagePublisher transactionPublisher() {
-        return new RabbitMessagePublisher(rabbitTemplate, transactionQueue());
+        return new RabbitMessagePublisher(rabbitTemplate, transactionQueue(), maxRetries);
     }
 }

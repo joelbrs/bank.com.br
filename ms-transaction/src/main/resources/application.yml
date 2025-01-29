@@ -28,6 +28,7 @@ amqp:
   queue:
     transaction:
       name: RABBIT.TRANSACTION.QUEUE
+    max-retries: 5
 
 authorizer:
     url: ${AUTHORIZER_URL:https://util.devi.tools}

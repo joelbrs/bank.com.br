@@ -1,13 +1,16 @@
 package br.com.joelf.mstransaction.application.services.transactions;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.joelf.mstransaction.application.services.exceptions.BusinessRuleException;
 import br.com.joelf.mstransaction.domain.dtos.TransactionDTOIn;
 import br.com.joelf.mstransaction.domain.models.Transaction;
 import br.com.joelf.mstransaction.domain.models.enums.TransactionStatus;
 import br.com.joelf.mstransaction.domain.services.TransactionService;
 import br.com.joelf.mstransaction.domain.validators.Validator;
 import br.com.joelf.mstransaction.infrastructure.async.MessagePublisher;
+import br.com.joelf.mstransaction.infrastructure.async.exceptions.UnprocessableEntityMessage;
 import br.com.joelf.mstransaction.infrastructure.clients.AuthorizerClient;
 import br.com.joelf.mstransaction.infrastructure.database.TransactionRepository;
 import feign.FeignException.FeignClientException;
@@ -38,17 +41,20 @@ public class TransactionServiceImpl implements TransactionService {
         Throwable error = validator.validate(dto);
 
         if (error != null) {
-            //TODO: handle it
+            throw new BusinessRuleException(error.getMessage());
         }
 
         Transaction transaction = MAPPER.convertValue(dto, Transaction.class);
-        transaction = transactionRepository.save(transaction);
+        Transaction result = transactionRepository.save(transaction);
         
-        try {
-            transactionMessagePublisher.handleMessage(MAPPER.writeValueAsString(transaction));
-        } catch (Exception e) {
-            // TODO: handle it
-        }
+        Thread.startVirtualThread(() -> {
+            try {
+                transactionMessagePublisher.handleMessage(MAPPER.writeValueAsString(result));
+            } catch (UnprocessableEntityMessage | JsonProcessingException e) {
+                transaction.setStatus(TransactionStatus.ERROR);
+                transactionRepository.update(transaction);
+            }
+        });
     }
 
     @Override

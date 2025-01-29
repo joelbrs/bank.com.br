@@ -1,9 +1,7 @@
 package br.com.joelf.mstransaction.infrastructure.async;
 
-import org.springframework.amqp.AmqpException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
+import br.com.joelf.mstransaction.infrastructure.async.exceptions.UnprocessableEntityMessage;
 
 public interface MessagePublisher {
-    void handleMessage(String message) throws JsonProcessingException, AmqpException;
+    void handleMessage(String message) throws UnprocessableEntityMessage;
 }
