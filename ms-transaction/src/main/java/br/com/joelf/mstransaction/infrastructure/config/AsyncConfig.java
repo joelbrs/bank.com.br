@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import br.com.joelf.mstransaction.domain.services.TransactionService;
 import br.com.joelf.mstransaction.infrastructure.async.MessagePublisher;
 import br.com.joelf.mstransaction.infrastructure.async.rabbitmq.RabbitMessagePublisher;
 import br.com.joelf.mstransaction.infrastructure.async.rabbitmq.listeners.RabbitTransactionMessageListener;
@@ -53,8 +54,10 @@ public class AsyncConfig {
     }
 
     @Bean
-    public MessageListener transactionListener() {
-        return new RabbitTransactionMessageListener();
+    public MessageListener transactionListener(
+        TransactionService transactionService
+    ) {
+        return new RabbitTransactionMessageListener(transactionService);
     }
 
     @Bean

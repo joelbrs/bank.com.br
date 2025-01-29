@@ -28,3 +28,7 @@ amqp:
   queue:
     transaction:
       name: RABBIT.TRANSACTION.QUEUE
+
+authorizer:
+    url: ${AUTHORIZER_URL:https://util.devi.tools}
+    path: ${AUTHORIZER_PATH:api/v2/}
