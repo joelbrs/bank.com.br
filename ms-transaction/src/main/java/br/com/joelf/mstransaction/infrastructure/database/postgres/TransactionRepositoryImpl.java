@@ -1,6 +1,7 @@
 package br.com.joelf.mstransaction.infrastructure.database.postgres;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.joelf.mstransaction.domain.models.Transaction;
+import br.com.joelf.mstransaction.domain.models.TransactionMetrics;
 import br.com.joelf.mstransaction.infrastructure.database.TransactionRepository;
 
 public class TransactionRepositoryImpl implements TransactionRepository {
@@ -20,15 +22,18 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private final RowMapper<Transaction> transactionRowMapper;
+    private final RowMapper<TransactionMetrics> transactionMetricsRowMapper;
 
     public TransactionRepositoryImpl(
         JdbcTemplate jdbcTemplate, 
         NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-        RowMapper<Transaction> transactionRowMapper
+        RowMapper<Transaction> transactionRowMapper,
+        RowMapper<TransactionMetrics> transactionMetricsRowMapper
     ) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.transactionRowMapper = transactionRowMapper;
+        this.transactionMetricsRowMapper = transactionMetricsRowMapper;
     }
 
     @Override
@@ -114,5 +119,24 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         SqlParameterSource parameters = new MapSqlParameterSource()
             .addValue("idempotency_key", idempotencyKey);
         return namedParameterJdbcTemplate.queryForObject(query, parameters, Boolean.class);
+    }
+
+    @Override
+    public List<TransactionMetrics> getMetricsByAccountNumber(String accountNumber) {
+        String query = """
+                select extract(month from t.created_at) as month, 
+                    sum(case when t.sender_account_number = :account_number and not t.receiver_account_number = :account_number then t.amount else 0 end) as sent,
+                    sum(case when t.receiver_account_number = :account_number and not t.sender_account_number = :account_number then t.amount else 0 end) as received,
+                    sum(case when t.sender_account_number = :account_number and t.receiver_account_number = :account_number then t.amount else 0 end) as internal
+
+                from tb_transacao t where t.status = 'COMPLETED' and (t.sender_account_number = :account_number or t.receiver_account_number = :account_number)
+                group by month
+                order by month;
+            """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource()
+            .addValue("account_number", accountNumber);
+
+        return namedParameterJdbcTemplate.query(query, parameters, transactionMetricsRowMapper);
     }
 }

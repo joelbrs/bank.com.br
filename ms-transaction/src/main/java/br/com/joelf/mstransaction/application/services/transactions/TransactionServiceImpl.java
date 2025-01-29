@@ -1,5 +1,7 @@
 package br.com.joelf.mstransaction.application.services.transactions;
 
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -8,6 +10,7 @@ import br.com.joelf.mstransaction.application.services.exceptions.BusinessRuleEx
 import br.com.joelf.mstransaction.domain.dtos.IdempotencyKeyDTOIn;
 import br.com.joelf.mstransaction.domain.dtos.TransactionDTOIn;
 import br.com.joelf.mstransaction.domain.models.Transaction;
+import br.com.joelf.mstransaction.domain.models.TransactionMetrics;
 import br.com.joelf.mstransaction.domain.models.enums.TransactionStatus;
 import br.com.joelf.mstransaction.domain.services.TransactionService;
 import br.com.joelf.mstransaction.domain.validators.Validator;
@@ -82,5 +85,10 @@ public class TransactionServiceImpl implements TransactionService {
             dto.receiverAccountNumber() + dto.senderAccountNumber();
 
         return tokenHandler.generateToken(issuer, subject, dto);
+    }
+
+    @Override
+    public List<TransactionMetrics> getMetricsByAccountNumber(String accountNumber) {
+        return transactionRepository.getMetricsByAccountNumber(accountNumber);
     }
 }

@@ -7,8 +7,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import br.com.joelf.mstransaction.domain.models.Transaction;
+import br.com.joelf.mstransaction.domain.models.TransactionMetrics;
 import br.com.joelf.mstransaction.infrastructure.database.AccountRepository;
 import br.com.joelf.mstransaction.infrastructure.database.TransactionRepository;
+import br.com.joelf.mstransaction.infrastructure.database.mapper.TransactionMetricsRowMapper;
 import br.com.joelf.mstransaction.infrastructure.database.mapper.TransactionRowMapper;
 import br.com.joelf.mstransaction.infrastructure.database.postgres.AccountRepositoryImpl;
 import br.com.joelf.mstransaction.infrastructure.database.postgres.TransactionRepositoryImpl;
@@ -20,9 +22,15 @@ public class RepositoryConfig {
     public TransactionRepository transactionRepository(
         JdbcTemplate jdbcTemplate,
         NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-        RowMapper<Transaction> transactionRowMapper
+        RowMapper<Transaction> transactionRowMapper,
+        RowMapper<TransactionMetrics> transactionMetricsRowMapper
     ) {
-        return new TransactionRepositoryImpl(jdbcTemplate, namedParameterJdbcTemplate, transactionRowMapper);
+        return new TransactionRepositoryImpl(
+            jdbcTemplate, 
+            namedParameterJdbcTemplate, 
+            transactionRowMapper,
+            transactionMetricsRowMapper
+        );
     }
 
     @Bean
@@ -33,5 +41,10 @@ public class RepositoryConfig {
     @Bean
     public RowMapper<Transaction> transactionRowMapper() {
         return new TransactionRowMapper();
+    }
+
+    @Bean
+    public RowMapper<TransactionMetrics> transactionMetricsRowMapper() {
+        return new TransactionMetricsRowMapper();
     }
 }
