@@ -1,15 +1,17 @@
 package br.com.joelf.mstransaction.infrastructure.adapters;
 
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Date;
 import java.util.Map;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.joelf.mstransaction.application.ports.TokenHandler;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 
 public class TokenHandlerImpl implements TokenHandler<Object> {
 
@@ -37,8 +39,21 @@ public class TokenHandlerImpl implements TokenHandler<Object> {
             .compact();
     }
 
-    private Key getSigningKey() {
-        byte[] keyBytes = this.jwtSecret.getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
+    private SecretKey getSigningKey() {
+        return new SecretKeySpec(jwtSecret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.toString());
+    }
+
+    @Override
+    public boolean validateToken(String token) {
+        JwtParser parser = Jwts.parser()
+            .verifyWith(getSigningKey())
+            .build();
+
+        try {
+            parser.parse(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
