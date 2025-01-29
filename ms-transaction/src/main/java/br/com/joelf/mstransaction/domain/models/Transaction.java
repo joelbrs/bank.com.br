@@ -11,6 +11,7 @@ public record Transaction(
     UUID id,
     String senderAccountNumber,
     String receiverAccountNumber,
+    String idempotentKey,
     BigDecimal amount,
     String description,
     LocalDateTime createdAt,

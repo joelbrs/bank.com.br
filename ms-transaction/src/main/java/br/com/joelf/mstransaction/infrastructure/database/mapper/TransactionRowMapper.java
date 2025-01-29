@@ -20,6 +20,7 @@ public class TransactionRowMapper implements RowMapper<Transaction> {
         BigDecimal amount = rs.getBigDecimal("amount");
         String senderAccountNumber = rs.getString("sender_account_number");
         String receiverAccountNumber = rs.getString("receiver_account_number");
+        String idempotentKey = rs.getString("idempotent_key");
         String description = rs.getString("description");
         LocalDateTime createdAt = rs.getObject("created_at", LocalDateTime.class);
         LocalDateTime updatedAt = rs.getObject("updated_at", LocalDateTime.class);
@@ -27,7 +28,16 @@ public class TransactionRowMapper implements RowMapper<Transaction> {
         TransactionType type = TransactionType.valueOf(rs.getString("type"));
 
         return new Transaction(
-            id, senderAccountNumber, receiverAccountNumber, amount, description, createdAt, updatedAt, status, type
+            id, 
+            senderAccountNumber, 
+            receiverAccountNumber, 
+            idempotentKey, 
+            amount, 
+            description, 
+            createdAt, 
+            updatedAt, 
+            status, 
+            type
         );
     }   
 }
