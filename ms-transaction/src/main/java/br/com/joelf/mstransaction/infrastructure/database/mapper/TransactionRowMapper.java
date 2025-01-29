@@ -1,6 +1,5 @@
 package br.com.joelf.mstransaction.infrastructure.database.mapper;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -16,28 +15,18 @@ public class TransactionRowMapper implements RowMapper<Transaction> {
 
     @Override
     public Transaction mapRow(ResultSet rs, int rowNum) throws SQLException {
-        UUID id = rs.getObject("id", UUID.class);
-        BigDecimal amount = rs.getBigDecimal("amount");
-        String senderAccountNumber = rs.getString("sender_account_number");
-        String receiverAccountNumber = rs.getString("receiver_account_number");
-        String idempotentKey = rs.getString("idempotent_key");
-        String description = rs.getString("description");
-        LocalDateTime createdAt = rs.getObject("created_at", LocalDateTime.class);
-        LocalDateTime updatedAt = rs.getObject("updated_at", LocalDateTime.class);
-        TransactionStatus status = TransactionStatus.valueOf(rs.getString("status"));
-        TransactionType type = TransactionType.valueOf(rs.getString("type"));
-
-        return new Transaction(
-            id, 
-            senderAccountNumber, 
-            receiverAccountNumber, 
-            idempotentKey, 
-            amount, 
-            description, 
-            createdAt, 
-            updatedAt, 
-            status, 
-            type
-        );
+        Transaction transaction = new Transaction();
+        transaction.setId(rs.getObject("id", UUID.class));
+        transaction.setAmount(rs.getBigDecimal("amount"));
+        transaction.setSenderAccountNumber(rs.getString("sender_account_number"));
+        transaction.setReceiverAccountNumber(rs.getString("receiver_account_number"));
+        transaction.setIdempotentKey(rs.getString("idempotent_key"));
+        transaction.setDescription(rs.getString("description"));
+        transaction.setCreatedAt(rs.getObject("created_at", LocalDateTime.class));
+        transaction.setUpdatedAt(rs.getObject("updated_at", LocalDateTime.class));
+        transaction.setStatus(TransactionStatus.valueOf(rs.getString("status")));
+        transaction.setType(TransactionType.valueOf(rs.getString("type")));
+        
+        return transaction;
     }   
 }

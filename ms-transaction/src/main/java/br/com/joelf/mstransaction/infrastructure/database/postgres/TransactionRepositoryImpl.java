@@ -49,26 +49,26 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     @Transactional
-    public UUID save(Transaction transaction) {
+    public Transaction save(Transaction transaction) {
         String query = """
                 insert into tb_transacao (id, sender_account_number, receiver_account_number, amount, idempotent_key, description, type)
                     values (?, ?, ?, ?, ?, ?, ?);
             """;
         
-        UUID id = UUID.randomUUID();
+        transaction.setId(UUID.randomUUID());
 
         jdbcTemplate.update(
             query, 
-            id, 
-            transaction.senderAccountNumber(), 
-            transaction.receiverAccountNumber(), 
-            transaction.amount(), 
-            transaction.idempotentKey(),
-            transaction.description(), 
-            transaction.type().name()
+            transaction.getId(), 
+            transaction.getSenderAccountNumber(), 
+            transaction.getReceiverAccountNumber(), 
+            transaction.getAmount(), 
+            transaction.getIdempotentKey(),
+            transaction.getDescription(), 
+            transaction.getType().name()
         );
 
-        return id;
+        return transaction;
     }
 
     @Override
@@ -79,9 +79,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         jdbcTemplate.update(
             query, 
-            transaction.status().name(), 
-            transaction.id()
+            transaction.getStatus().name(), 
+            transaction.getId()
         );
-        return transaction.id();
+        return transaction.getId();
     }
 }
