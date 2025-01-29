@@ -14,3 +14,12 @@ spring:
     init:
       mode: always
       schema-locations: classpath:schema.sql
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:admin}
+    password: ${RABBITMQ_PASSWORD:admin}
+    template:
+      retry:
+        enabled: true
+        initial-interval: 5s
