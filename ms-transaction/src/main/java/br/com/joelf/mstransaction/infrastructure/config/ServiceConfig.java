@@ -1,6 +1,8 @@
 package br.com.joelf.mstransaction.infrastructure.config;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -38,14 +40,16 @@ public class ServiceConfig {
         @Qualifier("transactionPublisher") MessagePublisher transactionMessagePublisher,
         AuthorizerClient authorizerClient,
         TokenHandler<Object> tokenHandler,
-        CacheRepository<String, Transaction> cacheRepositoryTransaction,
-        CacheRepository<String, List<TransactionMetrics>> cacheRepositoryMetrics
+        CacheRepository<UUID, Transaction> cacheRepositoryTransaction,
+        CacheRepository<String, List<TransactionMetrics>> cacheRepositoryMetrics,
+        CacheRepository<String, UUID> cacheRepositoryIdempotencyKey,
+        CacheRepository<String, BigDecimal> cacheRepositoryBalance
     ) {
         
         Validator<TransactionDTOIn> validator = new ValidatorComposite<>(
-            new IdempotencyKeyValidation(transactionRepository, tokenHandler),
+            new IdempotencyKeyValidation(transactionRepository, tokenHandler, cacheRepositoryIdempotencyKey),
             new ReceiverAccountValidation(accountRepository),
-            new BalanceValidation(transactionRepository)
+            new BalanceValidation(transactionRepository, cacheRepositoryBalance)
         );
 
         return new TransactionServiceImpl(
@@ -55,7 +59,8 @@ public class ServiceConfig {
             validator,
             tokenHandler,
             cacheRepositoryTransaction,
-            cacheRepositoryMetrics
+            cacheRepositoryMetrics,
+            cacheRepositoryBalance
         );
     }
 }

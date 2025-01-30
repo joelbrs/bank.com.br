@@ -1,6 +1,8 @@
 package br.com.joelf.mstransaction.application.services.transactions;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,8 +32,10 @@ public class TransactionServiceImpl implements TransactionService {
     private final AuthorizerClient authorizerClient;
     private final Validator<TransactionDTOIn> validator;
     private final TokenHandler<Object> tokenHandler;
-    private final CacheRepository<String, Transaction> cacheRepositoryTransaction;
+
+    private final CacheRepository<UUID, Transaction> cacheRepositoryTransaction;
     private final CacheRepository<String, List<TransactionMetrics>> cacheRepositoryMetrics;
+    private final CacheRepository<String, BigDecimal> balanceCacheRepository;
     
     public TransactionServiceImpl(
         TransactionRepository transactionRepository,
@@ -39,8 +43,9 @@ public class TransactionServiceImpl implements TransactionService {
         AuthorizerClient authorizerClient,
         Validator<TransactionDTOIn> validator,
         TokenHandler<Object> tokenHandler,
-        CacheRepository<String, Transaction> cacheRepositoryTransaction,
-        CacheRepository<String, List<TransactionMetrics>> cacheRepositoryMetrics
+        CacheRepository<UUID, Transaction> cacheRepositoryTransaction,
+        CacheRepository<String, List<TransactionMetrics>> cacheRepositoryMetrics,
+        CacheRepository<String, BigDecimal> balanceCacheRepository
     ) {
         this.transactionRepository = transactionRepository;
         this.transactionMessagePublisher = transactionMessagePublisher;
@@ -49,6 +54,7 @@ public class TransactionServiceImpl implements TransactionService {
         this.tokenHandler = tokenHandler;
         this.cacheRepositoryTransaction = cacheRepositoryTransaction;
         this.cacheRepositoryMetrics = cacheRepositoryMetrics;
+        this.balanceCacheRepository = balanceCacheRepository;
     }
 
     @Override
@@ -62,10 +68,7 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = MAPPER.convertValue(dto, Transaction.class);
         Transaction result = transactionRepository.save(transaction);
 
-        cacheRepositoryTransaction.put(result.getIdempotentKey(), result);
-        cacheRepositoryMetrics.delete(
-            result.getReceiverAccountNumber(), result.getSenderAccountNumber()
-        );
+        cacheRepositoryTransaction.put(result.getId(), result);
         
         Thread.startVirtualThread(() -> {
             try {
@@ -88,6 +91,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         //TODO: send success notification
         transactionRepository.update(transaction);
+        clearAccountsCache(transaction.getReceiverAccountNumber(), transaction.getSenderAccountNumber());
     }
 
     @Override
@@ -111,5 +115,10 @@ public class TransactionServiceImpl implements TransactionService {
         metrics = transactionRepository.getMetricsByAccountNumber(accountNumber);
         cacheRepositoryMetrics.put(accountNumber, metrics);
         return metrics;
+    }
+
+    private void clearAccountsCache(String receiverAccountNumber, String senderAccountNumber) {
+        cacheRepositoryMetrics.delete(receiverAccountNumber, senderAccountNumber);
+        balanceCacheRepository.delete(receiverAccountNumber, senderAccountNumber);
     }
 }

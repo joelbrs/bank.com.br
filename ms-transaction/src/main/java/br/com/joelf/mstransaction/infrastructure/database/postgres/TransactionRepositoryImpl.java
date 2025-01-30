@@ -111,14 +111,14 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public boolean existsByIdempotencyKey(String idempotencyKey) {
+    public UUID findTransactionIdByIdempotencyKey(String idempotencyKey) {
         String query = """
-            select exists(select 1 from tb_transacao where idempotent_key = :idempotency_key) and status = 'COMPLETED' or status = 'PENDING';    
+            select id from tb_transacao where idempotent_key = :idempotency_key and not status = 'ERROR';    
             """;
 
         SqlParameterSource parameters = new MapSqlParameterSource()
             .addValue("idempotency_key", idempotencyKey);
-        return namedParameterJdbcTemplate.queryForObject(query, parameters, Boolean.class);
+        return namedParameterJdbcTemplate.queryForObject(query, parameters, UUID.class);
     }
 
     @Override
