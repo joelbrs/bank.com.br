@@ -57,8 +57,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     @Transactional
     public Transaction save(Transaction transaction) {
         String query = """
-                insert into tb_transacao (id, sender_account_number, receiver_account_number, amount, idempotent_key, description, type)
-                    values (?, ?, ?, ?, ?, ?, ?);
+                insert into tb_transacao 
+                    (id, sender_account_number, receiver_account_number, amount, idempotent_key, description, type)
+                values (?, ?, ?, ?, ?, ?, ?);
             """;
         
         transaction.setId(UUID.randomUUID());
@@ -101,7 +102,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                         else amount
                     end
                 ) from tb_transacao 
-                where (sender_account_number = :account_number or receiver_account_number = :account_number) and status = 'COMPLETED';
+                where 
+                    (sender_account_number = :account_number or receiver_account_number = :account_number) 
+                    and status = 'COMPLETED';
             """;
 
         SqlParameterSource parameters = new MapSqlParameterSource()
@@ -124,12 +127,17 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     @Override
     public List<TransactionMetrics> getMetricsByAccountNumber(String accountNumber) {
         String query = """
-                select extract(month from t.created_at) as month, 
+                select 
+                    extract(month from t.created_at) as month, 
                     sum(case when t.sender_account_number = :account_number and not t.receiver_account_number = :account_number then t.amount else 0 end) as sent,
                     sum(case when t.receiver_account_number = :account_number and not t.sender_account_number = :account_number then t.amount else 0 end) as received,
                     sum(case when t.sender_account_number = :account_number and t.receiver_account_number = :account_number then t.amount else 0 end) as internal
-
-                from tb_transacao t where t.status = 'COMPLETED' and (t.sender_account_number = :account_number or t.receiver_account_number = :account_number)
+                from 
+                    tb_transacao t 
+                    where 
+                        extract(year from t.created_at) = extract(year from current_timestamp) 
+                        and t.status = 'COMPLETED' 
+                        and (t.sender_account_number = :account_number or t.receiver_account_number = :account_number)
                 group by month
                 order by month;
             """;
