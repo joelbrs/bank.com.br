@@ -17,6 +17,7 @@ import br.com.joelf.mstransaction.domain.validators.Validator;
 import br.com.joelf.mstransaction.infrastructure.async.MessagePublisher;
 import br.com.joelf.mstransaction.infrastructure.async.exceptions.UnprocessableEntityMessage;
 import br.com.joelf.mstransaction.infrastructure.clients.AuthorizerClient;
+import br.com.joelf.mstransaction.infrastructure.database.CacheRepository;
 import br.com.joelf.mstransaction.infrastructure.database.TransactionRepository;
 import feign.FeignException.FeignClientException;
 
@@ -29,19 +30,25 @@ public class TransactionServiceImpl implements TransactionService {
     private final AuthorizerClient authorizerClient;
     private final Validator<TransactionDTOIn> validator;
     private final TokenHandler<Object> tokenHandler;
+    private final CacheRepository<String, Transaction> cacheRepositoryTransaction;
+    private final CacheRepository<String, List<TransactionMetrics>> cacheRepositoryMetrics;
     
     public TransactionServiceImpl(
         TransactionRepository transactionRepository,
         MessagePublisher transactionMessagePublisher,
         AuthorizerClient authorizerClient,
         Validator<TransactionDTOIn> validator,
-        TokenHandler<Object> tokenHandler
+        TokenHandler<Object> tokenHandler,
+        CacheRepository<String, Transaction> cacheRepositoryTransaction,
+        CacheRepository<String, List<TransactionMetrics>> cacheRepositoryMetrics
     ) {
         this.transactionRepository = transactionRepository;
         this.transactionMessagePublisher = transactionMessagePublisher;
         this.authorizerClient = authorizerClient;
         this.validator = validator;
         this.tokenHandler = tokenHandler;
+        this.cacheRepositoryTransaction = cacheRepositoryTransaction;
+        this.cacheRepositoryMetrics = cacheRepositoryMetrics;
     }
 
     @Override
@@ -54,6 +61,11 @@ public class TransactionServiceImpl implements TransactionService {
 
         Transaction transaction = MAPPER.convertValue(dto, Transaction.class);
         Transaction result = transactionRepository.save(transaction);
+
+        cacheRepositoryTransaction.put(result.getIdempotentKey(), result);
+        cacheRepositoryMetrics.delete(
+            result.getReceiverAccountNumber(), result.getSenderAccountNumber()
+        );
         
         Thread.startVirtualThread(() -> {
             try {
@@ -89,6 +101,15 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionMetrics> getMetricsByAccountNumber(String accountNumber) {
-        return transactionRepository.getMetricsByAccountNumber(accountNumber);
+        List<TransactionMetrics> metrics = 
+            cacheRepositoryMetrics.get(accountNumber);
+        
+        if (metrics != null) {
+            return metrics;
+        }
+
+        metrics = transactionRepository.getMetricsByAccountNumber(accountNumber);
+        cacheRepositoryMetrics.put(accountNumber, metrics);
+        return metrics;
     }
 }

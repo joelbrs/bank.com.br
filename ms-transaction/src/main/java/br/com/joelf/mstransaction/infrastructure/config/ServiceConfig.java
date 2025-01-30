@@ -1,5 +1,7 @@
 package br.com.joelf.mstransaction.infrastructure.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,11 +12,14 @@ import br.com.joelf.mstransaction.application.services.transactions.validations.
 import br.com.joelf.mstransaction.application.services.transactions.validations.IdempotencyKeyValidation;
 import br.com.joelf.mstransaction.application.services.transactions.validations.ReceiverAccountValidation;
 import br.com.joelf.mstransaction.domain.dtos.TransactionDTOIn;
+import br.com.joelf.mstransaction.domain.models.Transaction;
+import br.com.joelf.mstransaction.domain.models.TransactionMetrics;
 import br.com.joelf.mstransaction.domain.services.TransactionService;
 import br.com.joelf.mstransaction.domain.validators.Validator;
 import br.com.joelf.mstransaction.infrastructure.async.MessagePublisher;
 import br.com.joelf.mstransaction.infrastructure.clients.AuthorizerClient;
 import br.com.joelf.mstransaction.infrastructure.database.AccountRepository;
+import br.com.joelf.mstransaction.infrastructure.database.CacheRepository;
 import br.com.joelf.mstransaction.infrastructure.database.TransactionRepository;
 import br.com.joelf.mstransaction.infrastructure.validators.ValidatorComposite;
 
@@ -32,7 +37,9 @@ public class ServiceConfig {
         TransactionRepository transactionRepository,
         @Qualifier("transactionPublisher") MessagePublisher transactionMessagePublisher,
         AuthorizerClient authorizerClient,
-        TokenHandler<Object> tokenHandler
+        TokenHandler<Object> tokenHandler,
+        CacheRepository<String, Transaction> cacheRepositoryTransaction,
+        CacheRepository<String, List<TransactionMetrics>> cacheRepositoryMetrics
     ) {
         
         Validator<TransactionDTOIn> validator = new ValidatorComposite<>(
@@ -46,7 +53,9 @@ public class ServiceConfig {
             transactionMessagePublisher,
             authorizerClient,
             validator,
-            tokenHandler
+            tokenHandler,
+            cacheRepositoryTransaction,
+            cacheRepositoryMetrics
         );
     }
 }
