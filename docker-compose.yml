@@ -2,9 +2,16 @@ services:
   rabbitmq:
     container_name: rabbitmq
     image: 'rabbitmq:3.13-management'
+    hostname: rabbitmq
     environment:
       RABBITMQ_DEFAULT_PASS: admin
       RABBITMQ_DEFAULT_USER: admin
     ports:
       - '5672:5672'
       - '15672:15672'
+    networks:
+      - rabbitmq_network
+
+networks:
+  rabbitmq_network:
+    driver: bridge
