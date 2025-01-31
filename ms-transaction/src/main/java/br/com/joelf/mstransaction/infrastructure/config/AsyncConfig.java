@@ -41,19 +41,22 @@ public class AsyncConfig {
 
     @Bean("transactionContainer")
     public SimpleMessageListenerContainer transactionContainer(
-        ConnectionFactory connectionFactory
+        ConnectionFactory connectionFactory,
+        TransactionService transactionService
     ) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(transactionQueueName);
-        container.setMessageListener(transactionListenerAdapter());
+        container.setMessageListener(transactionListenerAdapter(transactionService));
 
         return container;
     }
 
     @Bean("transactionListenerAdapter")
-    public MessageListenerAdapter transactionListenerAdapter() {
-        return new MessageListenerAdapter(transactionPublisher());
+    public MessageListenerAdapter transactionListenerAdapter(
+        TransactionService transactionService
+    ) {
+        return new MessageListenerAdapter(transactionListener(transactionService));
     }
 
     @Bean("transactionListener")

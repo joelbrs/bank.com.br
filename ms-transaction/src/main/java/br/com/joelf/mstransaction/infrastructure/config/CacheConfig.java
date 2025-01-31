@@ -21,6 +21,12 @@ import br.com.joelf.mstransaction.infrastructure.database.redis.CacheRepositoryI
 @Configuration
 @EnableCaching
 public class CacheConfig {
+
+    private static final String TRANSACTION_METRICS_SUFFIX = "/metrics";
+
+    public static String metricsKey(String accountNumber) {
+        return accountNumber + TRANSACTION_METRICS_SUFFIX;
+    }
     
     @Bean
     public RedisTemplate<UUID, Transaction> redisTemplateTransaction(RedisConnectionFactory connectionFactory) {

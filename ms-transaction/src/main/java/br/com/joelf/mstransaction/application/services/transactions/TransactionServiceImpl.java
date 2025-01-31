@@ -21,6 +21,7 @@ import br.com.joelf.mstransaction.domain.validators.Validator;
 import br.com.joelf.mstransaction.infrastructure.async.MessagePublisher;
 import br.com.joelf.mstransaction.infrastructure.async.exceptions.UnprocessableEntityMessage;
 import br.com.joelf.mstransaction.infrastructure.clients.AuthorizerClient;
+import br.com.joelf.mstransaction.infrastructure.config.CacheConfig;
 import br.com.joelf.mstransaction.infrastructure.database.CacheRepository;
 import br.com.joelf.mstransaction.infrastructure.database.TransactionRepository;
 import feign.FeignException.FeignClientException;
@@ -110,20 +111,22 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionMetrics> getMetricsByAccountNumber(String accountNumber) {
+        String TRANSACTION_METRICS_CACHE_KEY = CacheConfig.metricsKey(accountNumber);
+
         List<TransactionMetrics> metrics = 
-            cacheRepositoryMetrics.get(accountNumber);
+            cacheRepositoryMetrics.get(TRANSACTION_METRICS_CACHE_KEY);
         
         if (metrics != null) {
             return metrics;
         }
 
         metrics = transactionRepository.getMetricsByAccountNumber(accountNumber);
-        cacheRepositoryMetrics.put(accountNumber, metrics);
+        cacheRepositoryMetrics.put(TRANSACTION_METRICS_CACHE_KEY, metrics);
         return metrics;
     }
 
     private void clearAccountsCache(String receiverAccountNumber, String senderAccountNumber) {
-        cacheRepositoryMetrics.delete(receiverAccountNumber, senderAccountNumber);
+        cacheRepositoryMetrics.delete(CacheConfig.metricsKey(receiverAccountNumber), CacheConfig.metricsKey(senderAccountNumber));
         balanceCacheRepository.delete(receiverAccountNumber, senderAccountNumber);
     }
 }
