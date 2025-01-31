@@ -20,7 +20,7 @@ services:
     ports:
     - 8080:8080
     volumes:
-    - ./keycloak/:/opt/keycloak/data/import/
+    - ./.keycloak/:/opt/keycloak/data/import/
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin

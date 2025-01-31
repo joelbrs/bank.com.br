@@ -31,8 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-*:Zone.Identifier
-
-.env
-
-.keycloak
