@@ -10,8 +10,38 @@ services:
       - '5672:5672'
       - '15672:15672'
     networks:
-      - rabbitmq_network
+      - infra_network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.1
+    command:
+    - start-dev
+    - --import-realm
+    ports:
+    - 8080:8080
+    volumes:
+    - ./keycloak/:/opt/keycloak/data/import/
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_PORT: 8080
+      KC_HOSTNAME_URL: http://localhost:8080
+      KC_HOSTNAME_ADMIN_URL: http://localhost:8080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: true
+      KC_HTTP_RELATIVE_PATH: /
+      KC_HTTP_ENABLED: true
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - infra_network
+    healthcheck:
+      test: ['CMD-SHELL', '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:8080/auth/health/live']
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
 networks:
-  rabbitmq_network:
+  infra_network:
     driver: bridge

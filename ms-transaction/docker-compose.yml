@@ -10,10 +10,10 @@ services:
       - redis
       - rabbitmq
     networks:
-      - rabbitmq_network
+      - infra_network
       - services_network
     ports:
-      - '8080:8080'
+      - '8081:8080'
 
   db:
     image: postgres
@@ -38,8 +38,8 @@ services:
       - services_network
 
 networks:
-  rabbitmq_network:
+  infra_network:
     external:
-      name: bankcombr_rabbitmq_network
+      name: bankcombr_infra_network
   services_network:
     driver: bridge
