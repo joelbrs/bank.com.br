@@ -1,0 +1,48 @@
+### Gerar Token ADM
+POST http://localhost:8080/realms/{realm}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=admin-cli
+&username={username}
+&password={password}
+&grant_type=password
+
+### Cadastrar Usuário - Precisa de Token de ADMIN
+POST http://localhost:8080/admin/realms/{realm}/users
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+    "username": "{username}",
+    "firstName": "{firstName}",
+    "lastName": "{lastName}",
+    "email": "{email}",
+    "enabled": true,
+    "emailVerified": true,
+    "realmRoles": ["{role}"],
+    "credentials": [
+        {
+            "type": "password",
+            "value": "{password}",
+            "temporary": false
+        }
+    ]
+}
+
+### Gerar Token a partir do nome de usuário e senha
+POST http://localhost:8080/realms/{realm}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id={client_id}
+&client_secret={client_secret}
+&username={username}
+&password={password}
+&grant_type=password
+
+### Logout
+POST http://localhost:8080/realms/{realm}/protocol/openid-connect/revoke
+Content-Type: application/x-www-form-urlencoded
+
+client_id={client_id}
+&client_secret={client_secret}
+&token={token}
