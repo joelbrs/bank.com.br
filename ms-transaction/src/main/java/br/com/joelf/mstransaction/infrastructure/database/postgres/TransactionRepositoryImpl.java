@@ -108,7 +108,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             """;
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-            .addValue("sender_account_number", accountNumber);
+            .addValue("account_number", accountNumber);
 
         return namedParameterJdbcTemplate.queryForObject(query, parameters, BigDecimal.class);
     }
@@ -121,7 +121,12 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         SqlParameterSource parameters = new MapSqlParameterSource()
             .addValue("idempotency_key", idempotencyKey);
-        return namedParameterJdbcTemplate.queryForObject(query, parameters, UUID.class);
+
+        try {
+            return namedParameterJdbcTemplate.queryForObject(query, parameters, UUID.class);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override

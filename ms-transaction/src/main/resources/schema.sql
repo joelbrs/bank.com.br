@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS tb_conta (
-    id SERIAL PRIMARY KEY,
+    id UUID DEFAULT gen_random_uuid(),
     account_number VARCHAR(20) NOT NULL UNIQUE,  
     user_tax_id VARCHAR(20) NOT NULL,            
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
@@ -9,14 +9,14 @@ CREATE TABLE IF NOT EXISTS tb_conta (
 );
 
 CREATE TABLE IF NOT EXISTS tb_transacao (
-    id SERIAL PRIMARY KEY,
+    id UUID DEFAULT gen_random_uuid(),
     sender_account_number VARCHAR(20) NOT NULL,  
     receiver_account_number VARCHAR(20) NOT NULL,  
     amount DECIMAL(15, 2) NOT NULL,               
     description TEXT,                             
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
-    idempotent_key VARCHAR(255) NOT NULL UNIQUE,   
+    idempotent_key TEXT NOT NULL UNIQUE,   
     status VARCHAR(10) CHECK (status IN ('PENDING', 'COMPLETED', 'ERROR')) DEFAULT 'PENDING',  
     type VARCHAR(10) CHECK (type IN ('CREDIT', 'DEBIT')) NOT NULL,  
     

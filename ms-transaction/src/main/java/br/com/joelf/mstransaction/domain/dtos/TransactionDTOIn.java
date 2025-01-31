@@ -2,8 +2,6 @@ package br.com.joelf.mstransaction.domain.dtos;
 
 import java.math.BigDecimal;
 
-import org.hibernate.validator.constraints.UUID;
-
 import br.com.joelf.mstransaction.application.annotations.FieldsComparison;
 import br.com.joelf.mstransaction.domain.models.enums.TransactionType;
 import jakarta.validation.constraints.NotBlank;
@@ -24,7 +22,6 @@ public record TransactionDTOIn(
     String receiverAccountNumber,
 
     @NotBlank
-    @UUID
     String idempotentKey,
 
     @NotNull

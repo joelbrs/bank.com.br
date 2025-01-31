@@ -10,6 +10,8 @@ import javax.crypto.spec.SecretKeySpec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.joelf.mstransaction.application.ports.TokenHandler;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 
@@ -40,17 +42,17 @@ public class TokenHandlerImpl implements TokenHandler<Object> {
     }
 
     private SecretKey getSigningKey() {
-        return new SecretKeySpec(jwtSecret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.toString());
+        return new SecretKeySpec(jwtSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
     }
 
     @Override
     public boolean validateToken(String token) {
-        JwtParser parser = Jwts.parser()
-            .verifyWith(getSigningKey())
-            .build();
-
         try {
-            parser.parse(token);
+            Jwts.parser()
+                .verifyWith(getSigningKey()) 
+                .build()
+                .parseSignedClaims(token);
+
             return true;
         } catch (Exception e) {
             return false;

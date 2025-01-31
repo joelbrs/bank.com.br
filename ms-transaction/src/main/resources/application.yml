@@ -24,6 +24,11 @@ spring:
         enabled: true
         initial-interval: 5s
 
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /ms-transaction/api/v1
+
 amqp:
   queue:
     transaction:
@@ -35,6 +40,6 @@ authorizer:
   path: ${AUTHORIZER_PATH:api/v2/}
 
 jwt:
-  secret: ${JWT_SECRET:secret}
-  expiration: ${JWT_EXPIRATION:3600}
+  secret: ${JWT_SECRET:ae5abe0db67c2ccb2f32cad468b65489b17033f66943f0c53f85f84e1109e0f3d6dd31a62764eef11fdd8aef17c3c4e87c2fcd443969eeb34b6dc45a99f93c46f7a994d3ab7c26644359a85b9225659a4ab7505b9660fec537ac3e3678fdcb2c8179a048ba433d2e0ada2741eb87074a6d2f14b9e432143330865b121a7841ec22cfe8a311d62885163d8484c5b58e73d5158c9cdc02722f62e9a46cbfe07e45c853a34aad08b2918c95cebee41f0193a41a6ce4fec6007da460a9f80e5066d54772e789744924f8e0cfcc3e7894093ced854624882c5dfc3c4371a01ce0c0ae02fc116c79aa44ab5a058719b8aa6b45e02c4f6cd31c3dd071e24f90c7c7ffab}
+  expiration: ${JWT_EXPIRATION:360000}
   

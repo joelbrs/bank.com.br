@@ -1,6 +1,8 @@
 package br.com.joelf.mstransaction.infrastructure.config;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +23,40 @@ import br.com.joelf.mstransaction.infrastructure.database.redis.CacheRepositoryI
 public class CacheConfig {
     
     @Bean
-    public RedisTemplate<String, Transaction> redisTemplateTransaction(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, Transaction> template = new RedisTemplate<>();
+    public RedisTemplate<UUID, Transaction> redisTemplateTransaction(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<UUID, Transaction> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+
+        template.setKeySerializer(new Jackson2JsonRedisSerializer<>(UUID.class));
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+        return template;
+    }
+
+    @Bean
+    public RedisTemplate<String, List<TransactionMetrics>> redisTemplateMetrics(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, List<TransactionMetrics>> template = new RedisTemplate<>();
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(List.class));
+        
+        configureRedisTemplate(template, connectionFactory);
+
+        return template;
+    }
+
+        
+    @Bean
+    public RedisTemplate<String, UUID> redisTemplateIdempotencyKey(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, UUID> template = new RedisTemplate<>();
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(UUID.class));
+
+        configureRedisTemplate(template, connectionFactory);
+
+        return template;
+    }
+        
+    @Bean
+    public RedisTemplate<String, BigDecimal> redisTemplateBalance(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, BigDecimal> template = new RedisTemplate<>();
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 
         configureRedisTemplate(template, connectionFactory);
@@ -31,18 +65,8 @@ public class CacheConfig {
     }
 
     @Bean
-    public RedisTemplate<String, TransactionMetrics> redisTemplateMetrics(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, TransactionMetrics> template = new RedisTemplate<>();
-        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(List.class));
-        
-        configureRedisTemplate(template, connectionFactory);
-
-        return template;
-    }
-
-    @Bean
-    public CacheRepository<String, Transaction> cacheRepositoryTransaction(
-        RedisTemplate<String, Transaction> redisTemplate
+    public CacheRepository<UUID, Transaction> cacheRepositoryTransaction(
+        RedisTemplate<UUID, Transaction> redisTemplate
     ) {
         return new CacheRepositoryImpl<>(redisTemplate);
     }
@@ -50,6 +74,20 @@ public class CacheConfig {
     @Bean
     public CacheRepository<String, List<TransactionMetrics>> cacheRepositoryMetrics(
         RedisTemplate<String, List<TransactionMetrics>> redisTemplate
+    ) {
+        return new CacheRepositoryImpl<>(redisTemplate);
+    }
+
+    @Bean
+    public CacheRepository<String, UUID> cacheRepositoryIdempotencyKey(
+        RedisTemplate<String, UUID> redisTemplate
+    ) {
+        return new CacheRepositoryImpl<>(redisTemplate);
+    }
+
+    @Bean
+    public CacheRepository<String, BigDecimal> cacheRepositoryBalance(
+        RedisTemplate<String, BigDecimal> redisTemplate
     ) {
         return new CacheRepositoryImpl<>(redisTemplate);
     }

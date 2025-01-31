@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -58,6 +60,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Transactional
     public void create(TransactionDTOIn dto) {
         Throwable error = validator.validate(dto);
 
@@ -85,13 +88,15 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             authorizerClient.authorize();
             transaction.setStatus(TransactionStatus.COMPLETED);
+            clearAccountsCache(
+                transaction.getReceiverAccountNumber(), transaction.getSenderAccountNumber()
+            );
         } catch (FeignClientException e) {
             transaction.setStatus(TransactionStatus.ERROR);
         }
 
         //TODO: send success notification
         transactionRepository.update(transaction);
-        clearAccountsCache(transaction.getReceiverAccountNumber(), transaction.getSenderAccountNumber());
     }
 
     @Override
