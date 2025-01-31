@@ -1,21 +1,26 @@
 services:
   api: &api
-    build: .
+    build: 
+      context: ms-transaction
+      dockerfile: Dockerfile
     env_file:
-      - ./environments/.env
+      - ms-transaction/environments/.env
     depends_on:
       - db
       - redis
+      - rabbitmq
     networks:
       - rabbitmq_network
       - services_network
+    ports:
+      - '8080:8080'
 
   db:
     image: postgres
     restart: always
     hostname: db
     env_file:
-      - ./environments/.env         
+      - ms-transaction/environments/.env  
     ports:
       - '5432:5432'
     networks:
@@ -26,7 +31,7 @@ services:
     hostname: redis
     restart: always
     env_file:
-      - ./environments/.env
+      - ms-transaction/environments/.env
     ports:
       - '6379:6379'  
     networks:
