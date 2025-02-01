@@ -1,0 +1,19 @@
+services:
+  api: &api
+    build: 
+      context: ms-authentication
+      dockerfile: Dockerfile
+    env_file:
+      - ms-authentication/environments/.env
+    depends_on:
+      - keycloak
+    networks:
+      - infra_network
+      - services_network
+    ports:
+      - '8082:8080'
+
+networks:
+  infra_network:
+    external:
+      name: bankcombr_infra_network
