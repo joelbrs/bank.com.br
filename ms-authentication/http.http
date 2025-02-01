@@ -1,4 +1,4 @@
-POST http://localhost:8081/ms-authentication/api/v1/auth/sign-up
+POST http://localhost:80/ms-authentication/api/v1/auth/sign-up
 Content-Type: application/json
 
 {
@@ -11,7 +11,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:8081/ms-authentication/api/v1/auth/sign-in
+POST http://localhost:80/ms-authentication/api/v1/auth/sign-in
 Content-Type: application/json
 
 {

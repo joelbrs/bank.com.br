@@ -1,21 +1,6 @@
 services:
-  api: &api
-    build: 
-      context: ms-transaction
-      dockerfile: Dockerfile
-    env_file:
-      - ms-transaction/environments/.env
-    depends_on:
-      - db
-      - redis
-      - rabbitmq
-    networks:
-      - infra_network
-      - services_network
-    ports:
-      - '8081:8080'
-
   db:
+    container_name: ms-transaction-db
     image: postgres
     restart: always
     hostname: db
@@ -24,9 +9,10 @@ services:
     ports:
       - '5432:5432'
     networks:
-      - services_network
+      - shared_network
 
   redis:
+    container_name: ms-transaction-redis
     image: redis
     hostname: redis
     restart: always
@@ -35,11 +21,8 @@ services:
     ports:
       - '6379:6379'  
     networks:
-      - services_network
+      - shared_network
 
 networks:
-  infra_network:
-    external:
-      name: bankcombr_infra_network
-  services_network:
-    driver: bridge
+  shared_network:
+    external: true
